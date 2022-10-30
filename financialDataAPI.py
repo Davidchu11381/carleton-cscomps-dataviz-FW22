@@ -42,7 +42,7 @@ def top_contributors_by_cid(cid):
             print(
                 f"There's a {response.status_code} error with your request")
 
-# doesn't seem to work
+# doesn't seem to work, asking OpenSecrets about it currently
 # returns total donations from specified industry for specified candiate cid
 def total_from_industry_by_cid(ind, cid):
         #endpoint = "https://www.opensecrets.org/api/?method=candIndByInd&cid=" + cid + "&cycle=2020&ind=" + ind + "&apikey="
@@ -56,7 +56,7 @@ def total_from_industry_by_cid(ind, cid):
             print(
                 f"There's a {response.status_code} error with your request")
 
-# 
+# function that will eventually get top candidates for each industry
 def get_industry_totals():
     candidate_list = [] 
     industry_list = []
@@ -66,10 +66,11 @@ def get_industry_totals():
         for industry in industry_list:
             response = total_from_industry_by_cid(industry, candidate)
             # using response, add to industry_dict as appropriate
-            # industry_dict[industry] += (number obtained from response)
-    # store data in database
+            # industry_dict[industry[candidate]] += (number obtained from response)
+    # store data in database(?)
 
 def main():
+    # demonstrates use of one of the endpoints
     response = top_industries_by_cid("N00007360")
     if response:
         data_dict = xmltodict.parse(response.text) # parse from XML to a JSON-dict format
