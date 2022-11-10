@@ -1,36 +1,27 @@
 import React from 'react';
-import './App.css';
-// import Navbar from './components/Navbar';
 import { BrowserRouter as Router, Routes, Route} from 'react-router-dom';
-// import Home from './pages';
-// import About Us from './pages/about';
 import '../node_modules/bootstrap/dist/css/bootstrap.min.css'
-
-
 import HomePage from './pages/HomePage/index.js'
-// import AboutUs from './pages/AboutPage/index.js'
-
+import AboutUs from './pages/AboutPage/index.js'
+import NavbarBand from './components/Navbar.js'
+import IndustryPage from './pages/IndustryPage';
+import PersonPage from './pages/PersonPage';
+import TopicPage from './pages/TopicPage';
 function App() {
-return (
-  <>
-      <p> Hello </p>
-      <HomePage />
-      {/* <Router>
-        <Navbar />
-        <Routes>
-          <Route exact path='/'>
-            <HomePage />
-          </Route>
-          <Route path='/about'>
-            <AboutUs />
-          </Route>
-          <Route path='/contact' element={<Contact/>} />
-          <Route path='/blogs' element={<Blogs/>} />
-          <Route path='/sign-up' element={<SignUp/>} />
-        </Routes>
-      </Router> */}
-  </>
-);
+    return (
+    <>
+        <Router>
+            <NavbarBand />
+            <Routes>
+                <Route exact path='/' element={<HomePage />} />
+                <Route path='/aboutUs' element={<AboutUs />} />
+                <Route path='/industry' element={<IndustryPage />} />
+                <Route path='/congress' element={<PersonPage />} />
+                <Route path='/topic' element={<TopicPage />} />
+            </Routes>
+        </Router>
+    </>
+    );
 }
 
 export default App;
