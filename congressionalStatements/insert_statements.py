@@ -63,4 +63,18 @@ def get_congresspeople_collection(db):
     collection = db["congresspeople"]
     return collection
 
+def main():
+    db = get_mongodb_client()
+    statements_collection = get_statements_collection(db)
+    congresspeople_collection = get_congresspeople_collection(db)
+    addCongressRecordId(congresspeople_collection)
 
+    test_pdf = 'https://www.congress.gov/117/crec/2021/01/28/167/17/CREC-2021-01-28-senate.pdf'
+    pdf_text = load_pdf(test_pdf)
+    date = datetime.date(2021,1,28)
+    speeches = extract_speeches(pdf_text, date, 'senate')
+    store_speeches(speeches, statements_collection, date)
+    check_collection(statements_collection)
+
+if __name__ == "__main__":
+    main()
