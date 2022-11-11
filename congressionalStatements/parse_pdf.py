@@ -8,10 +8,10 @@ def load_pdf(pdf_file):
     with open(pdf_file, 'rb') as f:
     #pdfFile = open('/Users/annaneiman-golden/Downloads/CREC-2021-03-23-senate.pdf', 'rb')
         pdfReader = PyPDF2.PdfFileReader(f)
-    # Read in pages, concat into one long string
-    pdfText = ''
-    for i in range(pdfReader.numPages):
-        pdfText += pdfReader.getPage(i).extractText()
+        # Read in pages, concat into one long string
+        pdfText = ''
+        for i in range(pdfReader.numPages):
+            pdfText += pdfReader.getPage(i).extractText()
     return pdfText
 
 # client = pymongo.MongoClient("mongodb+srv://neimana:earthsayshello@cluster0.pvfbgyu.mongodb.net/?retryWrites=true&w=majority")
@@ -28,8 +28,12 @@ states = 'Alabama|Alaska|Arizona|Arkansas|California|Colorado|Connecticut|Delawa
 # from congress collection, make a regex for all members of congress names -- or congress ID?
 def get_congress_record_id_regex(collection):
     ids = []
-    for doc in collection:
-        ids.append(doc['congress_record_id'])
+    for doc in collection.find():
+        try:
+            ids.append(doc['congress_record_id'])
+        except KeyError:
+            # not from a state - will filter these members out
+            pass
     return '|'.join(ids) 
 
 def getDateAndChamber(pdfName):
@@ -45,23 +49,22 @@ def getDateAndChamber(pdfName):
 def get_cmid_from_speech(speech, congressperson_collection):
     member_ids = get_congress_record_id_regex(congressperson_collection)
     congressperson_id = re.search('(?:Mr|Ms|Mrs). ' + member_ids, speech).group(0)
-    cm_id = collection.find_one({"congress_record_id" : congressperson_id})['opensecrets_id'] #using opensecrets_id for now, may change
+    cm_id = congressperson_collection.find_one({"congress_record_id" : congressperson_id})['opensecrets_id'] #using opensecrets_id for now, may change
 
     return cm_id
 
-def extract_speeches(pdf_text, date, chamber, congressperson_collection):
+def extract_speeches(pdfText, date, chamber, congressperson_collection):
     # Prepare pdf text to be parsed for speeches
     # handle newlines
-    pdfText = re.sub('-\n', '' ,pdfText)
+    pdfText = re.sub('-|\n', '' ,pdfText)
     pdfText = re.sub('\nf ', '~', pdfText) #marking the end of a speech
-    pdfText = re.sub('\n', '' , pdfText)
     year = date.year
 
     #print(re.search('VerDate(.*?)'+year, pdfText).group()) # no <3
-    pdfText = re.sub('VerDate(.*?)RECORD(.*?)' + year, '', pdfText) #idk if this works no it doesn't
+    pdfText = re.sub('VerDate(.*?)RECORD(.*?)' + str(year), '', pdfText) #idk if this works no it doesn't
     #VerDate.*year
     #pdfText = re.sub('The SPEAKER pro tempore', '~', pdfText)
-    pdfText = re.sub('The (?:ACTING )?(?:PRESIDENT|SPEAKER) pro tempore', '~', pdfText) #marking the end of a speech
+    pdfText = re.sub('The (?:ACTING )?(?:PRESIDENT|SPEAKER) pro tempore|The PRESIDING OFFICER', '~', pdfText) #marking the end of a speech
     #regex variables
 
     member_ids = get_congress_record_id_regex(congressperson_collection)
@@ -69,7 +72,11 @@ def extract_speeches(pdf_text, date, chamber, congressperson_collection):
     states = 'Alabama|Alaska|Arizona|Arkansas|California|Colorado|Connecticut|Delaware|Florida|Georgia|Hawaii|Idaho|Illinois|Indiana|Iowa|Kansas|Kentucky|Louisiana|Maine|Maryland|Massachusetts|Michigan|Minnesota|Mississippi|Missouri|Montana|Nebraska|Nevada|New Hampshire|New Jersey|New Mexico|New York|North Carolina|North Dakota|Ohio|Oklahoma|Oregon|Pennsylvania|Rhode Island|South Carolina|South Dakota|Tennessee|Texas|Utah|Vermont|Virginia|Washington|West Virginia|Wisconsin|Wyoming'
 
     # find all speeches
-    regex = '(?:Mr|Ms|Mrs)\. ' + member_ids + '\. [^~]*' # could def make this better, but works ok!
+    print("-----")
+    print(member_ids)
+    print("-----")
+
+    regex = '(?:Mr|Ms|Mrs)\. (?:' + member_ids + ')\. [^~]*' # could def make this better, but works ok!
     #regex = '((?:Mr|Ms|Mrs). ' + memberName + '(?: of ' + states + ')? .*?)(?:Mr|Ms|Mrs). ' + memberName + '(?: of ' + states + ')?'
     allSpeeches = re.findall(regex, pdfText)
 

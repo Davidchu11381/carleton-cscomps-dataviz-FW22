@@ -1,4 +1,6 @@
 import datetime
+import requests
+
 import pymongo
 import pandas as pd
 
@@ -13,27 +15,31 @@ def addCongressRecordId(collection):
     # test adding congress_record_id field
 
     for doc in collection.find():
-        lastName = doc['last_name']
-        stateCode = doc['state']
-        fullState = stateDict[stateCode]
-        if collection.count_documents({'last_name' : lastName, 'type' : doc['type']}) > 1: #if ambiguous last name
-            congressRecordID = lastName.upper() + " of " + fullState
-        else:
-            congressRecordID = lastName.upper()
-        
-        collection.update_one(
-            {"_id" : doc["_id"]}, 
-            {"$set": {"congress_record_id": congressRecordID}})
+        try:
+            lastName = doc['last_name']
+            stateCode = doc['state']
+            fullState = stateDict[stateCode]
+            if collection.count_documents({'last_name' : lastName, 'type' : doc['type']}) > 1: #if ambiguous last name
+                congressRecordID = lastName.upper() + " of " + fullState
+            else:
+                congressRecordID = lastName.upper()
+            
+            collection.update_one(
+                {"_id" : doc["_id"]}, 
+                {"$set": {"congress_record_id": congressRecordID}})
+        except KeyError:
+            pass
 
-def store_speeches(speech_list, collection, date):
+def store_speeches(speech_list, statements_collection, congresspeople_collection, date):
     # store in a mongodb collection
+    date = str(date)
     for speech in speech_list:
-        cm_id = getCMIDFromSpeech(speech)
+        cm_id = get_cmid_from_speech(speech, congresspeople_collection)
         # speech = re.sub('(?:Mr|Ms|Mrs). ' + memberName, '', speech) # filter out names at beginning  
 
         # if document already exists, update
-        if collection.count_documents({"cm_id": cm_id, "date" : date}) > 0:
-            collection.find_one_and_update(
+        if statements_collection.count_documents({"cm_id": cm_id, "date" : date}) > 0:
+            statements_collection.find_one_and_update(
                 {"cm_id": cm_id, "date" : date},
                 {"$push": {"statements" : speech}})
         else:
@@ -42,7 +48,7 @@ def store_speeches(speech_list, collection, date):
                 "date" : date,
                 "statements" : [speech]
             }
-            collection.insert_one(document)
+            statements_collection.insert_one(document)
 
 def check_collection(collection):
     # test contents of collection -- good so far!!
@@ -68,12 +74,13 @@ def main():
     statements_collection = get_statements_collection(db)
     congresspeople_collection = get_congresspeople_collection(db)
     addCongressRecordId(congresspeople_collection)
+    #check_collection(congresspeople_collection)
 
-    test_pdf = 'https://www.congress.gov/117/crec/2021/01/28/167/17/CREC-2021-01-28-senate.pdf'
+    test_pdf = "test_pdf.pdf" # use requests to access pdfs from scraped links
     pdf_text = load_pdf(test_pdf)
     date = datetime.date(2021,1,28)
-    speeches = extract_speeches(pdf_text, date, 'senate')
-    store_speeches(speeches, statements_collection, date)
+    speeches = extract_speeches(pdf_text, date, 'senate', congresspeople_collection)
+    store_speeches(speeches, statements_collection, congresspeople_collection, date)
     check_collection(statements_collection)
 
 if __name__ == "__main__":
