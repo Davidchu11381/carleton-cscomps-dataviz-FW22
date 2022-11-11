@@ -1,1 +1,2 @@
-*.code-workspace
+# example MERN app
+mern_ex/*
