@@ -21,19 +21,16 @@ def load_pdf(pdf_file):
 #congressCollection = db['test for now']
 
 #regex variables
-memberName = '[A-Z][A-Z]+(?:[ -][A-Z][A-Z]+)?' # this is temp, will update with a function to get more like the one below # [A-Z][A-Z]+ -- old one
-#memberName = getCongressNamesRegex(congressCollection) # actuallty add this!!!
+#memberName = '[A-Z][A-Z]+(?:[ -][A-Z][A-Z]+)?' # this is temp, will update with a function to get more like the one below # [A-Z][A-Z]+ -- old one
 date = '(?:Jan(?:uary)?|Feb(?:ruary)?|Mar(?:ch)?|Apr(?:il)?|May|June?|July?|Aug(?:ust)?|Sep(?:tember)?|Oct(?:ober)?|Nov(?:ember)?|Dec(?:ember)?) [0-9]{1,2}, [0-9]{4}'
 states = 'Alabama|Alaska|Arizona|Arkansas|California|Colorado|Connecticut|Delaware|Florida|Georgia|Hawaii|Idaho|Illinois|Indiana|Iowa|Kansas|Kentucky|Louisiana|Maine|Maryland|Massachusetts|Michigan|Minnesota|Mississippi|Missouri|Montana|Nebraska|Nevada|New Hampshire|New Jersey|New Mexico|New York|North Carolina|North Dakota|Ohio|Oklahoma|Oregon|Pennsylvania|Rhode Island|South Carolina|South Dakota|Tennessee|Texas|Utah|Vermont|Virginia|Washington|West Virginia|Wisconsin|Wyoming'
 
-
-
 # from congress collection, make a regex for all members of congress names -- or congress ID?
-def getCongressNamesRegex(collection):
-    names = []
+def get_congress_record_id_regex(collection):
+    ids = []
     for doc in collection:
-        names.append(doc['last_name'])
-    return '|'.join(names) 
+        ids.append(doc['congress_record_id'])
+    return '|'.join(ids) 
 
 def getDateAndChamber(pdfName):
     '''
@@ -45,29 +42,15 @@ def getDateAndChamber(pdfName):
     return date, chamber
 
 # helper methods to get congressmember and date from speech
-def getCMIDFromSpeech(speech):
-    # with other code I wrote, should just be able to check against that field, and get cmd!
+def get_cmid_from_speech(speech, congressperson_collection):
+    member_ids = get_congress_record_id_regex(congressperson_collection)
+    congressperson_id = re.search('(?:Mr|Ms|Mrs). ' + member_ids, speech).group(0)
+    cm_id = collection.find_one({"congress_record_id" : congressperson_id})['opensecrets_id'] #using opensecrets_id for now, may change
 
-    regex = '(?:Mr|Ms|Mrs). ' + memberName + '(?: of [A-Z][a-z]+)?'
-    congressMember = re.search(regex, speech).group(0)
-    lastname = re.search(memberName, congressMember).group(0)
-    state = ""
-    if re.search(' of (' + states + ')', congressMember) != None:
-        state = re.search(states, congressMember).group(0)
-    cm_id = lastname # for now
-
-    # should be able to just do this now!
-    # doc = congressCollection.find_one({'congress_record_id' : comgressMember})
-    # cm_id = doc['opensecrets_id'] #
     return cm_id
 
-def extract_speeches(pdf_text, date, chamber):
-    # Extract speeches
-
+def extract_speeches(pdf_text, date, chamber, congressperson_collection):
     # Prepare pdf text to be parsed for speeches
-
-    # Either "The SPEAKER pro tempore" or "\nf " marks the end of the speech
-    # replace both with ~ to be able to isolate
     # handle newlines
     pdfText = re.sub('-\n', '' ,pdfText)
     pdfText = re.sub('\nf ', '~', pdfText) #marking the end of a speech
@@ -81,13 +64,12 @@ def extract_speeches(pdf_text, date, chamber):
     pdfText = re.sub('The (?:ACTING )?(?:PRESIDENT|SPEAKER) pro tempore', '~', pdfText) #marking the end of a speech
     #regex variables
 
-    memberName = '[A-Z][A-Z]+(?:[ -][A-Z][A-Z]+)?' # this is temp, will update with a function to get more like the one below # [A-Z][A-Z]+ -- old one
-    #memberName = getCongressNamesRegex(congressCollection) # actuallty add this!!!
+    member_ids = get_congress_record_id_regex(congressperson_collection)
     date = '(?:Jan(?:uary)?|Feb(?:ruary)?|Mar(?:ch)?|Apr(?:il)?|May|June?|July?|Aug(?:ust)?|Sep(?:tember)?|Oct(?:ober)?|Nov(?:ember)?|Dec(?:ember)?) [0-9]{1,2}, [0-9]{4}'
     states = 'Alabama|Alaska|Arizona|Arkansas|California|Colorado|Connecticut|Delaware|Florida|Georgia|Hawaii|Idaho|Illinois|Indiana|Iowa|Kansas|Kentucky|Louisiana|Maine|Maryland|Massachusetts|Michigan|Minnesota|Mississippi|Missouri|Montana|Nebraska|Nevada|New Hampshire|New Jersey|New Mexico|New York|North Carolina|North Dakota|Ohio|Oklahoma|Oregon|Pennsylvania|Rhode Island|South Carolina|South Dakota|Tennessee|Texas|Utah|Vermont|Virginia|Washington|West Virginia|Wisconsin|Wyoming'
 
     # find all speeches
-    regex = '(?:Mr|Ms|Mrs)\. ' + memberName + '(?: of ' + states + ')?\. [^~]*' # could def make this better, but works ok!
+    regex = '(?:Mr|Ms|Mrs)\. ' + member_ids + '\. [^~]*' # could def make this better, but works ok!
     #regex = '((?:Mr|Ms|Mrs). ' + memberName + '(?: of ' + states + ')? .*?)(?:Mr|Ms|Mrs). ' + memberName + '(?: of ' + states + ')?'
     allSpeeches = re.findall(regex, pdfText)
 
@@ -97,15 +79,15 @@ def extract_speeches(pdf_text, date, chamber):
         print(speech)
     return allSpeeches
 
-def store_speeches(speech_list, collection, date):
+def store_speeches(speech_list, statements_collection, congressperson_collection, date):
     # store in a mongodb collection
     for speech in speech_list:
-        cm_id = getCMIDFromSpeech(speech)
+        cm_id = get_cmid_from_speech(speech, congressperson_collection)
         # speech = re.sub('(?:Mr|Ms|Mrs). ' + memberName, '', speech) # filter out names at beginning  
 
         # if document already exists, update
-        if collection.count_documents({"cm_id": cm_id, "date" : date}) > 0:
-            collection.find_one_and_update(
+        if statements_collection.count_documents({"cm_id": cm_id, "date" : date}) > 0:
+            statements_collection.find_one_and_update(
                 {"cm_id": cm_id, "date" : date},
                 {"$push": {"statements" : speech}})
         else:
@@ -114,7 +96,7 @@ def store_speeches(speech_list, collection, date):
                 "date" : date,
                 "statements" : [speech]
             }
-            collection.insert_one(document)
+            statements_collection.insert_one(document)
 
 # could prob do more filtering like the speech filter
 
@@ -143,17 +125,4 @@ def check_collection(collection):
 # - potentially rewrite whole thing as a script (more typical python)
 # 
 # 
-def get_mongodb_client():
-    client = pymongo.MongoClient("mongodb://localhost:27017/") # must be run on olin312-04!!
-    db = client["comps"] # access the comps db
-    return db
-
-def get_statements_collection(db):
-    collection = db["statements"]
-    return collection
-
-def get_congresspeople_collection(db):
-    collection = db["congresspeople"]
-    return collection
-
 
