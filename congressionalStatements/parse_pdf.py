@@ -7,12 +7,12 @@ import datetime
 def load_pdf(pdf_file):
     with open(pdf_file, 'rb') as f:
     #pdfFile = open('/Users/annaneiman-golden/Downloads/CREC-2021-03-23-senate.pdf', 'rb')
-        pdfReader = PyPDF2.PdfFileReader(f)
+        pdf_reader = PyPDF2.PdfFileReader(f)
         # Read in pages, concat into one long string
-        pdfText = ''
-        for i in range(pdfReader.numPages):
-            pdfText += pdfReader.getPage(i).extractText()
-    return pdfText
+        pdf_text = ''
+        for i in range(pdf_reader.numPages):
+            pdf_text += pdf_reader.getPage(i).extractText()
+    return pdf_text
 
 # client = pymongo.MongoClient("mongodb+srv://neimana:earthsayshello@cluster0.pvfbgyu.mongodb.net/?retryWrites=true&w=majority")
 # db = client['statements_database']
@@ -36,35 +36,35 @@ def get_congress_record_id_regex(collection):
             pass
     return '|'.join(ids) 
 
-def getDateAndChamber(pdfName):
-    '''
-    get date and chamber from input (paired with links)
-    '''
-    date = re.search('[0-9]{4}-[0-9]{2}-[0-9]{2}', pdfName).group()
-    # chamber = re.search('senate|house', pdfName).group() -- when using chamber specific docs
-    chamber = ""
-    return date, chamber
+# def getDateAndChamber(pdfName):
+#     '''
+#     get date and chamber from input (paired with links)
+#     '''
+#     date = re.search('[0-9]{4}-[0-9]{2}-[0-9]{2}', pdfName).group()
+#     # chamber = re.search('senate|house', pdfName).group() -- when using chamber specific docs
+#     chamber = ""
+#     return date, chamber
 
-# helper methods to get congressmember and date from speech
-def get_cmid_from_speech(speech, congressperson_collection):
+# helper methods to get opensecrets id from speech
+def get_id_from_speech(speech, congressperson_collection):
     member_ids = get_congress_record_id_regex(congressperson_collection)
     congressperson_id = re.search('(?:Mr|Ms|Mrs). ' + member_ids, speech).group(0)
-    cm_id = congressperson_collection.find_one({"congress_record_id" : congressperson_id})['opensecrets_id'] #using opensecrets_id for now, may change
+    opensecrets_id = congressperson_collection.find_one({"congress_record_id" : congressperson_id})['opensecrets_id'] #using opensecrets_id for now, may change
 
-    return cm_id
+    return opensecrets_id
 
-def extract_speeches(pdfText, date, chamber, congressperson_collection):
+def extract_speeches(pdf_text, date, chamber, congressperson_collection):
     # Prepare pdf text to be parsed for speeches
     # handle newlines
-    pdfText = re.sub('-|\n', '' ,pdfText)
-    pdfText = re.sub('\nf ', '~', pdfText) #marking the end of a speech
+    pdf_text = re.sub('-|\n', '' ,pdf_text)
+    pdf_text = re.sub('\nf ', '~', pdf_text) #marking the end of a speech
     year = date.year
 
-    #print(re.search('VerDate(.*?)'+year, pdfText).group()) # no <3
-    pdfText = re.sub('VerDate(.*?)RECORD(.*?)' + str(year), '', pdfText) #idk if this works no it doesn't
+    #print(re.search('VerDate(.*?)'+year, pdf_text).group()) # no <3
+    pdf_text = re.sub('VerDate(.*?)RECORD(.*?)' + str(year), '', pdf_text) #idk if this works no it doesn't
     #VerDate.*year
-    #pdfText = re.sub('The SPEAKER pro tempore', '~', pdfText)
-    pdfText = re.sub('The (?:ACTING )?(?:PRESIDENT|SPEAKER) pro tempore|The PRESIDING OFFICER', '~', pdfText) #marking the end of a speech
+    #pdf_text = re.sub('The SPEAKER pro tempore', '~', pdf_text)
+    pdf_text = re.sub('The (?:ACTING )?(?:PRESIDENT|SPEAKER) pro tempore|The PRESIDING OFFICER', '~', pdf_text) #marking the end of a speech
     #regex variables
 
     member_ids = get_congress_record_id_regex(congressperson_collection)
@@ -78,41 +78,15 @@ def extract_speeches(pdfText, date, chamber, congressperson_collection):
 
     regex = '(?:Mr|Ms|Mrs)\. (?:' + member_ids + ')\. [^~]*' # could def make this better, but works ok!
     #regex = '((?:Mr|Ms|Mrs). ' + memberName + '(?: of ' + states + ')? .*?)(?:Mr|Ms|Mrs). ' + memberName + '(?: of ' + states + ')?'
-    allSpeeches = re.findall(regex, pdfText)
+    all_speeches = re.findall(regex, pdf_text)
 
     # should output list of all speeches in the given pdf
-    for speech in allSpeeches:
+    for speech in all_speeches:
         print("NEXT SPEECH--------")
         print(speech)
-    return allSpeeches
-
-def store_speeches(speech_list, statements_collection, congressperson_collection, date):
-    # store in a mongodb collection
-    for speech in speech_list:
-        cm_id = get_cmid_from_speech(speech, congressperson_collection)
-        # speech = re.sub('(?:Mr|Ms|Mrs). ' + memberName, '', speech) # filter out names at beginning  
-
-        # if document already exists, update
-        if statements_collection.count_documents({"cm_id": cm_id, "date" : date}) > 0:
-            statements_collection.find_one_and_update(
-                {"cm_id": cm_id, "date" : date},
-                {"$push": {"statements" : speech}})
-        else:
-            document = {
-                "cm_id" : cm_id,
-                "date" : date,
-                "statements" : [speech]
-            }
-            statements_collection.insert_one(document)
+    return all_speeches
 
 # could prob do more filtering like the speech filter
-
-def check_collection(collection):
-    # test contents of collection -- good so far!!
-    for doc in collection.find():
-        print("NEW DOC")
-        print(doc)
-
 
 # %% [markdown]
 # Issues to work out:

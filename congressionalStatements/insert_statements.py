@@ -9,24 +9,24 @@ from parse_pdf import *
 def get_cr_data():
     return pd.DataFrame.from_pickle("../CR_API/cr_117")
 
-def addCongressRecordId(collection):
-    stateDict = {"AL":"Alabama","AK":"Alaska","AZ":"Arizona","AR":"Arkansas","CA":"California","CO":"Colorado","CT":"Connecticut","DE":"Delaware","FL":"Florida","GA":"Georgia","HI":"Hawaii","ID":"Idaho","IL":"Illinois","IN":"Indiana","IA":"Iowa","KS":"Kansas","KY":"Kentucky","LA":"Louisiana","ME":"Maine","MD":"Maryland","MA":"Massachusetts","MI":"Michigan","MN":"Minnesota","MS":"Mississippi","MO":"Missouri","MT":"Montana","NE":"Nebraska","NV":"Nevada","NH":"New Hampshire","NJ":"New Jersey","NM":"New Mexico","NY":"New York","NC":"North Carolina","ND":"North Dakota","OH":"Ohio","OK":"Oklahoma","OR":"Oregon","PA":"Pennsylvania","RI":"Rhode Island","SC":"South Carolina","SD":"South Dakota","TN":"Tennessee","TX":"Texas","UT":"Utah","VT":"Vermont","VA":"Virginia","WA":"Washington","WV":"West Virginia","WI":"Wisconsin","WY":"Wyoming"}
+def add_congress_record_id(collection):
+    state_dict = {"AL":"Alabama","AK":"Alaska","AZ":"Arizona","AR":"Arkansas","CA":"California","CO":"Colorado","CT":"Connecticut","DE":"Delaware","FL":"Florida","GA":"Georgia","HI":"Hawaii","ID":"Idaho","IL":"Illinois","IN":"Indiana","IA":"Iowa","KS":"Kansas","KY":"Kentucky","LA":"Louisiana","ME":"Maine","MD":"Maryland","MA":"Massachusetts","MI":"Michigan","MN":"Minnesota","MS":"Mississippi","MO":"Missouri","MT":"Montana","NE":"Nebraska","NV":"Nevada","NH":"New Hampshire","NJ":"New Jersey","NM":"New Mexico","NY":"New York","NC":"North Carolina","ND":"North Dakota","OH":"Ohio","OK":"Oklahoma","OR":"Oregon","PA":"Pennsylvania","RI":"Rhode Island","SC":"South Carolina","SD":"South Dakota","TN":"Tennessee","TX":"Texas","UT":"Utah","VT":"Vermont","VA":"Virginia","WA":"Washington","WV":"West Virginia","WI":"Wisconsin","WY":"Wyoming"}
 
     # test adding congress_record_id field
 
     for doc in collection.find():
         try:
-            lastName = doc['last_name']
-            stateCode = doc['state']
-            fullState = stateDict[stateCode]
-            if collection.count_documents({'last_name' : lastName, 'type' : doc['type']}) > 1: #if ambiguous last name
-                congressRecordID = lastName.upper() + " of " + fullState
+            last_name = doc['last_name']
+            state_code = doc['state']
+            state = state_dict[state_code]
+            if collection.count_documents({'last_name' : last_name, 'type' : doc['type']}) > 1: #if ambiguous last name
+                congress_record_id = last_name.upper() + " of " + state
             else:
-                congressRecordID = lastName.upper()
+                congress_record_id = last_name.upper()
             
             collection.update_one(
                 {"_id" : doc["_id"]}, 
-                {"$set": {"congress_record_id": congressRecordID}})
+                {"$set": {"congress_record_id": congress_record_id}})
         except KeyError:
             pass
 
@@ -34,17 +34,17 @@ def store_speeches(speech_list, statements_collection, congresspeople_collection
     # store in a mongodb collection
     date = str(date)
     for speech in speech_list:
-        cm_id = get_cmid_from_speech(speech, congresspeople_collection)
+        opensecrets_id = get_id_from_speech(speech, congresspeople_collection)
         # speech = re.sub('(?:Mr|Ms|Mrs). ' + memberName, '', speech) # filter out names at beginning  
 
         # if document already exists, update
-        if statements_collection.count_documents({"cm_id": cm_id, "date" : date}) > 0:
+        if statements_collection.count_documents({"opensecrets_id": opensecrets_id, "date" : date}) > 0:
             statements_collection.find_one_and_update(
-                {"cm_id": cm_id, "date" : date},
+                {"opensecrets_id": opensecrets_id, "date" : date},
                 {"$push": {"statements" : speech}})
         else:
             document = {
-                "cm_id" : cm_id,
+                "opensecrets_id" : opensecrets_id,
                 "date" : date,
                 "statements" : [speech]
             }
@@ -73,7 +73,7 @@ def main():
     db = get_mongodb_client()
     statements_collection = get_statements_collection(db)
     congresspeople_collection = get_congresspeople_collection(db)
-    addCongressRecordId(congresspeople_collection)
+    add_congress_record_id(congresspeople_collection)
     #check_collection(congresspeople_collection)
 
     test_pdf = "test_pdf.pdf" # use requests to access pdfs from scraped links
