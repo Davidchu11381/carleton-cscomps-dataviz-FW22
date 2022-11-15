@@ -203,10 +203,10 @@ def build_database(df):
                 topics_list.append('NaN')
         k += 1
         time.sleep(15*60) 
-     all_tweets = pd.concat(tweets_list)
-     all_tweets.to_csv('./data/all_tweets/all_tweets.csv')
-     df['topics'] = topics_list
-     df.to_csv('./data/all_topics/all_topics.csv')
+    all_tweets = pd.concat(tweets_list)
+    all_tweets.to_csv('/home/dataviz/carleton-cscomps-dataviz-FW22/Tweets/Data/all_tweets.csv')
+    df['topics'] = topics_list
+    df.to_csv('/home/dataviz/carleton-cscomps-dataviz-FW22/Tweets/Data/all_topics.csv')
 
 if __name__ == "__main__":
     os.chdir('/home/dataviz/carleton-cscomps-dataviz-FW22/Tweets')
