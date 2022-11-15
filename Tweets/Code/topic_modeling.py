@@ -120,7 +120,7 @@ def tokenize(text):
         # make text lowercase and split it
         tokens = tokens.lower().split() 
         # removing stop words
-        stop_words = open("./data/stopwords.txt",'r').read().splitlines()
+        stop_words = open("/home/dataviz/carleton-cscomps-dataviz-FW22/Tweets/Data/stopwords.txt",'r').read().splitlines()
         stop_words = [word.strip() for word in stop_words]
         tokens = [w for w in tokens if not w in stop_words]
 
@@ -197,19 +197,19 @@ def build_database(df):
 
                 # return topics
                 topics = ' '.join(get_topics(tweets))
+                print("Finish run", i)
                 topics_list.append(topics)
             else:
                 topics_list.append('NaN')
         k += 1
-        time.sleep(15*60)
-
-        all_tweets = pd.concat(tweets_list)
-        all_tweets.to_csv('./data/all_tweets/all_tweets.csv')
-        df['topics'] = topics_list
-        # topics_df = pd.DataFrame (topics_list, columns = ['topics'])
-        df.to_csv('./data/all_topics/all_topics.csv')
+        time.sleep(15*60) 
+     all_tweets = pd.concat(tweets_list)
+     all_tweets.to_csv('./data/all_tweets/all_tweets.csv')
+     df['topics'] = topics_list
+     df.to_csv('./data/all_topics/all_topics.csv')
 
 if __name__ == "__main__":
-    os.chdir('/Users/davidchu/Desktop/Carleton/Courses/Senior/Fall/CS Comps/carleton-cscomps-dataviz-FW22/Tweets')
-    df = pd.read_csv("./data/legislators-current.csv")
+    os.chdir('/home/dataviz/carleton-cscomps-dataviz-FW22/Tweets')
+    df = pd.read_csv("/home/dataviz/carleton-cscomps-dataviz-FW22/Tweets/Data/legislators-current.csv")
     build_database(df)
+    print("Complete all runs")
