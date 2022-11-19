@@ -189,12 +189,16 @@ def build__tweets_database(df):
             id = df['twitter'][i]
             if id != 'nan':
                 # return all tweets
-                tweets = get_tweets(id)[['text','created_at']]
-                tweets['opensecrets_id'] = df['opensecrets_id'][i]
-                tweets['twitter'] = df['twitter'][i]
-                tweets_list.append(tweets)
+                try:
+                    tweets = get_tweets(id)[['text','created_at']]
+                    tweets['opensecrets_id'] = df['opensecrets_id'][i]
+                    tweets['twitter'] = df['twitter'][i]
+                    tweets_list.append(tweets)
+                    print(id)
+                except tweepy.TweepError as e:
+                    break
         k += 1
-        time.sleep(15*60) 
+        time.sleep(5*60) 
     all_tweets = pd.concat(tweets_list)
     all_tweets.to_csv('/home/dataviz/carleton-cscomps-dataviz-FW22/Tweets/Data/all_tweets.csv')
 
