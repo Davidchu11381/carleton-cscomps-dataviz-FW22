@@ -2,7 +2,6 @@ import requests
 import json
 import xmltodict
 from collections import defaultdict
-import pymongo
 
 key = "91a96cc61cceb54c2473df69372795f6"
 
@@ -56,22 +55,6 @@ def total_from_industry_by_cid(ind, cid):
             print(
                 f"There's a {response.status_code} error with your request")
 
-
-# demonstrates how to insert into a MongoDB database
-def insert_into_db(data):
-    client = pymongo.MongoClient("mongodb://localhost:27017/")
-
-    new_db = client["test_database"] # create a new database
-    new_collection = new_db["test_collection"] # create a new collection in the database
-    new_collection.drop() # clear anything already in it
-
-    list_of_dics = data["response"]["industries"]["industry"]
-
-    x = new_collection.insert_many(list_of_dics) # inserts a list of dictionaries
-
-    for x in new_collection.find():
-        print(x)
-        print()
 
 # def main():
     # demonstrates use of one of the endpoints

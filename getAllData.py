@@ -1,19 +1,12 @@
 import csv
 import pymongo
-import json
 import xmltodict
 from financialDataAPI import total_from_industry_by_cid
 import pandas as pd
 from collections import defaultdict
-import heapq
 
-
-# gets the following variables for each congressperson in dictionary format and inserts into MongoDB
-#   'last_name', 'first_name', 'middle_name', 'suffix', 'nickname', 'full_name', 'birthday', 
-#   'gender', 'type', 'state', 'district', 'senate_class', 'party', 'url', 'twitter', 'opensecrets_id'
-
-path_to_legislators = '/home/dataviz/Downloads/legislators-current.csv'
-path_to_industries = '/home/dataviz/Downloads/CRPIndustryCodes.csv'
+path_to_legislators = '/Users/kevin/Downloads/legislators-current.csv'
+path_to_industries = '/Users/kevin/Downloads/CRPIndustryCodes.csv'
 
 # returns a list of dictionaries containing all information on congresspeople
 def get_politician_data():
@@ -53,28 +46,24 @@ def get_all_industries():
             industries_set.add(row[2] + " " + row[3])
         return list(industries_set)
 
-get_all_industries()
-
 def get_industry_totals():
     industry_dict = defaultdict(list)
     cid_list = get_all_cid()
     industry_list = get_all_industries()
 
     # these are just for demonstrating on a smaller dataset
-    # cid_list = cid_list[:2]
-    # industry_list = industry_list[:2]
-    # test = ""
+    # cid_list = cid_list[:5]
+    # industry_list = industry_list[:5]
 
     for industry in industry_list:
         for cid in cid_list:
-            response = total_from_industry_by_cid(industry[:4], cid)
+            response = total_from_industry_by_cid(industry[:3], cid)
             if response:
-                test = industry
                 data_dict = xmltodict.parse(response.text) # parse from XML to a JSON-dict format
                 new_cand_dict = {}
                 new_cand_dict["cid"] = data_dict["response"]["candIndus"]["@cid"]
                 new_cand_dict["name"] = data_dict["response"]["candIndus"]["@cand_name"]
-                new_cand_dict["total"] = data_dict["response"]["candIndus"]["@total"]
+                new_cand_dict["total"] = int(data_dict["response"]["candIndus"]["@total"])
                 industry_dict[industry].append(new_cand_dict)
 
     # insert into MongoDB database
@@ -83,19 +72,16 @@ def get_industry_totals():
     new_collection = db["industries"] # create a new collection in the database
     new_collection.drop() # clear anything already in it
 
-    for key, value in industry_dict.items():
-        new_dict = {key:value}
-        new_collection.insert_one(new_dict)
+    for industry, congresspeople in industry_dict.items():
+        industry_code = industry[:3]
+        industry_name = industry[4:]
 
-    # print("industry_dict[" + test + "]: ", industry_dict[test])
-    # print()
-    # print(heapq.nlargest(2, industry_dict[test], key = lambda x : x['total']))
+        new_dict = {"code": industry_code, "name" : industry_name, "congresspeople" : congresspeople}
+        new_collection.insert_one(new_dict)
 
 get_industry_totals()
 
-def top_k_by_industry(industry, k):
-    industry_dict = get_industry_totals() # we will query MongoDB instead of calling this
-    return (heapq.nlargest(k, industry_dict[industry], key = lambda x : x['total']))
+
 
 
 
