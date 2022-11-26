@@ -1,12 +1,24 @@
 import csv
 import pymongo
 import xmltodict
-from financialDataAPI import total_from_industry_by_cid
-import pandas as pd
 from collections import defaultdict
+import requests
 
 path_to_legislators = '/Users/kevin/Downloads/legislators-current.csv'
 path_to_industries = '/Users/kevin/Downloads/CRPIndustryCodes.csv'
+key = "91a96cc61cceb54c2473df69372795f6" # API key
+
+# returns total donations from specified industry for specified candidate cid
+def total_from_industry_by_cid(ind, cid):
+        endpoint = "https://www.opensecrets.org/api/?method=candIndByInd&cid=" + cid + "&cycle=2020&ind=" + ind + "&apikey="
+        api = endpoint + key
+        response = requests.get(f"{api}")
+        if response.status_code == 200:
+            print("Successfully retrieved total for industry code" + ind +  " for cid: " + cid)
+            return response
+        else:
+            print(
+                f"There's a {response.status_code} error with your request")
 
 # returns a list of dictionaries containing all information on congresspeople
 def get_politician_data():
