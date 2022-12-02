@@ -183,24 +183,31 @@ def get_topics(df):
 def build__tweets_database(df):
     df = df[['last_name', 'first_name', 'opensecrets_id', 'twitter']].astype(str)
     tweets_list = []
-    k = 0
-    while(k < len(df)/5):
-        for i in range(5*k, 5*(k+1)):
+    error_ids = []
+    for i in range(len(df)):
+        repeat = 0
+        while True:
             id = df['twitter'][i]
             if id != 'nan':
-                # return all tweets
                 try:
                     tweets = get_tweets(id)[['text','created_at']]
                     tweets['opensecrets_id'] = df['opensecrets_id'][i]
                     tweets['twitter'] = df['twitter'][i]
                     tweets_list.append(tweets)
                     print(id)
-                except tweepy.TweepError as e:
-                    break
-        k += 1
-        time.sleep(5*60) 
+                except Exception as e:
+                    print(e)
+                    if "Rate limit exceeded" in str(e) and repeat < 3:
+                        repeat += 1
+                        time.sleep(10*60)
+                        continue
+                    else:
+                        error_ids.append([id, e])
+                        break
+            break
     all_tweets = pd.concat(tweets_list)
     all_tweets.to_csv('/home/dataviz/carleton-cscomps-dataviz-FW22/Tweets/Data/all_tweets.csv')
+    pd.DataFrame(error_ids).to_csv('/home/dataviz/carleton-cscomps-dataviz-FW22/Tweets/Data/error_log.csv')
 
 def build_topics_database(df):
     topics_list = []
