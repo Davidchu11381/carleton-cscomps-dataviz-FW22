@@ -5,11 +5,13 @@
 There are two APIs used in this project. Both of them were created in Flask, and to start them, run this in the command line within the project directory:
 
 $ export FLASK_APP=industryAPI.py
+
 $ flask run --host 0.0.0.0 --port 5000
 
 Open up a new terminal and run this:
 
 $ export FLASK_APP=politicianAPI.py
+
 $ flask run --host 0.0.0.0 --port 5001
 
 Then, go to your browser and go to http://localhost:5000/ or http://localhost:5001/ to access the respective API's. 
