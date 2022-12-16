@@ -180,36 +180,48 @@ def get_topics(df):
     top_unique_topics = np.unique(top_topics)
     return top_unique_topics
 
-def build_database(df):
+def build__tweets_database(df):
     df = df[['last_name', 'first_name', 'opensecrets_id', 'twitter']].astype(str)
     tweets_list = []
-    topics_list = []
-    k = 0
-    while(k < len(df)/5):
-        for i in range(5*k, 5*(k+1)):
+    error_ids = []
+    for i in range(len(df)):
+        repeat = 0
+        while True:
             id = df['twitter'][i]
             if id != 'nan':
-                # return all tweets
-                tweets = get_tweets(id)[['text','created_at']]
-                tweets['opensecrets_id'] = df['opensecrets_id'][i]
-                tweets['twitter'] = df['twitter'][i]
-                tweets_list.append(tweets)
-
-                # return topics
-                topics = ' '.join(get_topics(tweets))
-                print("Finish run", i)
-                topics_list.append(topics)
-            else:
-                topics_list.append('NaN')
-        k += 1
-        time.sleep(15*60) 
+                try:
+                    tweets = get_tweets(id)[['text','created_at']]
+                    tweets['opensecrets_id'] = df['opensecrets_id'][i]
+                    tweets['twitter'] = df['twitter'][i]
+                    tweets_list.append(tweets)
+                    print(id)
+                except Exception as e:
+                    print(e)
+                    if "Rate limit exceeded" in str(e) and repeat < 3:
+                        repeat += 1
+                        time.sleep(10*60)
+                        continue
+                    else:
+                        error_ids.append([id, e])
+                        break
+            break
     all_tweets = pd.concat(tweets_list)
     all_tweets.to_csv('/home/dataviz/carleton-cscomps-dataviz-FW22/Tweets/Data/all_tweets.csv')
-    df['topics'] = topics_list
-    df.to_csv('/home/dataviz/carleton-cscomps-dataviz-FW22/Tweets/Data/all_topics.csv')
+    pd.DataFrame(error_ids).to_csv('/home/dataviz/carleton-cscomps-dataviz-FW22/Tweets/Data/error_log.csv')
+
+def build_topics_database(df):
+    topics_list = []
+    politicians = df.groupby('opensecrets_id') 
+
+    for name, group in politicians:
+        topics_list.append(' '.join(get_topics(group)))
+    
+    pd.DataFrame(topics_list).to_csv('/home/dataviz/carleton-cscomps-dataviz-FW22/Tweets/Data/all_topics.csv')
+
+
 
 if __name__ == "__main__":
     os.chdir('/home/dataviz/carleton-cscomps-dataviz-FW22/Tweets')
     df = pd.read_csv("/home/dataviz/carleton-cscomps-dataviz-FW22/Tweets/Data/legislators-current.csv")
-    build_database(df)
+    build__tweets_database(df)
     print("Complete all runs")
