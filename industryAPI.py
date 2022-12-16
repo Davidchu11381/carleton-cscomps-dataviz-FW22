@@ -24,7 +24,7 @@ def getIndustryName(ind):
     return jsonify({'data': dic["name"]})
 
 # Returns all congresspeople for a specified industry code
-@app.route('/<string:ind>', methods = ['GET'])
+@app.route('/<string:ind>/all', methods = ['GET'])
 def getAllCongresspeople(ind):
     client = pymongo.MongoClient("mongodb://localhost:27017/")
     db = client['comps']
