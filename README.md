@@ -1,4 +1,4 @@
-*Data Visualization for Government Transparency: A Carleton CS Comps project*
+# Data Visualization for Government Transparency: A Carleton CS Comps project #
 
 ---
 
@@ -16,13 +16,13 @@ Then, go to your browser and go to http://localhost:5000/ or http://localhost:50
 
 ___
 
-**Politician API**:
+## Politician API:
 
 The format of all endpoints in this API is http://localhost:5001/ + politician cid + desired query for that politician.
 
 For example, if you want the top industries for a politician with CID N00003535, you would use http://localhost:5001/N00003535/industries. The rest of the endpoints are formatted exactly the same, refer to the comments of the API for more details.
 
-**Industry API**:
+## Industry API:
 
 The format of all endpoints in this API is http://localhost:5000/ + industry code + desired query for that industry.
 
