@@ -20,7 +20,7 @@ def total_from_industry_by_cid(ind, cid):
             print(
                 f"There's a {response.status_code} error with your request")
 
-# returns a list of dictionaries containing all information on congresspeople
+# saves a list of dictionaries containing demographic information on congresspeople to our database 
 def get_politician_data():
     with open(path_to_legislators, 'r') as csvfile:
         csv_reader = csv.reader(csvfile)
@@ -34,7 +34,13 @@ def get_politician_data():
             for index, var in enumerate(column_names):
                 new_dict[var] = row[index]
             list_of_dicts.append(new_dict)
-        return list_of_dicts
+
+        # insert into MongoDB database
+        client = pymongo.MongoClient("mongodb://localhost:27017/")
+        db = client['comps']
+        new_collection = db["congresspeople"] # create a new collection in the database
+        new_collection.drop() # clear anything already in it
+        new_collection.insert_many(list_of_dicts)
 
 # returns a list of all candidate cid's
 def get_all_cid():
@@ -58,6 +64,7 @@ def get_all_industries():
             industries_set.add(row[2] + " " + row[3])
         return list(industries_set)
 
+# saves industry donation data to congresspeople (grouped by industry) to our database
 def get_industry_totals():
     industry_dict = defaultdict(list)
     cid_list = get_all_cid()
@@ -91,7 +98,8 @@ def get_industry_totals():
         new_dict = {"code": industry_code, "name" : industry_name, "congresspeople" : congresspeople}
         new_collection.insert_one(new_dict)
 
-get_industry_totals()
+# get_industry_totals()
+# get_politician_data()
 
 
 

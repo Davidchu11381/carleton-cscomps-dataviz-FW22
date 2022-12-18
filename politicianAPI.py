@@ -1,6 +1,6 @@
 
 from flask import Flask, jsonify, request
-import heapq
+import pymongo
 import requests
 import xmltodict
 
@@ -16,15 +16,29 @@ def home():
         message = "Hi, this is an API for politician data for the MoneyFlows comps project! \n"
         return message
 
-# Returns summary info for a specific candidate cid
+# Returns all information pertaining to a candidate cid
 @app.route('/<string:cid>/summary', methods = ['GET'])
 def getSummaryInfo(cid):
     endpoint = "http://www.opensecrets.org/api/?method=candSummary&cid=" + cid + "&cycle=2020&apikey="
     api = endpoint + key
     response = requests.get(f"{api}")
     if response.status_code == 200:
+        # data from OpenSecrets
         data_dict = xmltodict.parse(response.text) # parse from XML to a JSON-dict format
-        return data_dict["response"]["summary"]
+        
+        # data from our database
+        client = pymongo.MongoClient("mongodb://localhost:27017/")
+        db = client['comps']
+        collection = db['congresspeople']
+        dic = collection.find_one({"opensecrets_id": cid})
+
+        # combining both sets of data
+        data_dict["response"]["summary"]["@birthday"] = dic['birthday']
+        data_dict["response"]["summary"]["@gender"] = dic['gender']
+        data_dict["response"]["summary"]["@url"] = dic['url']
+        data_dict["response"]["summary"]["@twitter"] = dic['twitter']
+
+        return jsonify(data_dict["response"]["summary"])
     else:
         return f"There's a {response.status_code} error with your request"
 
@@ -36,7 +50,7 @@ def getTopIndustries(cid):
     response = requests.get(f"{api}")
     if response.status_code == 200:
         data_dict = xmltodict.parse(response.text) # parse from XML to a JSON-dict format
-        return data_dict["response"]["industries"]
+        return jsonify(data_dict["response"]["industries"])
     else:
         return f"There's a {response.status_code} error with your request"
 
@@ -48,7 +62,7 @@ def getTopIndividuals(cid):
     response = requests.get(f"{api}")
     if response.status_code == 200:
         data_dict = xmltodict.parse(response.text) # parse from XML to a JSON-dict format
-        return data_dict["response"]["contributors"]
+        return jsonify(data_dict["response"]["contributors"])
     else:
         return f"There's a {response.status_code} error with your request"
   
