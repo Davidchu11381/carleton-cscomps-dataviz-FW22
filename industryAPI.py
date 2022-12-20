@@ -23,6 +23,16 @@ def getIndustryName(ind):
 
     return jsonify({'data': dic["name"]})
 
+# Returns total of a specified industry code
+@app.route('/<string:ind>/total', methods = ['GET'])
+def getIndustryTotal(ind):
+    client = pymongo.MongoClient("mongodb://localhost:27017/")
+    db = client['comps']
+    collection = db['industries']
+    dic = collection.find_one({"code": ind})
+
+    return jsonify({'data': dic["total"]})
+
 # Returns all congresspeople for a specified industry code
 @app.route('/<string:ind>/all', methods = ['GET'])
 def getAllCongresspeople(ind):
