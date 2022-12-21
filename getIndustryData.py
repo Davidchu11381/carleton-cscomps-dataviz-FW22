@@ -3,6 +3,7 @@ import pymongo
 import xmltodict
 from collections import defaultdict
 import requests
+import time
 
 path_to_legislators = '/Users/kevin/Downloads/legislators-current.csv'
 path_to_industries = '/Users/kevin/Downloads/CRPIndustryCodes.csv'
@@ -72,13 +73,18 @@ def get_industry_data():
     industry_list = get_all_industries()
 
     # these are just for demonstrating on a smaller dataset
-    # cid_list = cid_list[:5]
-    # industry_list = industry_list[:5]
+    cid_list = cid_list[:5]
+    industry_list = industry_list[:5]
 
+    count = 0 # counts number of calls we have made in order to make sure we don't exceed 200 calls per day
     for industry in industry_list:
         total = 0 # keeps track of total amount of donations from this industry
         for cid in cid_list:
             response = total_from_industry_by_cid(industry[:3], cid)
+            count += 1
+            if count > 198:
+                count = 0
+                time.sleep(90000)
             if response:
                 data_dict = xmltodict.parse(response.text) # parse from XML to a JSON-dict format
                 new_cand_dict = {}
@@ -105,7 +111,6 @@ def get_industry_data():
 
         new_dict = {"code": industry_code, "name" : industry_name, "total": industry_total, "congresspeople" : congresspeople}
         new_collection.insert_one(new_dict)
-
 get_industry_data()
 # get_politician_data()
 
