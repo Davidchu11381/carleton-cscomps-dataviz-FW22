@@ -5,8 +5,8 @@ from collections import defaultdict
 import requests
 import time
 
-path_to_legislators = '/home/dataviz/Downloads/legislators-current.csv'
-path_to_industries = '/home/dataviz/Downloads/CRPIndustryCodes.csv'
+path_to_legislators = '/Users/Kevin/Downloads/legislators-current.csv'
+path_to_industries = '/Users/Kevin/Downloads/CRPIndustryCodes.csv'
 key = "91a96cc61cceb54c2473df69372795f6" # API key
 
 # returns total donations from specified industry for specified candidate cid
@@ -82,6 +82,7 @@ def get_industry_data():
         for cid in cid_list:
             response = total_from_industry_by_cid(industry[:3], cid)
             count += 1
+            print(count)
             if count > 15000:
                 count = 0
                 time.sleep(90000)
