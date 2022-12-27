@@ -1,6 +1,37 @@
 # Data Visualization for Government Transparency: A Carleton CS Comps project #
 
 ---
+Here is a section that details ways to to view the industry data within our MongoDB database.
+
+To access collection of industry data go to the command line and type in the following:
+ ```
+  $ mongosh
+  
+  $ use comps
+  ```
+
+Then, use any of the below queries to view the information you want:
+
+#### To show all industries and their info(name, code, list congresspeople) in the collection:
+
+```
+	$ db.industries.find()
+```
+
+#### To show industries sorted by total donations in descending order(excluding list of congresspeople for readability):
+
+```
+	$ db.industries.find({}, {"name": 1, "code": 1, "total": 1}).sort({ "total": -1})
+```
+
+#### To find an industry by any field:
+```
+  $ db.industries.find({field_name: field_value})
+```
+
+Ex. ```db.industries.find({name: "Education"})```
+  
+---
 
 There are two APIs used in this project. Both of them were created in Flask, and to start them, run this in the command line within the project directory:
 
