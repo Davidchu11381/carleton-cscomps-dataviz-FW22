@@ -66,15 +66,18 @@ def get_all_industries():
         return list(industries_set)
 
 # saves industry donation data to congresspeople (grouped by industry) to our database
+# takes ~ 4 days to completely run.
+# DO NOT RUN UNLESS YOU KNOW WHAT YOU'RE DOING. It will clear everything in our database and will take days to rerun it.
 def get_industry_data():
     industry_dict = defaultdict(list)
-    industry_totals = defaultdict(int)
     cid_list = get_all_cid()
     industry_list = get_all_industries()
 
-    # these are just for demonstrating on a smaller dataset
-    # cid_list = cid_list[:5]
-    # industry_list = industry_list[:5]
+    # insert into MongoDB database
+    client = pymongo.MongoClient("mongodb://localhost:27017/")
+    db = client['comps']
+    new_collection = db["industries"] # create a new collection in the database
+    new_collection.drop() # clear anything already in it
 
     count = 0 # counts number of calls we have made in order to make sure we don't exceed 20000 calls per day
     for industry in industry_list:
@@ -93,27 +96,24 @@ def get_industry_data():
                 new_cand_dict["name"] = data_dict["response"]["candIndus"]["@cand_name"]
                 donation_amount = int(data_dict["response"]["candIndus"]["@total"])
                 new_cand_dict["total"] = donation_amount
-
                 total += donation_amount # updates total amount of donations
                 industry_dict[industry].append(new_cand_dict) # adds this candidate's info to the list 
-        industry_totals[industry] = total # once total for this industry has been calculated, save it
 
-    # insert into MongoDB database
+        new_dict = {"code": industry[:3], "name" : industry[4:], "total": total, "congresspeople" : industry_dict[industry]}
+        new_collection.insert_one(new_dict)
+    
+# Returns a list of industries with available data in the following form: "code industry_name". Ex "W04 Education"
+def getNonEmptyIndustries():
     client = pymongo.MongoClient("mongodb://localhost:27017/")
     db = client['comps']
     new_collection = db["industries"] # create a new collection in the database
-    new_collection.drop() # clear anything already in it
+    industries = []
+    for industry in new_collection.find():
+        industry_code = industry['code']
+        industry_name = industry['name']
+        industries.append(industry_code + " " + industry_name)
+    return industries
 
-    # format the dictionary as desired
-    for industry, congresspeople in industry_dict.items():
-        industry_code = industry[:3]
-        industry_name = industry[4:]
-        industry_total = industry_totals[industry]
-
-        new_dict = {"code": industry_code, "name" : industry_name, "total": industry_total, "congresspeople" : congresspeople}
-        new_collection.insert_one(new_dict)
-get_industry_data()
-# get_politician_data()
 
 
 
