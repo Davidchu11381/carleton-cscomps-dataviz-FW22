@@ -23,7 +23,6 @@ def getDescription(ind):
     soup = BeautifulSoup(page.content, "html.parser")
     results = soup.find(id="profileLeftColumn")
     results = format_description(results.text)
-    print(results)
     return results
 
 # creating a Flask app
