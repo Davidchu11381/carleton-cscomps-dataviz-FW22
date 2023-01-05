@@ -78,7 +78,7 @@ def main(argv):
     #check_collection(congresspeople_collection)
 
     try: 
-        df = pd.from_pickle(argv[0])
+        df = pd.read_pickle(argv[0])
     except FileNotFoundError as e:
         print(e)
     except IndexError as e:
@@ -87,11 +87,13 @@ def main(argv):
     #test_pdf = 'https://www.congress.gov/117/crec/2021/01/28/167/17/CREC-2021-01-28-senate.pdf'
     #date = datetime.date(2021,1,28)
     for row in df.itertuples():
-        pdf_text = load_pdf(row.pdf_url)
+        with open("temp.pdf", "wb") as pdf:
+            pdf.write(requests.get(row.pdf_url).content)
+        pdf_text = load_pdf("temp.pdf")
         date = row.date.date()
-        speeches = extract_speeches(pdf_text, date, row.chamber)
-        store_speeches(speeches, statements_collection, date)
+        speeches = extract_speeches(pdf_text, date, row.chamber, congresspeople_collection)
+        store_speeches(speeches, statements_collection, congresspeople_collection, date)
     check_collection(statements_collection)
 
 if __name__ == "__main__":
-    main()
+    main(sys.argv[1:])

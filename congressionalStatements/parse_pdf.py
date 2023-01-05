@@ -1,7 +1,8 @@
-import PyPDF2
-import regex as re
-import pymongo
+import re
 import datetime
+
+import PyPDF2
+import pymongo
 
 
 def load_pdf(pdf_file):
@@ -49,9 +50,13 @@ def get_congress_record_id_regex(collection):
 def get_id_from_speech(speech, congressperson_collection):
     member_ids = get_congress_record_id_regex(congressperson_collection)
     congressperson_id = re.search('(?:Mr|Ms|Mrs). ' + member_ids, speech).group(0)
-    opensecrets_id = congressperson_collection.find_one({"congress_record_id" : congressperson_id})['opensecrets_id'] #using opensecrets_id for now, may change
-
-    return opensecrets_id
+    try:
+        opensecrets_id = congressperson_collection.find_one({"congress_record_id" : congressperson_id})['opensecrets_id'] #using opensecrets_id for now, may change
+        return opensecrets_id
+    except TypeError as e:
+        print(member_ids)
+        print(congressperson_id)
+        raise e
 
 def extract_speeches(pdf_text, date, chamber, congressperson_collection):
     # Prepare pdf text to be parsed for speeches
@@ -72,20 +77,20 @@ def extract_speeches(pdf_text, date, chamber, congressperson_collection):
     states = 'Alabama|Alaska|Arizona|Arkansas|California|Colorado|Connecticut|Delaware|Florida|Georgia|Hawaii|Idaho|Illinois|Indiana|Iowa|Kansas|Kentucky|Louisiana|Maine|Maryland|Massachusetts|Michigan|Minnesota|Mississippi|Missouri|Montana|Nebraska|Nevada|New Hampshire|New Jersey|New Mexico|New York|North Carolina|North Dakota|Ohio|Oklahoma|Oregon|Pennsylvania|Rhode Island|South Carolina|South Dakota|Tennessee|Texas|Utah|Vermont|Virginia|Washington|West Virginia|Wisconsin|Wyoming'
 
     # find all speeches
-    print("-----")
-    print(member_ids)
-    print("-----")
+    # print("-----")
+    # print(member_ids)
+    # print("-----")
 
     stopper = '(?:(?:Mr|Ms|Mrs)\. (?:' + member_ids + ')\.|~)'
     #regex = '(?:Mr|Ms|Mrs)\. (?:' + member_ids + ')\. [^~]*' # could def make this better, but works ok!
     regex = '((?:Mr|Ms|Mrs)\. (?:' + member_ids + ')\. (?:.*?))' + stopper #adding this, lets see if it works
     #regex = '('+memberID + '(?: of ' + states + ')?\. (?:.*?))(?:~|'+memberID+'\.)'
-    all_speeches = re.findall(regex, pdf_text, overlapped=True)
+    all_speeches = re.findall(regex, pdf_text)
 
     # should output list of all speeches in the given pdf
-    for speech in all_speeches:
-        print("NEXT SPEECH--------")
-        print(speech)
+    # for speech in all_speeches:
+    #     print("NEXT SPEECH--------")
+    #     print(speech)
     return all_speeches
 
 # could prob do more filtering like the speech filter
