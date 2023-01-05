@@ -54,7 +54,8 @@ def get_id_from_speech(speech, congressperson_collection):
         opensecrets_id = congressperson_collection.find_one({"congress_record_id" : congressperson_id})['opensecrets_id'] #using opensecrets_id for now, may change
         return opensecrets_id
     except TypeError as e:
-        print(member_ids)
+        with open('bugged_speech.txt', 'w') as f:
+            f.write(speech)
         print(congressperson_id)
         raise e
 
