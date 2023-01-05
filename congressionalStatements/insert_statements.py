@@ -1,4 +1,5 @@
 import datetime
+import sys
 import requests
 
 import pymongo
@@ -69,18 +70,27 @@ def get_congresspeople_collection(db):
     collection = db["congresspeople"]
     return collection
 
-def main():
+def main(argv):
     db = get_mongodb_client()
     statements_collection = get_statements_collection(db)
     congresspeople_collection = get_congresspeople_collection(db)
     add_congress_record_id(congresspeople_collection)
     #check_collection(congresspeople_collection)
 
-    test_pdf = "test_pdf.pdf" # use requests to access pdfs from scraped links
-    pdf_text = load_pdf(test_pdf)
-    date = datetime.date(2021,1,28)
-    speeches = extract_speeches(pdf_text, date, 'senate', congresspeople_collection)
-    store_speeches(speeches, statements_collection, congresspeople_collection, date)
+    try: 
+        df = pd.from_pickle(argv[0])
+    except FileNotFoundError as e:
+        print(e)
+    except IndexError as e:
+        print(e)
+
+    #test_pdf = 'https://www.congress.gov/117/crec/2021/01/28/167/17/CREC-2021-01-28-senate.pdf'
+    #date = datetime.date(2021,1,28)
+    for row in df.itertuples():
+        pdf_text = load_pdf(row.pdf_url)
+        date = row.date.date()
+        speeches = extract_speeches(pdf_text, date, row.chamber)
+        store_speeches(speeches, statements_collection, date)
     check_collection(statements_collection)
 
 if __name__ == "__main__":

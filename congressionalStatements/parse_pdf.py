@@ -1,5 +1,5 @@
 import PyPDF2
-import re
+import regex as re
 import pymongo
 import datetime
 
@@ -61,7 +61,7 @@ def extract_speeches(pdf_text, date, chamber, congressperson_collection):
     year = date.year
 
     #print(re.search('VerDate(.*?)'+year, pdf_text).group()) # no <3
-    pdf_text = re.sub('VerDate(.*?)RECORD(.*?)' + str(year), '', pdf_text) #idk if this works no it doesn't
+    pdf_text = re.sub('VerDate(?:.*?)RECORD(?:.*?)' + str(year), '', pdf_text) #test this
     #VerDate.*year
     #pdf_text = re.sub('The SPEAKER pro tempore', '~', pdf_text)
     pdf_text = re.sub('The (?:ACTING )?(?:PRESIDENT|SPEAKER) pro tempore|The PRESIDING OFFICER', '~', pdf_text) #marking the end of a speech
@@ -76,9 +76,11 @@ def extract_speeches(pdf_text, date, chamber, congressperson_collection):
     print(member_ids)
     print("-----")
 
-    regex = '(?:Mr|Ms|Mrs)\. (?:' + member_ids + ')\. [^~]*' # could def make this better, but works ok!
-    #regex = '((?:Mr|Ms|Mrs). ' + memberName + '(?: of ' + states + ')? .*?)(?:Mr|Ms|Mrs). ' + memberName + '(?: of ' + states + ')?'
-    all_speeches = re.findall(regex, pdf_text)
+    stopper = '(?:(?:Mr|Ms|Mrs)\. (?:' + member_ids + ')\.|~)'
+    #regex = '(?:Mr|Ms|Mrs)\. (?:' + member_ids + ')\. [^~]*' # could def make this better, but works ok!
+    regex = '((?:Mr|Ms|Mrs)\. (?:' + member_ids + ')\. (?:.*?))' + stopper #adding this, lets see if it works
+    #regex = '('+memberID + '(?: of ' + states + ')?\. (?:.*?))(?:~|'+memberID+'\.)'
+    all_speeches = re.findall(regex, pdf_text, overlapped=True)
 
     # should output list of all speeches in the given pdf
     for speech in all_speeches:
