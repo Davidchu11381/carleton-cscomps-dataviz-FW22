@@ -49,7 +49,9 @@ def get_congress_record_id_regex(collection):
 # helper methods to get opensecrets id from speech
 def get_id_from_speech(speech, congressperson_collection):
     member_ids = get_congress_record_id_regex(congressperson_collection)
-    congressperson_id = re.search('(?:Mr|Ms|Mrs). ' + member_ids, speech).group(0)
+    congressperson_id = re.search('(?:Mr|Ms|Mrs). (' + member_ids + ')', speech).group(0) #changed here to group -- works?
+    #congressperson_id = re.search(member_ids, speech).group(0) # if not, try this
+
     try:
         opensecrets_id = congressperson_collection.find_one({"congress_record_id" : congressperson_id})['opensecrets_id'] #using opensecrets_id for now, may change
         return opensecrets_id

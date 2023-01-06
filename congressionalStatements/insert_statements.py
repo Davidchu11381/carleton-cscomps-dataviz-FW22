@@ -13,6 +13,7 @@ def get_cr_data():
 def add_congress_record_id(collection):
     state_dict = {"AL":"Alabama","AK":"Alaska","AZ":"Arizona","AR":"Arkansas","CA":"California","CO":"Colorado","CT":"Connecticut","DE":"Delaware","FL":"Florida","GA":"Georgia","HI":"Hawaii","ID":"Idaho","IL":"Illinois","IN":"Indiana","IA":"Iowa","KS":"Kansas","KY":"Kentucky","LA":"Louisiana","ME":"Maine","MD":"Maryland","MA":"Massachusetts","MI":"Michigan","MN":"Minnesota","MS":"Mississippi","MO":"Missouri","MT":"Montana","NE":"Nebraska","NV":"Nevada","NH":"New Hampshire","NJ":"New Jersey","NM":"New Mexico","NY":"New York","NC":"North Carolina","ND":"North Dakota","OH":"Ohio","OK":"Oklahoma","OR":"Oregon","PA":"Pennsylvania","RI":"Rhode Island","SC":"South Carolina","SD":"South Dakota","TN":"Tennessee","TX":"Texas","UT":"Utah","VT":"Vermont","VA":"Virginia","WA":"Washington","WV":"West Virginia","WI":"Wisconsin","WY":"Wyoming"}
 
+    # need to fix this to include ppl with same name and same state
     # test adding congress_record_id field
 
     for doc in collection.find():
@@ -20,7 +21,10 @@ def add_congress_record_id(collection):
             last_name = doc['last_name']
             state_code = doc['state']
             state = state_dict[state_code]
-            if collection.count_documents({'last_name' : last_name, 'type' : doc['type']}) > 1: #if ambiguous last name
+            # if same last name, chamber, state, and sex (?), include full name -- may need to double check this, could be an issue tho
+            if collection.count_documents({'last_name' : last_name, 'type' : doc['type'], 'gender' : doc['gender'], 'state' : state_code}) > 1 :
+                congress_record_id = doc['first_name'].upper() + " " + last_name.upper() + " of " + state
+            elif collection.count_documents({'last_name' : last_name, 'type' : doc['type']}) > 1: #if ambiguous last name
                 congress_record_id = last_name.upper() + " of " + state
             else:
                 congress_record_id = last_name.upper()
