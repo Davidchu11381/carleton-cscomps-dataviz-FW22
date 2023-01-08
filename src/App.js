@@ -7,6 +7,7 @@ import NavbarBand from './components/Navbar.js'
 import IndustryPage from './pages/IndustryPage';
 import PersonPage from './pages/PersonPage';
 import TopicPage from './pages/TopicPage';
+
 function App() {
     return (
     <>
