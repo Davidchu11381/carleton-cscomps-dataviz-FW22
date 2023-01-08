@@ -27,8 +27,7 @@
   },
   "scripts": {
     "start": "react-scripts --openssl-legacy-provider start",
-    "start-politician": "cd backend && python3 politicianAPI.py", 
-    "start-industry": "cd backend && python3 industryAPI.py",
+    "start-backend": "cd backend && python3 politicianAPI.py",
     "build": "react-scripts --openssl-legacy-provider build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
