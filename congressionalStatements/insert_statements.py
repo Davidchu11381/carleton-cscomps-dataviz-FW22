@@ -90,7 +90,10 @@ def main(argv):
 
     #test_pdf = 'https://www.congress.gov/117/crec/2021/01/28/167/17/CREC-2021-01-28-senate.pdf'
     #date = datetime.date(2021,1,28)
+    num = 0 # progress counter
     for row in df.itertuples():
+        if num % 10 == 0:
+            print(num)
         with open("temp.pdf", "wb") as pdf:
             pdf.write(requests.get(row.pdf_url).content)
         pdf_text = load_pdf("temp.pdf")
