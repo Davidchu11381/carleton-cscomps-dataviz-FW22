@@ -78,7 +78,8 @@ def get_industry_data():
     new_collection = db["industries"] # create a new collection in the database
     new_collection.drop() # clear anything already in it
 
-    
+    cid_list = cid_list[:10]
+    industry_list = industry_list[:10]
 
     count = 0 # counts number of calls we have made in order to make sure we don't exceed 20000 calls per day
     for industry in industry_list:
