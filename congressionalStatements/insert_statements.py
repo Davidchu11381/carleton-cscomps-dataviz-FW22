@@ -100,6 +100,7 @@ def main(argv):
         date = row.date.date()
         speeches = extract_speeches(pdf_text, date, row.chamber, congresspeople_collection)
         store_speeches(speeches, statements_collection, congresspeople_collection, date)
+        num += 1
     check_collection(statements_collection)
 
 if __name__ == "__main__":
