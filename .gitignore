@@ -1,2 +1,2 @@
-# example MERN app
-mern_ex/*
+*.code-workspace
+credentials.py
