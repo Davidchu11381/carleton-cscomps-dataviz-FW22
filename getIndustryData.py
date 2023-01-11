@@ -73,6 +73,9 @@ def get_industry_data():
     cid_list = get_all_cid()
     industry_list = get_all_industries()
 
+    cid_list = cid_list[:5]
+    industry_list = industry_list[:5]
+
     # insert into MongoDB database
     client = pymongo.MongoClient("mongodb://localhost:27017/")
     db = client['comps']

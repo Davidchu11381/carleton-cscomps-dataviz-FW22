@@ -31,6 +31,10 @@ def getProfilePic(handle):
         return url
     except:
         print('Failed authentication')
+        
+# removes all "@" symbols from keys in a dictionary
+def removeAtSymbol(dict):
+    return {x.translate({64:None}) : y for x, y in dict.items()}
 
 # creating a Flask app
 app = Flask(__name__)
@@ -50,24 +54,27 @@ def getSummaryInfo(cid):
     response = requests.get(f"{api}")
     if response.status_code == 200:
         # data from OpenSecrets
-        data_dict = xmltodict.parse(response.text) # parse from XML to a JSON-dict format
+        data_dict = xmltodict.parse(response.text)["response"]["summary"] # parse from XML to a JSON-dict format
         
-        # data from our database
+        # removing @ symbols
+        data_dict = removeAtSymbol(data_dict)
+
+        # getting data from our database
         client = pymongo.MongoClient("mongodb://localhost:27017/")
         db = client['comps']
         collection = db['congresspeople']
         dic = collection.find_one({"opensecrets_id": cid})
 
         # combining both sets of data
-        data_dict["response"]["summary"]["@birthday"] = dic['birthday']
-        data_dict["response"]["summary"]["@gender"] = dic['gender']
-        data_dict["response"]["summary"]["@url"] = dic['url']
+        data_dict["birthday"] = dic['birthday']
+        data_dict["gender"] = dic['gender']
+        data_dict["url"] = dic['url']
         twitter_handle = dic['twitter']
-        data_dict["response"]["summary"]["@twitter"] = twitter_handle
+        data_dict["twitter"] = twitter_handle
         profile_pic_url = getProfilePic(twitter_handle)
-        data_dict["response"]["summary"]["@profile_picture"] = profile_pic_url
+        data_dict["profile_picture"] = profile_pic_url
 
-        return jsonify(data_dict["response"]["summary"])
+        return jsonify(data_dict)
     else:
         return f"There's a {response.status_code} error with your request"
 
@@ -78,8 +85,13 @@ def getTopIndustries(cid):
     api = endpoint + opensecrets_key
     response = requests.get(f"{api}")
     if response.status_code == 200:
-        data_dict = xmltodict.parse(response.text) # parse from XML to a JSON-dict format
-        return jsonify(data_dict["response"]["industries"])
+        data_dict = xmltodict.parse(response.text)["response"]["industries"] # parse from XML to a JSON-dict format
+
+        # remove "@" symbols
+        data_dict = removeAtSymbol(data_dict) 
+        data_dict["industry"] = [removeAtSymbol(industry_dict) for industry_dict in data_dict["industry"]]
+
+        return jsonify(data_dict)
     else:
         return f"There's a {response.status_code} error with your request"
 
@@ -90,8 +102,12 @@ def getTopIndividuals(cid):
     api = endpoint + opensecrets_key
     response = requests.get(f"{api}")
     if response.status_code == 200:
-        data_dict = xmltodict.parse(response.text) # parse from XML to a JSON-dict format
-        return jsonify(data_dict["response"]["contributors"])
+        data_dict = xmltodict.parse(response.text)["response"]["contributors"] # parse from XML to a JSON-dict format
+
+        # remove "@" symbols
+        data_dict = removeAtSymbol(data_dict) 
+        data_dict["contributor"] = [removeAtSymbol(contributor_dict) for contributor_dict in data_dict["contributor"]]
+        return jsonify(data_dict)
     else:
         return f"There's a {response.status_code} error with your request"
   
