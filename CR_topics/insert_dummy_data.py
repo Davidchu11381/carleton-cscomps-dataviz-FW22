@@ -10,7 +10,7 @@ random_words = ["abortion", "government", "business", "capitalism", "Biden", "pr
 
 for doc in congresspeople_collection.find():
     num_words = random.randint(2, 6)
-    for i in num_words:
+    for i in range(num_words):
         frequency = random.random()
         topic = random_words[random.randint(0,30)]
         new_doc = {
