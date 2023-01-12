@@ -15,14 +15,7 @@ for doc in congresspeople_collection.find():
         frequency = random.random()
         topic = random_words[random.randint(0,30)]
         topic_frequencies[topic] = frequency
-
-        '''
-        new_doc = {
-            "opensecrets_id" : doc["opensecrets_id"],
-            "topic" : topic,
-            "frequency" : frequency
-        }
-        '''
+    
     new_doc = {
         "opensecrets_id" : doc["opensecrets_id"],
         "topic_frequencies" : topic_frequencies
