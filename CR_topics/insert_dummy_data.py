@@ -10,12 +10,21 @@ random_words = ["abortion", "government", "business", "capitalism", "Biden", "pr
 
 for doc in congresspeople_collection.find():
     num_words = random.randint(2, 6)
+    topic_frequencies = {}
     for i in range(num_words):
         frequency = random.random()
         topic = random_words[random.randint(0,30)]
+        topic_frequencies[topic] = frequency
+
+        '''
         new_doc = {
             "opensecrets_id" : doc["opensecrets_id"],
             "topic" : topic,
             "frequency" : frequency
         }
-        topics_collection.insert_one(new_doc)
+        '''
+    new_doc = {
+        "opensecrets_id" : doc["opensecrets_id"],
+        "topic_frequencies" : topic_frequencies
+    }
+    topics_collection.insert_one(new_doc)
