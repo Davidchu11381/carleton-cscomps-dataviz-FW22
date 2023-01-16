@@ -2,12 +2,12 @@ import React, { Component } from 'react'
 import Chart from 'react-google-charts'
 const sankeyData = [
   ['From', 'To', 'Weight'],
-  ['A', 'X', 5],
-  ['A', 'Y', 7],
-  ['A', 'Z', 6],
-  ['B', 'X', 2],
-  ['B', 'Y', 9],
-  ['B', 'Z', 4],
+  ['Oil & Gas', 'Politician A', 5],
+  ['Oil & Gas', 'Politician B', 7],
+  ['Oil & Gas', 'Politician C', 6],
+  ['Education', 'Politician A', 2],
+  ['Education', 'Politician B', 9],
+  ['Education', 'Politician C', 4],
 ]
 class SankeyChart extends Component {
   render() {

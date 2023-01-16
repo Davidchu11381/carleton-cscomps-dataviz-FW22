@@ -1,0 +1,26 @@
+/* IGNORE THIS: depracated code */
+.overallPage {
+    flex-direction: row;
+    justify-content: space-evenly;
+}
+
+.left-section {
+    flex-direction: column;
+    color: green;
+}
+
+.middle-section {
+    color: green;
+}
+
+.right-section {
+    flex-direction: column;
+    color: green;
+}
+
+.information {
+    background-color: red;
+    justify-content: space-evenly;
+    border-width: 0em;
+    border-color: black;
+}

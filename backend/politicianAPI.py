@@ -3,11 +3,13 @@ from flask import Flask, jsonify, request
 import heapq
 import requests
 import xmltodict
+from flask_cors import CORS
 
 key = "91a96cc61cceb54c2473df69372795f6" # API key
 
 # creating a Flask app
 app = Flask(__name__)
+CORS(app)
 
 # home route
 @app.route('/', methods = ['GET'])
