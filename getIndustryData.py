@@ -4,6 +4,7 @@ import xmltodict
 from collections import defaultdict
 import requests
 import time
+from politicianAPI import removeAtSymbol
 
 path_to_legislators = '/Users/Kevin/Downloads/legislators-current.csv'
 path_to_industries = '/Users/Kevin/Downloads/CRPIndustryCodes.csv'
@@ -28,12 +29,36 @@ def get_politician_data():
         list_of_dicts = []
         column_names = next(csv_reader)
         column_names = column_names[:14] + [column_names[18]] + [column_names[24]] # column names we want
-
         for row in csv_reader:
             row = row[:14] + [row[18]] + [row[24]]
             new_dict = {}
+
+            # adding info from csv
             for index, var in enumerate(column_names):
                 new_dict[var] = row[index]
+
+            # adding info from OpenSecrets
+            endpoint = "http://www.opensecrets.org/api/?method=candSummary&cid=" + new_dict["opensecrets_id"] + "&cycle=2022&apikey="
+            api = endpoint + key
+            response = requests.get(f"{api}")
+            if response.status_code == 200:
+                # data from OpenSecrets
+                data_dict = xmltodict.parse(response.text)["response"]["summary"] # parse from XML to a JSON-dict format
+                
+                # removing @ symbols
+                data_dict = removeAtSymbol(data_dict)
+                
+                # adding to dictionary
+                new_dict["first_elected"] = data_dict["first_elected"]
+                new_dict["next_election"] = data_dict["first_elected"]
+                new_dict["total"] = data_dict["total"]
+                new_dict["spent"] = data_dict["spent"]
+                new_dict["cash_on_hand"] = data_dict["cash_on_hand"]
+                new_dict["debt"] = data_dict["debt"]
+                new_dict["origin"] = data_dict["origin"]
+            else:
+                print(f"There's a {response.status_code} error with your request")
+            
             list_of_dicts.append(new_dict)
 
         # insert into MongoDB database
@@ -116,6 +141,8 @@ def getNonEmptyIndustries():
         industry_name = industry['name']
         industries.append(industry_code + " " + industry_name)
     return industries
+
+get_politician_data()
 
 
 

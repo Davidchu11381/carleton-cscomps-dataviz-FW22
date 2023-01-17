@@ -49,39 +49,18 @@ def home():
 # Returns all demographic information pertaining to a candidate cid
 @app.route('/<string:cid>/summary', methods = ['GET'])
 def getSummaryInfo(cid):
-    endpoint = "http://www.opensecrets.org/api/?method=candSummary&cid=" + cid + "&cycle=2020&apikey="
-    api = endpoint + opensecrets_key
-    response = requests.get(f"{api}")
-    if response.status_code == 200:
-        # data from OpenSecrets
-        data_dict = xmltodict.parse(response.text)["response"]["summary"] # parse from XML to a JSON-dict format
-        
-        # removing @ symbols
-        data_dict = removeAtSymbol(data_dict)
-
-        # getting data from our database
-        client = pymongo.MongoClient("mongodb://localhost:27017/")
-        db = client['comps']
-        collection = db['congresspeople']
-        dic = collection.find_one({"opensecrets_id": cid})
-
-        # combining both sets of data
-        data_dict["birthday"] = dic['birthday']
-        data_dict["gender"] = dic['gender']
-        data_dict["url"] = dic['url']
-        twitter_handle = dic['twitter']
-        data_dict["twitter"] = twitter_handle
-        profile_pic_url = getProfilePic(twitter_handle)
-        data_dict["profile_picture"] = profile_pic_url
-
-        return jsonify(data_dict)
-    else:
-        return f"There's a {response.status_code} error with your request"
+    # getting data from our database
+    client = pymongo.MongoClient("mongodb://localhost:27017/")
+    db = client['comps']
+    collection = db['congresspeople']
+    dic = collection.find_one({"opensecrets_id": cid})
+    dic.pop("_id")
+    return jsonify(dic)
 
 # Returns top 10 industries for a specific candidate cid
 @app.route('/<string:cid>/industry', methods = ['GET'])
 def getTopIndustries(cid):
-    endpoint = "https://www.opensecrets.org/api/?method=candIndustry&cid=" + cid + "&cycle=2020&apikey="
+    endpoint = "https://www.opensecrets.org/api/?method=candIndustry&cid=" + cid + "&cycle=2022&apikey="
     api = endpoint + opensecrets_key
     response = requests.get(f"{api}")
     if response.status_code == 200:
@@ -98,7 +77,7 @@ def getTopIndustries(cid):
 # Returns top individual contributors for a specific candidate cid
 @app.route('/<string:cid>/individual', methods = ['GET'])
 def getTopIndividuals(cid):
-    endpoint = "https://www.opensecrets.org/api/?method=candContrib&cid=" + cid + "&cycle=2020&apikey="
+    endpoint = "https://www.opensecrets.org/api/?method=candContrib&cid=" + cid + "&cycle=2022&apikey="
     api = endpoint + opensecrets_key
     response = requests.get(f"{api}")
     if response.status_code == 200:
@@ -110,6 +89,20 @@ def getTopIndividuals(cid):
         return jsonify(data_dict)
     else:
         return f"There's a {response.status_code} error with your request"
+
+# Returns all congresspeople sorted by alphabetical order
+@app.route('/all', methods = ['GET'])
+def getAllCongresspeople():
+    client = pymongo.MongoClient("mongodb://localhost:27017/")
+    db = client['comps']
+    collection = db['congresspeople']
+    list_of_congresspeople = []
+    for dict in collection.find():
+        dict.pop("_id")
+        list_of_congresspeople.append(dict)
+    list_of_congresspeople.sort(key = lambda x: x["last_name"])
+
+    return jsonify({"data": list_of_congresspeople})
   
 # driver function
 if __name__ == '__main__':
