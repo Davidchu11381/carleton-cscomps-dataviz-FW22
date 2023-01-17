@@ -51,7 +51,7 @@ def get_politician_data():
                 # adding to dictionary
                 new_dict["first_elected"] = data_dict["first_elected"]
                 new_dict["next_election"] = data_dict["first_elected"]
-                new_dict["total"] = data_dict["total"]
+                new_dict["total"] = int(data_dict["total"])
                 new_dict["spent"] = data_dict["spent"]
                 new_dict["cash_on_hand"] = data_dict["cash_on_hand"]
                 new_dict["debt"] = data_dict["debt"]
@@ -117,7 +117,7 @@ def get_industry_data():
             if count > 15000:
                 count = 0
                 time.sleep(90000)
-            if response:
+            if response:    
                 data_dict = xmltodict.parse(response.text) # parse from XML to a JSON-dict format
                 new_cand_dict = {}
                 new_cand_dict["cid"] = data_dict["response"]["candIndus"]["@cid"]

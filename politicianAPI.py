@@ -91,19 +91,91 @@ def getTopIndividuals(cid):
         return f"There's a {response.status_code} error with your request"
 
 # Returns all congresspeople sorted by alphabetical order
-@app.route('/all', methods = ['GET'])
-def getAllCongresspeople():
+@app.route('/all/<string:sort>', methods = ['GET'])
+def getAllCongresspeople(sort):
     client = pymongo.MongoClient("mongodb://localhost:27017/")
     db = client['comps']
     collection = db['congresspeople']
-    list_of_congresspeople = []
+    list = []
     for dict in collection.find():
         dict.pop("_id")
-        list_of_congresspeople.append(dict)
-    list_of_congresspeople.sort(key = lambda x: x["last_name"])
+        list.append(dict)
+    if sort == "alphabetical":
+        list.sort(key = lambda x: x["last_name"])
+    elif sort == "total":
+        list.sort(key = lambda x: x["total"])
 
-    return jsonify({"data": list_of_congresspeople})
+    return jsonify({"data": list})
+
+# Returns all Republicans sorted by alphabetical order
+@app.route('/republicans/<string:sort>', methods = ['GET'])
+def getAllRepublicans(sort):
+    client = pymongo.MongoClient("mongodb://localhost:27017/")
+    db = client['comps']
+    collection = db['congresspeople']
+    list = []
+    for dict in collection.find({"party": "Republican"}):
+        dict.pop("_id")
+        list.append(dict)
+    if sort == "alphabetical":
+        list.sort(key = lambda x: x["last_name"])
+    elif sort == "total":
+        list.sort(key = lambda x: x["total"])
+
+    return jsonify({"data": list})
   
+# Returns all Democrats sorted by alphabetical order
+@app.route('/democrats/<string:sort>', methods = ['GET'])
+def getAllDemocrats(sort):
+    client = pymongo.MongoClient("mongodb://localhost:27017/")
+    db = client['comps']
+    collection = db['congresspeople']
+    list = []
+    for dict in collection.find({"party": "Democrats"}):
+        dict.pop("_id")
+        list.append(dict)
+    if sort == "alphabetical":
+        list.sort(key = lambda x: x["last_name"])
+    elif sort == "total":
+        list.sort(key = lambda x: x["total"])
+
+    return jsonify({"data": list})
+
+# Returns all Senators sorted by alphabetical order
+@app.route('/senators/<string:sort>', methods = ['GET'])
+def getAllSenators(sort):
+    client = pymongo.MongoClient("mongodb://localhost:27017/")
+    db = client['comps']
+    collection = db['congresspeople']
+    list = []
+    for dict in collection.find({"type": "sen"}):
+        dict.pop("_id")
+        list.append(dict)
+    if sort == "alphabetical":
+        list.sort(key = lambda x: x["last_name"])
+    elif sort == "total":
+        list.sort(key = lambda x: x["total"])
+
+    return jsonify({"data": list})
+
+# Returns all Representatives sorted by alphabetical order
+@app.route('/representatives/<string:sort>', methods = ['GET'])
+def getAllRepresentatives(sort):
+    client = pymongo.MongoClient("mongodb://localhost:27017/")
+    db = client['comps']
+    collection = db['congresspeople']
+    list = []
+    for dict in collection.find({"type": "rep"}):
+        dict.pop("_id")
+        list.append(dict)
+    if sort == "alphabetical":
+        list.sort(key = lambda x: x["last_name"])
+    elif sort == "total":
+        list.sort(key = lambda x: x["total"])
+
+    return jsonify({"data": list})
+
+
 # driver function
 if __name__ == '__main__':
     app.run(debug = True)
