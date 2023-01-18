@@ -6,8 +6,8 @@ import requests
 import time
 from politicianAPI import removeAtSymbol
 
-path_to_legislators = '/Users/Kevin/Downloads/legislators-current.csv'
-path_to_industries = '/Users/Kevin/Downloads/CRPIndustryCodes.csv'
+path_to_legislators = '/home/dataviz/Downloads/legislators-current.csv'
+path_to_industries = '/home/dataviz/Downloads/CRPIndustryCodes.csv'
 key = "91a96cc61cceb54c2473df69372795f6" # API key
 
 # returns total donations from specified industry for specified candidate cid
@@ -51,7 +51,7 @@ def get_politician_data():
                 # adding to dictionary
                 new_dict["first_elected"] = data_dict["first_elected"]
                 new_dict["next_election"] = data_dict["first_elected"]
-                new_dict["total"] = int(data_dict["total"])
+                new_dict["total"] = float(data_dict["total"])
                 new_dict["spent"] = data_dict["spent"]
                 new_dict["cash_on_hand"] = data_dict["cash_on_hand"]
                 new_dict["debt"] = data_dict["debt"]
