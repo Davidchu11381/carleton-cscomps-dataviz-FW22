@@ -206,8 +206,8 @@ def build__tweets_database(df):
                         break
             break
     all_tweets = pd.concat(tweets_list)
-    all_tweets.to_csv('/home/dataviz/carleton-cscomps-dataviz-FW22/Tweets/Data/all_tweets.csv')
-    pd.DataFrame(error_ids).to_csv('/home/dataviz/carleton-cscomps-dataviz-FW22/Tweets/Data/error_log.csv')
+    all_tweets.to_csv('Data/addtional_tweets.csv')
+    pd.DataFrame(error_ids).to_csv('Data/addtional_error_log.csv')
 
 def build_topics_database(df):
     topics_list = []
@@ -221,7 +221,7 @@ def build_topics_database(df):
 
 
 if __name__ == "__main__":
-    os.chdir('/home/dataviz/carleton-cscomps-dataviz-FW22/Tweets')
-    df = pd.read_csv("/home/dataviz/carleton-cscomps-dataviz-FW22/Tweets/Data/legislators-current.csv")
+    os.chdir('/Users/davidchu/Desktop/Carleton/Courses/Senior/Fall/CS Comps/carleton-cscomps-dataviz-FW22/Tweets')
+    df = pd.read_csv("Data/legislators-more.csv")
     build__tweets_database(df)
     print("Complete all runs")
