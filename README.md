@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 # Data Visualization for Government Transparency: A Carleton CS Comps project #
 
 ---
@@ -61,7 +60,7 @@ For example, if you want the top industries for a politician with CID N00003535,
 The format of all endpoints in this API is http://localhost:5000/ + industry code + desired query for that industry.
 
 For example, if you want the top 10 for a industry with CID W04, you would use http://localhost:5000/W04/10. 
-=======
+
 # Getting Started with Create React App
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
@@ -132,4 +131,4 @@ This section has moved here: [https://facebook.github.io/create-react-app/docs/d
 ### `npm run build` fails to minify
 
 This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
->>>>>>> 24eb623867e4c78261194bbabd860c30aabfb3ad
+

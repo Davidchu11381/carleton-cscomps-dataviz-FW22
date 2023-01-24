@@ -6,13 +6,8 @@ import requests
 import time
 from politicianAPI import removeAtSymbol
 
-<<<<<<< HEAD:getIndustryData.py
 path_to_legislators = '/home/dataviz/Downloads/legislators-current.csv'
 path_to_industries = '/home/dataviz/Downloads/CRPIndustryCodes.csv'
-=======
-path_to_legislators = '../interim_data/legislators_current.csv'
-path_to_industries = '../interim_data/CRPIndustryCodes.csv'
->>>>>>> 24eb623867e4c78261194bbabd860c30aabfb3ad:backend/getIndustryData.py
 key = "91a96cc61cceb54c2473df69372795f6" # API key
 
 # returns total donations from specified industry for specified candidate cid
@@ -103,63 +98,6 @@ def get_industry_data():
     cid_list = get_all_cid()
     industry_list = get_all_industries()
 
-<<<<<<< HEAD:getIndustryData.py
-    cid_list = cid_list[:5]
-    industry_list = industry_list[:5]
-
-=======
->>>>>>> 24eb623867e4c78261194bbabd860c30aabfb3ad:backend/getIndustryData.py
-    # insert into MongoDB database
-    client = pymongo.MongoClient("mongodb://localhost:27017/")
-    db = client['comps']
-    new_collection = db["industries"] # create a new collection in the database
-    new_collection.drop() # clear anything already in it
-
-<<<<<<< HEAD:getIndustryData.py
-    count = 0 # counts number of calls we have made in order to make sure we don't exceed 20000 calls per day
-    for industry in industry_list:
-        total = 0 # keeps track of total amount of donations from this industry
-        for cid in cid_list:
-            response = total_from_industry_by_cid(industry[:3], cid)
-            count += 1
-            print(count)
-            if count > 15000:
-                count = 0
-                time.sleep(90000)
-            if response:    
-                data_dict = xmltodict.parse(response.text) # parse from XML to a JSON-dict format
-                new_cand_dict = {}
-                new_cand_dict["cid"] = data_dict["response"]["candIndus"]["@cid"]
-                new_cand_dict["name"] = data_dict["response"]["candIndus"]["@cand_name"]
-                donation_amount = int(data_dict["response"]["candIndus"]["@total"])
-                new_cand_dict["total"] = donation_amount
-                total += donation_amount # updates total amount of donations
-                industry_dict[industry].append(new_cand_dict) # adds this candidate's info to the list 
-
-        new_dict = {"code": industry[:3], "name" : industry[4:], "total": total, "congresspeople" : industry_dict[industry]}
-        new_collection.insert_one(new_dict)
-    
-# Returns a list of industries with available data in the following form: "code industry_name". Ex "W04 Education"
-def getNonEmptyIndustries():
-    client = pymongo.MongoClient("mongodb://localhost:27017/")
-    db = client['comps']
-    new_collection = db["industries"] # create a new collection in the database
-    industries = []
-    for industry in new_collection.find():
-        industry_code = industry['code']
-        industry_name = industry['name']
-        industries.append(industry_code + " " + industry_name)
-    return industries
-
-get_politician_data()
-
-
-
-
-
-
-        
-=======
     cid_list = cid_list[:10]
     industry_list = industry_list[:10]
 
@@ -185,8 +123,7 @@ get_politician_data()
 
         new_dict = {"code": industry[:3], "name" : industry[4:], "total": total, "congresspeople" : industry_dict[industry]}
         new_collection.insert_one(new_dict)
->>>>>>> 24eb623867e4c78261194bbabd860c30aabfb3ad:backend/getIndustryData.py
-    
+
 # Returns a list of industries with available data in the following form: "code industry_name". Ex "W04 Education"
 def getNonEmptyIndustries():
     client = pymongo.MongoClient("mongodb://localhost:27017/")
