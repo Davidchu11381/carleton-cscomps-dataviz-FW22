@@ -1,8 +1,23 @@
 import React from 'react';
-import {Container, Row, Col} from 'react-bootstrap';
-import YoutubeEmbed from './components/YoutubeEmbed';
-import SankeyChart from './components/SankeyChart';
+import {Container, Row, Col, Button} from 'react-bootstrap';
+// import YoutubeEmbed from './components/YoutubeEmbed';
+// import SankeyChart from './components/SankeyChart';
+import { useNavigate } from 'react-router-dom';
+
 function HomePage() {
+
+    const navigate = useNavigate();
+
+    const switchtoIndustryPage = () => {
+        console.log("switching to industry page");
+        navigate('/industry');
+    }
+
+    const switchtoCongressPage = () => {
+        console.log("switching to congress page");
+        navigate('/congress')
+    }
+
     return (
         <Container>
             <div className="HomePage">
@@ -40,11 +55,32 @@ function HomePage() {
                                 page(s) that will tell you more about them.
                             </p>
                         </div>
-                        <YoutubeEmbed embedId="ugrcQhQm4YI" />
+                        {/* <YoutubeEmbed embedId="ugrcQhQm4YI" /> */}
                     
                     </Col>
                 </Row>
-                <SankeyChart />
+                <Row>
+                    <Col>
+                    <Button variant="dark"
+                            onClick={switchtoIndustryPage}
+                            >
+                        Sort by Industries
+                    </Button>
+                    {/* <div>
+                        <Link to='/AboutUs' className="btn btn-primary">hello</Link>
+                    </div> */}
+                    </Col>
+
+                    <Col>
+                    <Button variant="dark"
+                            onClick={switchtoCongressPage}
+                            >
+                        Sort by Congresspeople
+                    </Button>
+                    </Col>
+
+                </Row>
+                {/* <SankeyChart /> */}
             </div>
         </Container>
     );

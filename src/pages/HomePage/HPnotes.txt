@@ -1,0 +1,19 @@
+Purpose of Home Page:
+    introduce the users to the website
+    give a brief overview of the information containted within
+    give them two choices: industry/sectors or congresspeople
+
+Needs:
+    a blurb for introduction + information overview
+    two buttons
+        one leads to industry/sector main page
+        other leads to congresspeople main page
+
+Design:
+        -----------------------
+        Navigation
+        -----------------------
+        introduction
+        information overview
+
+        button 1    button 2
