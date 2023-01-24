@@ -9,16 +9,18 @@ import { Container, Col, Row } from 'react-bootstrap';
 function PersonPage() {
 
     // "declaring" variables
-    const [politicianData, setPoliticianData] = useState({
+    //should be a better way to do this w/o having separate variables, but works for now
+    const [politicianIndustryData, setPoliticianIndustryData] = useState({
         candidate_name: "",
-        state: "",
-        political_party: "",
-        total_cash: "",
         cid: "",
         industry: [],
     });
 
-
+    const [politicianDemoData, setPoliticianDemoData] = useState({
+        state: "",
+        political_party: "",
+        total_cash: "",
+    });
     // IGNORE THIS
 
     // useEffect(() => {
@@ -41,14 +43,24 @@ function PersonPage() {
         fetch('http://127.0.0.1:5001/N00007360/industry')
         .then((data) => {return data.json()})
         .then((post) => {
-            setPoliticianData({
+            setPoliticianIndustryData({
                 candidate_name : post.cand_name,
                 cid : post.cid,
                 industry: post.industry,
             });
         });
+        fetch('http://127.0.0.1:5001/N00007360/summary')
+        .then((data) => {return data.json()})
+        .then((post) => {
+            setPoliticianDemoData({
+                state : post.state,
+                political_party : post.party,
+                total_cash: post.total,
+            });
+        });
     }, []);
 
+  
     // TESTING CODE
     // console.log(politicianData.industry[0]);
     // console.log(politicianData.industry);
@@ -76,15 +88,15 @@ function PersonPage() {
                     <Row>
                         <div className="picture">
                             {/* IMAGE WILL GO HERE */}
-                            <h1>{politicianData.candidate_name}</h1>
+                            <h1>{politicianIndustryData.candidate_name}</h1>
                         </div>
                     </Row>
                     <Row>
                         <div className="information">
-                            <p>CID: {politicianData.cid}</p>
-                            <p>State: {politicianData.state}</p>
-                            <p>Political Party: {politicianData.political_party}</p>
-                            <p>Total Cash: {politicianData.total_cash}</p>
+                            <p>CID: {politicianIndustryData.cid}</p>
+                            <p>State: {politicianDemoData.state}</p>
+                            <p>Political Party: {politicianDemoData.political_party}</p>
+                            <p>Total Cash: ${politicianDemoData.total_cash}</p>
                         </div>
                     </Row>
                 </Col>
@@ -93,7 +105,7 @@ function PersonPage() {
                         <h1>Top 10 Industries</h1>
 
                         <ul>
-                            {politicianData.industry.forEach(item => <li>{item}</li>)}
+                            {/*politicianData.industry.forEach(item => <li>{item}</li>)*/}
                         </ul>
 
                         {/* {politicianData.industry.map((item, index) => {
