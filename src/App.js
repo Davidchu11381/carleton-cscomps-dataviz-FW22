@@ -6,7 +6,9 @@ import AboutUs from './pages/AboutPage/index.js'
 import NavbarBand from './components/Navbar.js'
 import IndustryPage from './pages/IndustryPage';
 import PersonPage from './pages/PersonPage';
-import TopicPage from './pages/TopicPage';
+import CongressPage from './pages/CongressPage'
+import BarChartPage from './pages/BarChartPage';
+
 
 function App() {
     return (
@@ -17,8 +19,9 @@ function App() {
                 <Route exact path='/' element={<HomePage />} />
                 <Route path='/aboutUs' element={<AboutUs />} />
                 <Route path='/industry' element={<IndustryPage />} />
-                <Route path='/congress' element={<PersonPage />} />
-                <Route path='/topic' element={<TopicPage />} />
+                <Route path='/individual' element={<PersonPage />} />
+                <Route path='/barchart' element={<BarChartPage />} />
+                <Route path='/congress' element={<CongressPage />} />
             </Routes>
         </Router>
     </>
