@@ -1,7 +1,7 @@
 import React from 'react';
 import {Container, Row, Col, Button} from 'react-bootstrap';
 // import YoutubeEmbed from './components/YoutubeEmbed';
-// import SankeyChart from './components/SankeyChart';
+import SankeyChart from './components/SankeyChart';
 import { useNavigate } from 'react-router-dom';
 
 function HomePage() {
@@ -80,7 +80,7 @@ function HomePage() {
                     </Col>
 
                 </Row>
-                {/* <SankeyChart /> */}
+                <SankeyChart />
             </div>
         </Container>
     );
