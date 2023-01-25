@@ -80,7 +80,8 @@ function HomePage() {
                     </Col>
 
                 </Row>
-                <SankeyChart />
+                <SankeyChart cid="N00007360"/>
+                <SankeyChart cid="N00003389"/>
             </div>
         </Container>
     );
