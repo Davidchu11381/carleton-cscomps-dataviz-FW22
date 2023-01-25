@@ -8,6 +8,7 @@ import IndustryPage from './pages/IndustryPage';
 import PersonPage from './pages/PersonPage';
 import CongressPage from './pages/CongressPage'
 import BarChartPage from './pages/BarChartPage';
+import SankeyPage from './pages/SankeyPage';
 
 
 function App() {
@@ -22,6 +23,7 @@ function App() {
                 <Route path='/individual' element={<PersonPage />} />
                 <Route path='/barchart' element={<BarChartPage />} />
                 <Route path='/congress' element={<CongressPage />} />
+                <Route path='/sankey' element={<SankeyPage />} />
             </Routes>
         </Router>
     </>

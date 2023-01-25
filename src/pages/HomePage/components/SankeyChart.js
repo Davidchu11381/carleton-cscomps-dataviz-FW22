@@ -15,7 +15,7 @@ class SankeyChart extends Component {
       <div className="container mt-5">
         <h2>Sankey Diagram</h2>
         <Chart
-          width={700}
+          width={'200'}
           height={'350px'}
           chartType="Sankey"
           loader={<div>Loading Chart</div>}
