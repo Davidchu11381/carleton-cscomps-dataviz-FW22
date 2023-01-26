@@ -1,8 +1,8 @@
 import React from 'react'
-import { Col, Row, Container, Stack, ButtonGroup } from 'react-bootstrap'
-import { Form, ToggleButton } from 'react-bootstrap'
+import { Col, Row, Container, Stack, Form, Card, ListGroupItem } from 'react-bootstrap'
+import { ButtonGroup, ToggleButton, ListGroup } from 'react-bootstrap'
 import SankeyChart from '../HomePage/components/SankeyChart';
-import { useState, useEffect, useReducer } from 'react';
+import { useEffect, useReducer } from 'react';
 import PoliticianButton from './components/PoliticianButton';
 
 import { reducer, initialState } from './hooks/reducer';
@@ -25,11 +25,25 @@ function SankeyPage() {
         'Rhode Island','South Carolina','South Dakota','Tennessee','Texas','Utah',
         'Vermont','Virginia','Washington','West Virginia','Wisconsin','Wyoming'];
 
+    // politician={{id: "Pelosi", name: "Nancy Pelosi", func: dispatch}}>
+
+    const personTest = [{id: "Pelosi", name: "Nancy Pelosi", party: "Democrat", chamber: "House", state: "California"}, 
+                        {id: "McConnell", name: "Mitch McConnell", party: "Republican", chamber: "Senate", state: "Kentucky"},
+                        {id: "Boozman", name: "John Boozman", party: "Republican", chamber: "Senate", state: "Arkansas"},
+                        {id: "Huffman", name: "Jared Huffman", party: "Democrat", chamber: "House", state: "California"},
+                        {id: "Klobuchar", name: "Amy Klobuchar", party: "Democrat", chamber: "Senate", state: "Minnesota"}]
+
+
     // /**
     //  * Filter array items based on search criteria (query)
     //  */
     function filterItems(arr, query) {
         return arr.filter((el) => el.toLowerCase().includes(query.toLowerCase()));
+    }
+
+    function listStates(list) {
+        return list.map(state => 
+            <ListGroupItem> {state} </ListGroupItem>)
     }
 
     const handleFilter = (event) => {        
@@ -41,8 +55,13 @@ function SankeyPage() {
         // need to form a "list group under the search that contains the list of states..."
     }
 
+    // useEffect(() => {
+    //     listStates(filters.selectedStates);
+    // }, [filters.selectedStates])
+
     useEffect(() => {
         console.log("in index.js:", filters);
+        // this is where the list of eligable congrespeople need to change
     }, [filters]);
    
     return (
@@ -86,15 +105,11 @@ function SankeyPage() {
                                 onChange={(event) => {
                                     console.log(event.target.value);
                                     if (event.target.value === "Chamber") { 
-                                    //     setFilters( prevFilters => { return { ...prevFilters, chamber: ""}
-                                    // })
                                         dispatch({
                                                 type: 'UPDATE_CHAMBER',
                                                 value: "",
                                             });	
                                     } else {
-                                    //     setFilters( prevFilters => { return { ...prevFilters, chamber: event.target.value}
-                                    // })
                                         dispatch({
                                                 type: 'UPDATE_CHAMBER',
                                                 value: event.target.value,
@@ -112,73 +127,35 @@ function SankeyPage() {
                             <Form.Control 
                                 size="sm" 
                                 type="text" 
-                                placeholder="Old State" 
+                                placeholder="State" 
                                 class="mb-3"
                                 onChange={handleFilter}
-                                // onKeyDown={handleFilter}
                                 />
+                                <ListGroup>
+                                    {/* {listStates(filters.selectedStates)} */}
+                                    {/* <ListGroup.Item size="sm">Cras justo odio</ListGroup.Item>
+                                    <ListGroup.Item>Dapibus ac facilisis in</ListGroup.Item>
+                                    <ListGroup.Item>Morbi leo risus</ListGroup.Item>
+                                    <ListGroup.Item>Porta ac consectetur ac</ListGroup.Item>
+                                    <ListGroup.Item>Vestibulum at eros</ListGroup.Item> */}
+                                </ListGroup>
                         </Col>
-                        <Col>                        
-                            {/* <Form.Control as = 'select'>
-                                {selections()}
-                            </Form.Control> */}
-                        </Col>
-                        
-                        {/* <Col>
-                            <ButtonGroup aria-label="Basic example">
-                                <Button variant="secondary">Left</Button>
-                                <Button variant="secondary">Middle</Button>
-                                <Button variant="secondary">Right</Button>
-                            </ButtonGroup>
-                        </Col> */}
-                        <Col>
-                            
-                        </Col>
+                       
                     </Row>
-
+                    <Card style={{ width: '18rem' }}>
+                        <Card.Body>
+                            <Card.Text>
+                            PLEASE SELECT MULTIPLE POLITICIANS BECAUSE IT IS POSSIBLE
+                            </Card.Text>
+                        </Card.Body>
+                    </Card>
                     {/* where the array of politicians will be listed */}
-                    {/* <Container>
-                    <ToggleButton
-                        className="mb-2"
-                        id="politician-id"
-                        type="checkbox"
-                        variant="outline-primary"
-                        checked={checked}
-                        value="1"
-                        onChange={(e) => {
-                            console.log(e.currentTarget.id);
-                            setChecked(e.currentTarget.checked);
-
-                        }}
-                        // console.log(e);
-                        // setChecked(e.currentTarget.checked)}
-                    >
-                        Politician Name
-                    </ToggleButton>
-
-                    </Container> */}
-
-                    {/* <Form.Select aria-label="state-select"
-                        size="sm"
-                        id="state"
-                        onChange={(event) => {
-                            console.log(event.target.value);
-                            if (event.target.value === "State") {
-                               setFilters( prevFilters => { return { ...prevFilters, state: ""}
-                            })} else {
-                                setFilters( prevFilters => { return { ...prevFilters, state: event.target.value}
-                            })};
-                        }}>
-                        <option>State</option>
-                        <option value="AL">Alabama</option>
-                        <option value="AK">Alaska</option>
-                    </Form.Select> */}
                     <Container>
+                        <Row sm={2} md={2} lg={3}>
                         {/* listing of the congresspoeple that fit the criteria go here */}
-                        <PoliticianButton
-                        politician={{id: "example", name: "Nancy", func: dispatch}}>
-
-                        </PoliticianButton>
+                        {personTest.map(person => 
+                            <PoliticianButton politician={person} func={dispatch}></PoliticianButton>)}
+                        </Row>
                     </Container>
                 </Stack>
             </Col>

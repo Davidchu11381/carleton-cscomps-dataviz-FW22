@@ -9,42 +9,32 @@ import React from 'react';
 import { useState } from 'react';
 import { ToggleButton } from 'react-bootstrap';
 
-function PoliticianButton({ politician }) {
+function PoliticianButton( data ) {
+    const dispatch = data.func;
+    const info = data.politician;
 
-    // buttons start out false
+    // buttons start out false => not selected
     const [initial, setInitial] = useState(false);
 
-    function updateList (person, func) {
-        // access reducer associated with the sankey filter and update it
-        // if (node.checked === true) {
-        //     console.log("it was true");
-        //     console.log(node.id);
-        // } else {
-        //     console.log("it was false");
-        //     console.log(node.id);
-        // }
-
-        console.log(person.checked);
+    function updateList (person, dispatch) {
         
         if (person.checked === false) {
-            console.log("here");
-            func({
+            dispatch({
                 type: 'REMOVE_PERSON',
                 value: person.id,
             });	
         } else {
-            console.log("there");
-            func({
+            dispatch({
                 type: 'ADD_PERSON',
                 value: person.id,
             });	
-        }
-    }
-
+        };
+    };
+    
     return (
         <ToggleButton
             className="mb-2"
-            id={politician.id}
+            id={info.id}
             type="checkbox"
             variant="outline-primary"
             checked={initial}
@@ -53,10 +43,10 @@ function PoliticianButton({ politician }) {
                 console.log(e.currentTarget.id);
                 setInitial(e.currentTarget.checked);
                 // updateList(e.currentTarget);
-                updateList(e.currentTarget, politician.func);
+                updateList(e.currentTarget, dispatch);
             }}
         >
-            {politician.name}
+            {info.name}
         </ToggleButton>
     );
 }

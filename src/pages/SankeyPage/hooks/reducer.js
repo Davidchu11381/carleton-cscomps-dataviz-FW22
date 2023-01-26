@@ -25,40 +25,40 @@ export const reducer = (state, action) => {
 
 		case 'UPDATE_PARTY':
 			return {
-				... state,
+				...state,
 				party: value,
 			};
 
 		case 'UPDATE_CHAMBER':
 			return {
-				... state,
+				...state,
 				chamber: value,
 			};
 		
 		case 'ADD_STATE':
 			state.selectedStates.push(value);
 			return {
-				... state,
+				...state,
 			}
 		
 		case 'REMOVE_STATE':
 			index = state.selectedStates.indexOf(value);
 			state.selectedStates.splice(index, 1);
 			return {
-				... state,
+				...state,
 			}
 		
 		case 'ADD_PERSON':
 			state.selectedPoliticians.push(value);
 			return {
-				... state,
+				...state,
 			}
 		
 		case 'REMOVE_PERSON':
 			index = state.selectedPoliticians.indexOf(value);
 			state.selectedPoliticians.splice(index, 1);
 			return {
-				... state,
+				...state,
 			}
 		
 		default:
