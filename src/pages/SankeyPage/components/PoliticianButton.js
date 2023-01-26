@@ -14,14 +14,30 @@ function PoliticianButton({ politician }) {
     // buttons start out false
     const [initial, setInitial] = useState(false);
 
-    function updateList (node) {
+    function updateList (person, func) {
         // access reducer associated with the sankey filter and update it
-        if (node.checked === true) {
-            console.log("it was true");
-            console.log(node.id);
+        // if (node.checked === true) {
+        //     console.log("it was true");
+        //     console.log(node.id);
+        // } else {
+        //     console.log("it was false");
+        //     console.log(node.id);
+        // }
+
+        console.log(person.checked);
+        
+        if (person.checked === false) {
+            console.log("here");
+            func({
+                type: 'REMOVE_PERSON',
+                value: person.id,
+            });	
         } else {
-            console.log("it was false");
-            console.log(node.id);
+            console.log("there");
+            func({
+                type: 'ADD_PERSON',
+                value: person.id,
+            });	
         }
     }
 
@@ -36,7 +52,8 @@ function PoliticianButton({ politician }) {
             onChange={(e) => {
                 console.log(e.currentTarget.id);
                 setInitial(e.currentTarget.checked);
-                updateList(e.currentTarget);
+                // updateList(e.currentTarget);
+                updateList(e.currentTarget, politician.func);
             }}
         >
             {politician.name}
