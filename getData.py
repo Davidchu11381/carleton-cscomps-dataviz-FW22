@@ -44,6 +44,59 @@ def getTopIndustries(cid):
         return f"There's a {response.status_code} error with your request"
 
 # saves a list of dictionaries containing demographic and financial information on congresspeople to our database 
+def get_politician_data2():
+    client = pymongo.MongoClient("mongodb://localhost:27017/")
+    db = client['comps']
+    new_collection = db["congresspeople"] # create a new collection in the database
+    with open(path_to_legislators, 'r') as csvfile:
+        csv_reader = csv.reader(csvfile)
+        column_names = next(csv_reader)
+        column_names = column_names[:14] + [column_names[18]] + [column_names[24]] # column names we want
+        for row in csv_reader:
+
+            row = row[:14] + [row[18]] + [row[24]]
+            new_dict = {}
+
+            # adding info from csv
+            for index, var in enumerate(column_names):
+                new_dict[var] = row[index]
+
+            # adding summary info from OpenSecrets
+            endpoint = "http://www.opensecrets.org/api/?method=candSummary&cid=" + new_dict["opensecrets_id"] + "&cycle=2022&apikey="
+            api = endpoint + key
+            response = requests.get(f"{api}")
+            if response.status_code == 200:
+                data_dict = xmltodict.parse(response.text)["response"]["summary"] # parse from XML to a JSON-dict format
+                
+                # removing @ symbols
+                data_dict = removeAtSymbol(data_dict)
+                
+                # adding to dictionary
+                new_dict["first_elected"] = data_dict["first_elected"]
+                new_dict["total"] = float(data_dict["total"])
+                new_dict["spent"] = float(data_dict["spent"])
+                new_dict["cash_on_hand"] = float(data_dict["cash_on_hand"])
+                new_dict["debt"] = float(data_dict["debt"])
+                new_dict["origin"] = data_dict["origin"]
+
+            # adding industry info from OpenSecrets
+            endpoint = "https://www.opensecrets.org/api/?method=candIndustry&cid=" + new_dict["opensecrets_id"] + "&cycle=2022&apikey="
+            api = endpoint + key
+            response = requests.get(f"{api}")
+            if response.status_code == 200:
+                data_dict = xmltodict.parse(response.text)["response"]["industries"] # parse from XML to a JSON-dict format
+                # removing @ symbols
+                data_dict = removeAtSymbol(data_dict)
+                data_dict["industry"] = [removeAtSymbol(industry_dict) for industry_dict in data_dict["industry"]]
+                
+                # adding to dictionary
+                new_dict["industry"] = data_dict["industry"]
+
+            else:
+                print(f"There's a {response.status_code} error with your request")
+            new_collection.find_one_and_update({"opensecrets_id": new_dict["opensecrets_id"]}, {"$set": new_dict})
+
+# saves a list of dictionaries containing demographic and financial information on congresspeople to our database 
 def get_politician_data():
     client = pymongo.MongoClient("mongodb://localhost:27017/")
     db = client['comps']
@@ -176,8 +229,7 @@ def getTopicData():
             for i in range(5,17):
                 new_dict["topic_" + str(i - 4)] = row[i]
             new_collection.insert_one(new_dict)
-
-get_politician_data()
+get_politician_data2()
 
         
 
