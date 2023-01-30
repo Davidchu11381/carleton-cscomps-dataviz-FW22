@@ -1,6 +1,6 @@
 import React from 'react'
-import { Col, Row, Container, Stack, Form, Card, ListGroupItem } from 'react-bootstrap'
-import { ButtonGroup, ToggleButton, ListGroup } from 'react-bootstrap'
+import { Col, Row, Container, Stack, Form, Card, Dropdown } from 'react-bootstrap'
+// import { ButtonGroup, ToggleButton, ListGroup, ListGroupItem } from 'react-bootstrap'
 import SankeyChart from '../HomePage/components/SankeyChart';
 import { useEffect, useReducer } from 'react';
 import PoliticianButton from './components/PoliticianButton';
@@ -10,6 +10,10 @@ import { reducer, initialState } from './hooks/reducer';
 // TALK ABOUT IN COMPS TOMORROW
 // when click on the line between fields == info?
 // illustrates backing of politicians (aka lobbying)
+
+// need "space" for already-selected politicians
+// states may be a drop-down selection (just to be easier)
+// GOAL: focus on connecting filtering with data viz
 
 function SankeyPage() {
 
@@ -25,43 +29,50 @@ function SankeyPage() {
         'Rhode Island','South Carolina','South Dakota','Tennessee','Texas','Utah',
         'Vermont','Virginia','Washington','West Virginia','Wisconsin','Wyoming'];
 
-    // politician={{id: "Pelosi", name: "Nancy Pelosi", func: dispatch}}>
-
+    // id = openSecretsAPI
     const personTest = [{id: "Pelosi", name: "Nancy Pelosi", party: "Democrat", chamber: "House", state: "California"}, 
                         {id: "McConnell", name: "Mitch McConnell", party: "Republican", chamber: "Senate", state: "Kentucky"},
-                        {id: "Boozman", name: "John Boozman", party: "Republican", chamber: "Senate", state: "Arkansas"},
+                        {id: "Boozman", name: "John Boozman", party: "Republican", chamber: "House", state: "Arkansas"},
                         {id: "Huffman", name: "Jared Huffman", party: "Democrat", chamber: "House", state: "California"},
                         {id: "Klobuchar", name: "Amy Klobuchar", party: "Democrat", chamber: "Senate", state: "Minnesota"}]
 
+    function displayButtons() {
+        console.log("HERE IN DISPLAY BUTTONS", filters.filteredPoliticians);
+        if (filters.filteredPoliticians.length === 0) {
+            console.log("in the case of no one");
+            return(filters.originalPolList.map(person => 
+            <PoliticianButton politician={person} func={dispatch}></PoliticianButton>));
+        } else {
+            return (filters.filteredPoliticians.map(person => 
+            <PoliticianButton politician={person} func={dispatch}></PoliticianButton>));
+        };
+    }
 
     // /**
     //  * Filter array items based on search criteria (query)
     //  */
     function filterItems(arr, query) {
+        // console.log("the arra given:", arr);
         return arr.filter((el) => el.toLowerCase().includes(query.toLowerCase()));
     }
 
-    function listStates(list) {
-        return list.map(state => 
-            <ListGroupItem> {state} </ListGroupItem>)
-    }
+    // function listStates(list) {
+    //     return list.map(state => 
+    //         <ListGroupItem> {state} </ListGroupItem>)
+    // }
 
     const handleFilter = (event) => {        
         var eligibleStates = filterItems(stateList, event.target.value);
         console.log(eligibleStates);
+        // var stuff = filterPoliticians(filters);
+        // console.log(stuff);
         // return stateList.map(dep =>
         //     <option key={dep}>{dep}</option>
         // ); 
-        // need to form a "list group under the search that contains the list of states..."
     }
 
-    // useEffect(() => {
-    //     listStates(filters.selectedStates);
-    // }, [filters.selectedStates])
-
     useEffect(() => {
-        console.log("in index.js:", filters);
-        // this is where the list of eligable congrespeople need to change
+        console.log("ins index.js:", filters);
     }, [filters]);
    
     return (
@@ -69,33 +80,27 @@ function SankeyPage() {
         <Row>
             <Col lg={4}>
                 <Stack gap={2}>
-                    <h2>Filter by things below</h2>
+                    <h4>Filter by party, chamber, state</h4>
                     <Row lg={2}>
                         <Col>
                             <Form.Select aria-label="party-select" 
                                 size="sm"
                                 id="party"
                                 onChange={(event) => {
-                                    console.log(event.target.value);
-                                    if (event.target.value === "Party") {
-                                        dispatch({
-                                            type: 'UPDATE_PARTY',
-                                            value: "",
-                                        });	
+                                    // console.log(event.target.value);
+                                    console.log("about to update selection with PARTY");
 
-                                    // setFilters( prevFilters => { return { ...prevFilters, party: ""}
-                                    } else {
-                                        dispatch({
-                                            type: 'UPDATE_PARTY',
-                                            value: event.target.value,
-                                        });	
-                                        // setFilters( prevFilters => { return { ...prevFilters, party: event.target.value}
-                                    }
+                                    dispatch({
+                                        type: 'UPDATE_BUTTONS', 
+                                        party: event.target.value,
+                                        chamber: filters.chamber,
+                                        selectedStates: filters.selectedStates,
+                                    })
                                 }}>
                                 <option>Party</option>
-                                <option value="democratic">Democrat</option>
-                                <option value="republican">Republican</option>
-                                <option value="other">Other</option>
+                                <option value="Democrat">Democrat</option>
+                                <option value="Republican">Republican</option>
+                                <option value="">Other</option>
                             </Form.Select>
                         </Col>
                         <Col>
@@ -104,21 +109,17 @@ function SankeyPage() {
                                 id="chamber"
                                 onChange={(event) => {
                                     console.log(event.target.value);
-                                    if (event.target.value === "Chamber") { 
-                                        dispatch({
-                                                type: 'UPDATE_CHAMBER',
-                                                value: "",
-                                            });	
-                                    } else {
-                                        dispatch({
-                                                type: 'UPDATE_CHAMBER',
-                                                value: event.target.value,
-                                            });	
-                                    };
+                                    console.log("about to update selectio with CHAMBER");
+                                    dispatch({
+                                        type: 'UPDATE_BUTTONS', 
+                                        party: filters.party,
+                                        chamber: event.target.value,
+                                        selectedStates: filters.selectedStates,
+                                    });
                                 }}>
-                                <option>Chamber</option>
-                                <option value="house">House of Representatives</option>
-                                <option value="senate">United States Senate</option>
+                                <option value="">Chamber</option>
+                                <option value="House">House of Representatives</option>
+                                <option value="Senate">United States Senate</option>
                             </Form.Select>
                         </Col>
                     </Row>
@@ -131,14 +132,39 @@ function SankeyPage() {
                                 class="mb-3"
                                 onChange={handleFilter}
                                 />
-                                <ListGroup>
-                                    {/* {listStates(filters.selectedStates)} */}
-                                    {/* <ListGroup.Item size="sm">Cras justo odio</ListGroup.Item>
-                                    <ListGroup.Item>Dapibus ac facilisis in</ListGroup.Item>
-                                    <ListGroup.Item>Morbi leo risus</ListGroup.Item>
-                                    <ListGroup.Item>Porta ac consectetur ac</ListGroup.Item>
-                                    <ListGroup.Item>Vestibulum at eros</ListGroup.Item> */}
-                                </ListGroup>
+                        
+                        <Dropdown>
+                            <Dropdown.Toggle variant="success" id="dropdown-basic">
+                                States
+                            </Dropdown.Toggle>
+
+                            {/* <Form></Form> */}
+
+                            <Dropdown.Menu>
+                                <Dropdown.Item href="#/action-1">Action</Dropdown.Item>
+                                <Dropdown.Item href="#/action-2">Another action</Dropdown.Item>
+                                <Dropdown.Item href="#/action-3">Something else</Dropdown.Item>
+                                <Form>
+                                {['checkbox', 'radio'].map((type) => (
+                                <div key={`default-${type}`} className="mb-3">
+                                <Form.Check 
+                                    type={type}
+                                    id={`default-${type}`}
+                                    label={`default ${type}`}
+                                    // feedback={}
+                                />
+
+                                <Form.Check
+                                    disabled
+                                    type={type}
+                                    label={`disabled ${type}`}
+                                    id={`disabled-default-${type}`}
+                                />
+                                </div>
+                                
+                            ))}</Form>
+                            </Dropdown.Menu>
+                        </Dropdown>
                         </Col>
                        
                     </Row>
@@ -153,8 +179,7 @@ function SankeyPage() {
                     <Container>
                         <Row sm={2} md={2} lg={3}>
                         {/* listing of the congresspoeple that fit the criteria go here */}
-                        {personTest.map(person => 
-                            <PoliticianButton politician={person} func={dispatch}></PoliticianButton>)}
+                        {displayButtons()}
                         </Row>
                     </Container>
                 </Stack>
