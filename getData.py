@@ -6,8 +6,14 @@ import requests
 import time
 from politicianAPI import removeAtSymbol
 
-path_to_legislators = '/home/dataviz/Downloads/legislators-current.csv'
-path_to_industries = '/home/dataviz/Downloads/CRPIndustryCodes.csv'
+# path_to_legislators = '/home/dataviz/Downloads/legislators-current.csv'
+# path_to_industries = '/home/dataviz/Downloads/CRPIndustryCodes.csv'
+# path_to_topics = '/home/dataviz/Downloads/topic_dist_by_doc.csv'
+
+path_to_legislators = '/Users/kevin/Downloads/legislators-current.csv'
+path_to_industries = '/Users/kevin/Downloads/CRPIndustryCodes.csv'
+path_to_topics = '/Users/kevin/Downloads/topic_dist_by_doc.csv'
+
 key = "91a96cc61cceb54c2473df69372795f6" # API key
 
 # returns total donations from specified industry for specified candidate cid
@@ -22,11 +28,29 @@ def total_from_industry_by_cid(ind, cid):
             print(
                 f"There's a {response.status_code} error with your request")
 
-# saves a list of dictionaries containing demographic information on congresspeople to our database 
+# Returns top 10 industries for a specific candidate cid
+def getTopIndustries(cid):
+    endpoint = "https://www.opensecrets.org/api/?method=candIndustry&cid=" + cid + "&cycle=2022&apikey="
+    api = endpoint + opensecrets_key
+    response = requests.get(f"{api}")
+    if response.status_code == 200:
+        data_dict = xmltodict.parse(response.text)["response"]["industries"] # parse from XML to a JSON-dict format
+
+        # remove "@" symbols
+        data_dict = removeAtSymbol(data_dict) 
+        data_dict["industry"] = [removeAtSymbol(industry_dict) for industry_dict in data_dict["industry"]]
+        return data_dict
+    else:
+        return f"There's a {response.status_code} error with your request"
+
+# saves a list of dictionaries containing demographic and financial information on congresspeople to our database 
 def get_politician_data():
+    client = pymongo.MongoClient("mongodb://localhost:27017/")
+    db = client['comps']
+    new_collection = db["congresspeople"] # create a new collection in the database
+    # new_collection.drop() # clear anything already in it
     with open(path_to_legislators, 'r') as csvfile:
         csv_reader = csv.reader(csvfile)
-        list_of_dicts = []
         column_names = next(csv_reader)
         column_names = column_names[:14] + [column_names[18]] + [column_names[24]] # column names we want
         for row in csv_reader:
@@ -37,12 +61,11 @@ def get_politician_data():
             for index, var in enumerate(column_names):
                 new_dict[var] = row[index]
 
-            # adding info from OpenSecrets
+            # adding summary info from OpenSecrets
             endpoint = "http://www.opensecrets.org/api/?method=candSummary&cid=" + new_dict["opensecrets_id"] + "&cycle=2022&apikey="
             api = endpoint + key
             response = requests.get(f"{api}")
             if response.status_code == 200:
-                # data from OpenSecrets
                 data_dict = xmltodict.parse(response.text)["response"]["summary"] # parse from XML to a JSON-dict format
                 
                 # removing @ symbols
@@ -50,23 +73,28 @@ def get_politician_data():
                 
                 # adding to dictionary
                 new_dict["first_elected"] = data_dict["first_elected"]
-                new_dict["next_election"] = data_dict["first_elected"]
                 new_dict["total"] = float(data_dict["total"])
-                new_dict["spent"] = data_dict["spent"]
-                new_dict["cash_on_hand"] = data_dict["cash_on_hand"]
-                new_dict["debt"] = data_dict["debt"]
+                new_dict["spent"] = float(data_dict["spent"])
+                new_dict["cash_on_hand"] = float(data_dict["cash_on_hand"])
+                new_dict["debt"] = float(data_dict["debt"])
                 new_dict["origin"] = data_dict["origin"]
+
+            # adding industry info from OpenSecrets
+            endpoint = "https://www.opensecrets.org/api/?method=candIndustry&cid=" + new_dict["opensecrets_id"] + "&cycle=2022&apikey="
+            api = endpoint + key
+            response = requests.get(f"{api}")
+            if response.status_code == 200:
+                data_dict = xmltodict.parse(response.text)["response"]["industries"] # parse from XML to a JSON-dict format
+                # removing @ symbols
+                data_dict = removeAtSymbol(data_dict)
+                data_dict["industry"] = [removeAtSymbol(industry_dict) for industry_dict in data_dict["industry"]]
+                
+                # adding to dictionary
+                new_dict["industry"] = data_dict["industry"]
+
             else:
                 print(f"There's a {response.status_code} error with your request")
-            
-            list_of_dicts.append(new_dict)
-
-        # insert into MongoDB database
-        client = pymongo.MongoClient("mongodb://localhost:27017/")
-        db = client['comps']
-        new_collection = db["congresspeople"] # create a new collection in the database
-        new_collection.drop() # clear anything already in it
-        new_collection.insert_many(list_of_dicts)
+            new_collection.insert_one(new_dict)
 
 # returns a list of all candidate cid's
 def get_all_cid():
@@ -101,7 +129,6 @@ def get_industry_data():
     cid_list = cid_list[:5]
     industry_list = industry_list[:5]
 
-    # insert into MongoDB database
     client = pymongo.MongoClient("mongodb://localhost:27017/")
     db = client['comps']
     new_collection = db["industries"] # create a new collection in the database
@@ -129,20 +156,30 @@ def get_industry_data():
 
         new_dict = {"code": industry[:3], "name" : industry[4:], "total": total, "congresspeople" : industry_dict[industry]}
         new_collection.insert_one(new_dict)
-    
-# Returns a list of industries with available data in the following form: "code industry_name". Ex "W04 Education"
-def getNonEmptyIndustries():
+
+# Saves tweet topic data to our database
+def getTopicData():
     client = pymongo.MongoClient("mongodb://localhost:27017/")
     db = client['comps']
-    new_collection = db["industries"] # create a new collection in the database
-    industries = []
-    for industry in new_collection.find():
-        industry_code = industry['code']
-        industry_name = industry['name']
-        industries.append(industry_code + " " + industry_name)
-    return industries
+    new_collection = db["topics"] # create a new collection in the database
+    new_collection.drop() # clear anything already in it
+
+    with open(path_to_topics, 'r') as csvfile:
+        csv_reader = csv.reader(csvfile)
+        temp = next(csv_reader)
+        for row in csv_reader:
+            new_dict = {}
+            new_dict["doc_id"] = row[1]
+            new_dict["created_at"] = row[2]
+            new_dict["opensecrets_id"] = row[3]
+            new_dict["twitter"] = row[4]
+            for i in range(5,17):
+                new_dict["topic_" + str(i - 4)] = row[i]
+            new_collection.insert_one(new_dict)
 
 get_politician_data()
+
+        
 
 
 

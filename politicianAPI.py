@@ -4,6 +4,7 @@ import pymongo
 import requests
 import xmltodict
 import tweepy
+from collections import defaultdict
 
 opensecrets_key = "91a96cc61cceb54c2473df69372795f6" # API key
 
@@ -46,7 +47,40 @@ def home():
         message = "Hi, this is an API for politician data for the MoneyFlows comps project! \n"
         return message
 
-# Returns all demographic information pertaining to a candidate cid
+
+# Returns topic distribution for a congressperson
+@app.route('/<string:cid>/topics', methods = ['GET'])
+def getTopics(cid):
+    client = pymongo.MongoClient("mongodb://localhost:27017/")
+    db = client['comps']
+    collection = db['topics']
+    topics_dict = defaultdict(int)
+    topics_dict["opensecrets_id"] = cid
+
+    # get topic distributions for all tweets by this politician
+    for dict in collection.find({"opensecrets_id": cid}):
+
+        # get max topic distribution value
+        max_value = 0
+        for i in range(1,13):
+            topic = "topic_" + str(i)
+            if float(dict[topic]) > max_value:
+                max_value = float(dict[topic])
+
+        # find all topics with that value
+        max_topics = []
+        for i in range(1,13):
+            topic = "topic_" + str(i)
+            if float(dict[topic]) == max_value:
+                max_topics.append(topic)
+
+        # increment count for those topics
+        for topic in max_topics:
+            topics_dict[topic] += 1
+
+    return jsonify({"data": topics_dict})
+
+# Returns all information pertaining to a candidate cid
 @app.route('/<string:cid>/summary', methods = ['GET'])
 def getSummaryInfo(cid):
     # getting data from our database
@@ -56,23 +90,6 @@ def getSummaryInfo(cid):
     dic = collection.find_one({"opensecrets_id": cid})
     dic.pop("_id")
     return jsonify(dic)
-
-# Returns top 10 industries for a specific candidate cid
-@app.route('/<string:cid>/industry', methods = ['GET'])
-def getTopIndustries(cid):
-    endpoint = "https://www.opensecrets.org/api/?method=candIndustry&cid=" + cid + "&cycle=2022&apikey="
-    api = endpoint + opensecrets_key
-    response = requests.get(f"{api}")
-    if response.status_code == 200:
-        data_dict = xmltodict.parse(response.text)["response"]["industries"] # parse from XML to a JSON-dict format
-
-        # remove "@" symbols
-        data_dict = removeAtSymbol(data_dict) 
-        data_dict["industry"] = [removeAtSymbol(industry_dict) for industry_dict in data_dict["industry"]]
-
-        return jsonify(data_dict)
-    else:
-        return f"There's a {response.status_code} error with your request"
 
 # Returns top individual contributors for a specific candidate cid
 @app.route('/<string:cid>/individual', methods = ['GET'])
@@ -89,23 +106,6 @@ def getTopIndividuals(cid):
         return jsonify(data_dict)
     else:
         return f"There's a {response.status_code} error with your request"
-
-# Returns all congresspeople sorted by alphabetical order
-@app.route('/all/<string:sort>', methods = ['GET'])
-def getAllCongresspeople(sort):
-    client = pymongo.MongoClient("mongodb://localhost:27017/")
-    db = client['comps']
-    collection = db['congresspeople']
-    list = []
-    for dict in collection.find():
-        dict.pop("_id")
-        list.append(dict)
-    if sort == "alphabetical":
-        list.sort(key = lambda x: x["last_name"])
-    elif sort == "total":
-        list.sort(key = lambda x: x["total"])
-
-    return jsonify({"data": list})
 
 # Returns all Republicans sorted by alphabetical order
 @app.route('/republicans/<string:sort>', methods = ['GET'])
@@ -131,7 +131,7 @@ def getAllDemocrats(sort):
     db = client['comps']
     collection = db['congresspeople']
     list = []
-    for dict in collection.find({"party": "Democrats"}):
+    for dict in collection.find({"party": "Democrat"}):
         dict.pop("_id")
         list.append(dict)
     if sort == "alphabetical":
@@ -174,7 +174,6 @@ def getAllRepresentatives(sort):
         list.sort(key = lambda x: x["total"])
 
     return jsonify({"data": list})
-
 
 # driver function
 if __name__ == '__main__':
