@@ -2,7 +2,7 @@
 
 The goal of this project is allow users to discover connections between industries that fund members of Congress and statements made by those members via interactive data visualizations.
 
-Users are able to input any arbitrary subset of congresspeople or select pre-made groups of congresspeople(Senators, Democrats, etc.). From there, two visualizations will be displayed.
+Users are able to input any arbitrary subset of congresspeople or select pre-made groups of congresspeople(Senators, Democrats, etc.). From there, three visualizations will be displayed.
 
 1. A Sankey diagram showing the breakdown of the top 10 industries that fund the congressperson(s).
 
