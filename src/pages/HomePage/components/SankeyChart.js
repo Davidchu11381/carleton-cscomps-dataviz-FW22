@@ -5,13 +5,14 @@ class SankeyChart extends Component {
 
   constructor(props) {
     super(props);
-    this.cid = props.cid; //pass in cid as props in html
+    this.cid = props.cid; //pass in cid as props in html -- can turn into a list of cids
     this.state = {
       data : []
     };
+    this.fetchData();
   }
 
-  componentDidMount() {
+  fetchData() {
     fetch('http://127.0.0.1:5001/'+ this.cid +'/industry') 
       .then(response => response.json())
       .then(data => {
