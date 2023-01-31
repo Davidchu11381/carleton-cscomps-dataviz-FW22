@@ -7,11 +7,29 @@
 
 // import style from '../DisplayBoard.module.css';
 
+/* 
+	create a function that makes an API call and returns a list (or JSON object) of all the politicians
+		and save it into originalPolList
+	
+	for each politician:
+		open_secrets ID
+		name
+		party
+		state
+		chamber
+*/
+function addPoliticians(a_list) {
+	a_list.push("string")
+	return a_list;
+}
+
 export const initialState = {
 
 	// used for display
 	selectedPoliticians: [],
 	filteredPoliticians: [],
+	something: addPoliticians([]),
+	filtersUsed: 0,
 
 	// used for filtering
     party: "",
@@ -21,12 +39,13 @@ export const initialState = {
 			{id: "McConnell", name: "Mitch McConnell", party: "Republican", chamber: "Senate", state: "Kentucky"},
 			{id: "Boozman", name: "John Boozman", party: "Republican", chamber: "House", state: "Arkansas"},
 			{id: "Huffman", name: "Jared Huffman", party: "Democrat", chamber: "House", state: "California"},
-			{id: "Klobuchar", name: "Amy Klobuchar", party: "Democrat", chamber: "Senate", state: "Minnesota"}]
+			{id: "Klobuchar", name: "Amy Klobuchar", party: "Democrat", chamber: "Senate", state: "Minnesota"},
+			{id: "Sanders", name: "Bernie Sanders", party: "Independent", chamber: "Senate", state: "Texas"},]
 
 };
 
 export const reducer = (state, action) => {
-	const value = action;
+	const value = action.value;
 	// console.log(action.type, value, ' in sankey filter reducer');
 	let index;
 
@@ -41,9 +60,15 @@ export const reducer = (state, action) => {
 
 			if (state.chamber !== "") {
 				orgList = orgList.filter((el)=> el.chamber.includes(state.chamber));
-			}
+			} 
 			if (state.party !== "") {
-				orgList = orgList.filter((el)=> el.party.includes(state.party));
+				if (state.party === "Democrat" || state.party === "Republican") {
+					orgList = orgList.filter((el)=> el.party.includes(state.party))
+				} else {
+					// filters out the two main parties
+					orgList = orgList.filter(el => { return !el.party.includes("Democrat")});
+					orgList = orgList.filter(el => { return !el.party.includes("Republican")});
+				}
 			}
 
 			// if (state.selectedPoliticians !== []) {
