@@ -47,38 +47,82 @@ def home():
         message = "Hi, this is an API for politician data for the MoneyFlows comps project! \n"
         return message
 
+# just used to test the process of getting a cid list from the /senators endpoint and using it to get topics for the whole group
+# @app.route('/test', methods = ['GET'])
+# def test():
+#     response = requests.get("http://127.0.0.1:5001/republicans/total")
+#     cid_list = response.json()["data"]
 
-# Returns topic distribution for a congressperson
-@app.route('/<string:cid>/topics', methods = ['GET'])
-def getTopics(cid):
+#     return getIndustries(cid_list)
+
+# Returns topic distribution for a congressperson(s)
+# For just one congressperson, cid_list is just the cid.
+# If there are multiple congresspeople, cid_list is a comma-delimited list of cid's. ex. "N00007360,N00007361,N00007362"
+@app.route('/<string:cid_list>/topics', methods = ['GET'])
+def getTopics(cid_list):
+    cid_list = cid_list.split(",") # splits input into a list of cid's
+
+    # access our mongodb database
     client = pymongo.MongoClient("mongodb://localhost:27017/")
     db = client['comps']
     collection = db['topics']
-    topics_dict = defaultdict(int)
-    topics_dict["opensecrets_id"] = cid
 
-    # get topic distributions for all tweets by this politician
-    for dict in collection.find({"opensecrets_id": cid}):
+    topics_dict = defaultdict(int) # tracks topic names(keys) and the number of Tweets where a specific topic had the highest prob(values)
 
-        # get max topic distribution value
-        max_value = 0
-        for i in range(1,13):
-            topic = "topic_" + str(i)
-            if float(dict[topic]) > max_value:
-                max_value = float(dict[topic])
+    # iterate through each congressperson
+    for cid in cid_list:
+        # get topic distributions for all tweets by this politician
+        for dict in collection.find({"opensecrets_id": cid}):
 
-        # find all topics with that value
-        max_topics = []
-        for i in range(1,13):
-            topic = "topic_" + str(i)
-            if float(dict[topic]) == max_value:
-                max_topics.append(topic)
+            # get max topic distribution value for this tweet
+            max_value = 0
+            for i in range(1,13):
+                topic = "topic_" + str(i)
+                if float(dict[topic]) > max_value:
+                    max_value = float(dict[topic])
 
-        # increment count for those topics
-        for topic in max_topics:
-            topics_dict[topic] += 1
+            # find all topics with that value
+            max_topics = []
+            for i in range(1,13):
+                topic = "topic_" + str(i)
+                if float(dict[topic]) == max_value:
+                    max_topics.append(topic)
+
+            # increment count for those topics
+            for topic in max_topics:
+                topics_dict[topic] += 1
 
     return jsonify({"data": topics_dict})
+
+# Returns top 10 industries for a congressperson(s)
+# For just one congressperson, cid_list is just the cid.
+# If there are multiple congresspeople, cid_list is a comma-delimited list of cid's. ex. "N00007360,N00007361,N00007362"
+@app.route('/<string:cid_list>/industry', methods = ['GET'])
+def getIndustries(cid_list):
+    client = pymongo.MongoClient("mongodb://localhost:27017/")
+    db = client['comps']
+    collection = db['congresspeople']
+    cid_list = cid_list.split(",")
+    aggregate_industry_dict = defaultdict(float) # tracks industry names(keys) and total donations from those industries to the group(values)
+    name_to_code = defaultdict(str) # maps industry names to their industry codes
+    
+    # iterate through each congressperson
+    for cid in cid_list:
+        dic = collection.find_one({"opensecrets_id": cid})
+        if not "industry" in dic:
+            continue
+        industry_dicts = dic["industry"]
+        # iterate through the congressperson's top 10 industries and add to aggregate dict
+        for industry_dict in industry_dicts:
+            name_to_code[industry_dict["industry_name"]] = industry_dict["industry_code"]
+            aggregate_industry_dict[industry_dict["industry_name"]] += float(industry_dict["total"])
+    
+    # format output
+    res = []
+    for industry_name, total in aggregate_industry_dict.items():
+        res.append({"industry_name": industry_name, "industry_code": name_to_code[industry_name], "total": total})
+    
+    return jsonify({"industry": res})
 
 # Returns all information pertaining to a candidate cid
 @app.route('/<string:cid>/summary', methods = ['GET'])
@@ -89,7 +133,7 @@ def getSummaryInfo(cid):
     collection = db['congresspeople']
     dic = collection.find_one({"opensecrets_id": cid})
     dic.pop("_id")
-    return jsonify(dic)
+    return jsonify({"summary": dic})
 
 # Returns top individual contributors for a specific candidate cid
 @app.route('/<string:cid>/individual', methods = ['GET'])
@@ -122,7 +166,9 @@ def getAllRepublicans(sort):
     elif sort == "total":
         list.sort(key = lambda x: x["total"])
 
-    return jsonify({"data": list})
+    cid_list = [dict["opensecrets_id"] for dict in list]
+
+    return jsonify({"data": ",".join(cid_list)})
   
 # Returns all Democrats sorted by alphabetical order
 @app.route('/democrats/<string:sort>', methods = ['GET'])
@@ -139,7 +185,9 @@ def getAllDemocrats(sort):
     elif sort == "total":
         list.sort(key = lambda x: x["total"])
 
-    return jsonify({"data": list})
+    cid_list = [dict["opensecrets_id"] for dict in list]
+
+    return jsonify({"data": ",".join(cid_list)})
 
 # Returns all Senators sorted by alphabetical order
 @app.route('/senators/<string:sort>', methods = ['GET'])
@@ -156,7 +204,9 @@ def getAllSenators(sort):
     elif sort == "total":
         list.sort(key = lambda x: x["total"])
 
-    return jsonify({"data": list})
+    cid_list = [dict["opensecrets_id"] for dict in list]
+
+    return jsonify({"data": ",".join(cid_list)})
 
 # Returns all Representatives sorted by alphabetical order
 @app.route('/representatives/<string:sort>', methods = ['GET'])
@@ -173,7 +223,9 @@ def getAllRepresentatives(sort):
     elif sort == "total":
         list.sort(key = lambda x: x["total"])
 
-    return jsonify({"data": list})
+    cid_list = [dict["opensecrets_id"] for dict in list]
+
+    return jsonify({"data": ",".join(cid_list)})
 
 # driver function
 if __name__ == '__main__':
