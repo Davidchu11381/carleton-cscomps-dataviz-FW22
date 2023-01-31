@@ -9,24 +9,24 @@ import React from 'react';
 import { useState } from 'react';
 import { ToggleButton } from 'react-bootstrap';
 
-function PoliticianButton( data ) {
+function StateButton( data ) {
     const redFunc = data.func;
-    const info = data.politician;
+    const info = data.state;
 
     // buttons start out false => not selected
-    const [initial, setInitial] = useState(false);
+    const [initial, setInitial] = useState(true);
 
-    function updateList (person, dispatch) {
+    function updateList (state, dispatch) {
         
-        if (person.checked === false) {
+        if (state.checked === false) {
             dispatch({
-                type: 'REMOVE_PERSON',
-                value: person.id,
+                type: 'REMOVE_STATE',
+                value: state.id,
             });	
         } else {
             dispatch({
-                type: 'ADD_PERSON',
-                value: person.id,
+                type: 'ADD_STATE',
+                value: state.id,
             });	
         };
     };
@@ -34,20 +34,21 @@ function PoliticianButton( data ) {
     return (
         <ToggleButton
             className="mb-2"
-            id={info.id}
+            id={info}
             type="checkbox"
             variant="outline-primary"
             checked={initial}
             value="1"
             onChange={(e) => {
                 // console.log(e.currentTarget.id);
+                // console.log("the e.currentTarget", e.currentTarget);
                 setInitial(e.currentTarget.checked);
                 updateList(e.currentTarget, redFunc);
             }}
         >
-            {info.name}
+            {info}
         </ToggleButton>
     );
 }
 
-export default PoliticianButton;
+export default StateButton;

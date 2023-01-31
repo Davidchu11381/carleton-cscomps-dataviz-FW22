@@ -35,8 +35,8 @@ export const initialState = {
     party: "",
     chamber: "",
     selectedStates: [],
-	originalPolList: [{id: "Pelosi", name: "Nancy Pelosi", party: "Democrat", chamber: "House", state: "California"}, 
-			{id: "McConnell", name: "Mitch McConnell", party: "Republican", chamber: "Senate", state: "Kentucky"},
+	originalPolList: [{id: "N00007360", name: "Nancy Pelosi", party: "Democrat", chamber: "House", state: "California"}, 
+			{id: "N00003389", name: "Mitch McConnell", party: "Republican", chamber: "Senate", state: "Kentucky"},
 			{id: "Boozman", name: "John Boozman", party: "Republican", chamber: "House", state: "Arkansas"},
 			{id: "Huffman", name: "Jared Huffman", party: "Democrat", chamber: "House", state: "California"},
 			{id: "Klobuchar", name: "Amy Klobuchar", party: "Democrat", chamber: "Senate", state: "Minnesota"},
@@ -81,10 +81,19 @@ export const reducer = (state, action) => {
 			}
 		
 		case 'ADD_STATE':
-			state.selectedStates.push(value);
-			return {
-				...state,
+			console.log("IN ADD STATE");
+			// need to check is state is already in there
+			if (state.selectedStates.includes(value)) {
+				return {
+					...state,
+				}
+			} else {
+				state.selectedStates.push(value);
+				return {
+					...state,
+				}
 			}
+			
 		
 		case 'REMOVE_STATE':
 			index = state.selectedStates.indexOf(value);
