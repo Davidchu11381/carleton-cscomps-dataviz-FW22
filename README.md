@@ -1,36 +1,16 @@
 # Data Visualization for Government Transparency: A Carleton CS Comps project #
 
----
-Here is a section that details ways to to view the industry data within our MongoDB database.
+The goal of this project is allow users to discover connections between industries that fund members of Congress and statements made by those members via interactive data visualizations.
 
-To access collection of industry data go to the command line and type in the following:
- ```
-  $ mongosh
-  
-  $ use comps
-  ```
+Users are able to input any arbitrary subset of congresspeople or select pre-made groups of congresspeople(Senators, Democrats, etc.). From there, three visualizations will be displayed.
 
-Then, use any of the below queries to view the information you want:
+1. A Sankey diagram showing the breakdown of the top 10 industries that fund the congressperson(s).
 
-#### To show all industries and their info(name, code, list congresspeople) in the collection:
+2. A Sankey diagram showing the breakdown of the distribution of the topics found in the congressperson(s) Tweets.
 
-```
-	$ db.industries.find()
-```
+3. A Sankey diagram showing the breakdown of the distribution of the topics found in the congressperson(s) congressional statements.
 
-#### To show industries sorted by total donations in descending order(excluding list of congresspeople for readability):
 
-```
-	$ db.industries.find({}, {"name": 1, "code": 1, "total": 1}).sort({ "total": -1})
-```
-
-#### To find an industry by any field:
-```
-  $ db.industries.find({field_name: field_value})
-```
-
-Ex. ```db.industries.find({name: "Education"})```
-  
 ---
 
 There are two APIs used in this project. Both of them were created in Flask, and to start them, run this in the command line within the project directory:

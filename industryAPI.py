@@ -56,7 +56,7 @@ def getTopKCongresspeople(ind, k):
     top_k = heapq.nlargest(k, dic["congresspeople"], key = lambda x : x["total"])
 
     return jsonify({'data': top_k})
-  
+
 # driver function
 if __name__ == '__main__':
     app.run(debug = True)
