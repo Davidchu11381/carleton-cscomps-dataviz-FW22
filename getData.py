@@ -6,13 +6,13 @@ import requests
 import time
 from politicianAPI import removeAtSymbol
 
-# path_to_legislators = '/home/dataviz/Downloads/legislators-current.csv'
+path_to_legislators = '/home/dataviz/Downloads/legislators-current.csv'
 # path_to_industries = '/home/dataviz/Downloads/CRPIndustryCodes.csv'
 # path_to_topics = '/home/dataviz/Downloads/topic_dist_by_doc.csv'
 
-path_to_legislators = '/Users/kevin/Downloads/legislators-current.csv'
-path_to_industries = '/Users/kevin/Downloads/CRPIndustryCodes.csv'
-path_to_topics = '/Users/kevin/Downloads/topic_dist_by_doc.csv'
+#path_to_legislators = '/Users/kevin/Downloads/legislators-current.csv'
+#path_to_industries = '/Users/kevin/Downloads/CRPIndustryCodes.csv'
+#path_to_topics = '/Users/kevin/Downloads/topic_dist_by_doc.csv'
 
 key = "91a96cc61cceb54c2473df69372795f6" # API key
 
