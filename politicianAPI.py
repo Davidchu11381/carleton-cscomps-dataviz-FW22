@@ -3,11 +3,8 @@ import pymongo
 import requests
 import xmltodict
 import tweepy
-<<<<<<< HEAD
 from flask_cors import CORS, cross_origin
-=======
 from collections import defaultdict
->>>>>>> 6963e720b836eb683b66c8d24b4f0eea1dc32144
 
 opensecrets_key = "91a96cc61cceb54c2473df69372795f6" # API key
 
@@ -119,7 +116,6 @@ def getSummaryInfo(cid):
     else:
         return f"There's a {response.status_code} error with your request"
 
-<<<<<<< HEAD
 # Returns top 10 industries for a specific candidate cid
 @app.route('/<string:cid>/industry', methods = ['GET'])
 @cross_origin()
@@ -138,8 +134,6 @@ def getTopIndustries(cid):
     else:
         return f"There's a {response.status_code} error with your request"
 
-=======
->>>>>>> 6963e720b836eb683b66c8d24b4f0eea1dc32144
 # Returns top individual contributors for a specific candidate cid
 @app.route('/<string:cid>/individual', methods = ['GET'])
 @cross_origin()
@@ -156,9 +150,7 @@ def getTopIndividuals(cid):
         return jsonify(data_dict)
     else:
         return f"There's a {response.status_code} error with your request"
-<<<<<<< HEAD
   
-=======
 
 # Returns all Republicans sorted by alphabetical order
 @app.route('/republicans/<string:sort>', methods = ['GET'])
@@ -228,7 +220,6 @@ def getAllRepresentatives(sort):
 
     return jsonify({"data": list})
 
->>>>>>> 6963e720b836eb683b66c8d24b4f0eea1dc32144
 # driver function
 if __name__ == '__main__':
     app.run(debug = True)
