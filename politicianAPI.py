@@ -47,6 +47,38 @@ def home():
         message = "Hi, this is an API for politician data for the MoneyFlows comps project! \n"
         return message
 
+# Returns topic distribution for list of congresspeople
+@app.route('/<string:cid_list>/topicList', methods = ['GET'])
+def getTopicsList(cid_list):
+    client = pymongo.MongoClient("mongodb://localhost:27017/")
+    db = client['comps']
+    collection = db['topics']
+    topics_dict = defaultdict(int)
+    topics_dict["opensecrets_ids"] = cid_list
+
+    for cid in cid_list:
+        # get topic distributions for all tweets by this politician
+        for dict in collection.find({"opensecrets_id": cid}):
+
+            # get max topic distribution value
+            max_value = 0
+            for i in range(1,13):
+                topic = "topic_" + str(i)
+                if float(dict[topic]) > max_value:
+                    max_value = float(dict[topic])
+
+            # find all topics with that value
+            max_topics = []
+            for i in range(1,13):
+                topic = "topic_" + str(i)
+                if float(dict[topic]) == max_value:
+                    max_topics.append(topic)
+
+            # increment count for those topics
+            for topic in max_topics:
+                topics_dict[topic] += 1
+
+    return jsonify({"data": topics_dict})
 
 # Returns topic distribution for a congressperson
 @app.route('/<string:cid>/topics', methods = ['GET'])
@@ -90,6 +122,16 @@ def getSummaryInfo(cid):
     dic = collection.find_one({"opensecrets_id": cid})
     dic.pop("_id")
     return jsonify(dic)
+
+# Returns all information pertaining to a candidate cid
+@app.route('/<string:cid>/industry', methods = ['GET'])
+def getIndustries(cid):
+    # getting data from our database
+    client = pymongo.MongoClient("mongodb://localhost:27017/")
+    db = client['comps']
+    collection = db['congresspeople']
+    dic = collection.find_one({"opensecrets_id": cid})
+    return jsonify({"industry": dic["industry"]})
 
 # Returns top individual contributors for a specific candidate cid
 @app.route('/<string:cid>/individual', methods = ['GET'])
