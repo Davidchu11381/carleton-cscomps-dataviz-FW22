@@ -50,23 +50,26 @@ def home():
 # just used to test the process of getting a cid list from the /senators endpoint and using it to get topics for the whole group
 # @app.route('/test', methods = ['GET'])
 # def test():
-#     response = requests.get("http://127.0.0.1:5001/senators/total")
+#     response = requests.get("http://127.0.0.1:5001/republicans/total")
 #     cid_list = response.json()["data"]
 
-#     return getTopics(cid_list)
+#     return getIndustries(cid_list)
 
 # Returns topic distribution for a congressperson(s)
 # For just one congressperson, cid_list is just the cid.
 # If there are multiple congresspeople, cid_list is a comma-delimited list of cid's. ex. "N00007360,N00007361,N00007362"
 @app.route('/<string:cid_list>/topics', methods = ['GET'])
 def getTopics(cid_list):
+    cid_list = cid_list.split(",") # splits input into a list of cid's
+
+    # access our mongodb database
     client = pymongo.MongoClient("mongodb://localhost:27017/")
     db = client['comps']
     collection = db['topics']
-    topics_dict = defaultdict(int)
-    cid_list = cid_list.split(",")
-    topics_dict["opensecrets_ids"] = cid_list
 
+    topics_dict = defaultdict(int) # tracks topic names(keys) and the number of Tweets where a specific topic had the highest prob(values)
+
+    # iterate through each congressperson
     for cid in cid_list:
         # get topic distributions for all tweets by this politician
         for dict in collection.find({"opensecrets_id": cid}):
@@ -91,6 +94,36 @@ def getTopics(cid_list):
 
     return jsonify({"data": topics_dict})
 
+# Returns top 10 industries for a congressperson(s)
+# For just one congressperson, cid_list is just the cid.
+# If there are multiple congresspeople, cid_list is a comma-delimited list of cid's. ex. "N00007360,N00007361,N00007362"
+@app.route('/<string:cid_list>/industry', methods = ['GET'])
+def getIndustries(cid_list):
+    client = pymongo.MongoClient("mongodb://localhost:27017/")
+    db = client['comps']
+    collection = db['congresspeople']
+    cid_list = cid_list.split(",")
+    aggregate_industry_dict = defaultdict(float) # tracks industry names(keys) and total donations from those industries to the group(values)
+    name_to_code = defaultdict(str) # maps industry names to their industry codes
+    
+    # iterate through each congressperson
+    for cid in cid_list:
+        dic = collection.find_one({"opensecrets_id": cid})
+        if not "industry" in dic:
+            continue
+        industry_dicts = dic["industry"]
+        # iterate through the congressperson's top 10 industries and add to aggregate dict
+        for industry_dict in industry_dicts:
+            name_to_code[industry_dict["industry_name"]] = industry_dict["industry_code"]
+            aggregate_industry_dict[industry_dict["industry_name"]] += float(industry_dict["total"])
+    
+    # format output
+    res = []
+    for industry_name, total in aggregate_industry_dict.items():
+        res.append({"industry_name": industry_name, "industry_code": name_to_code[industry_name], "total": total})
+    
+    return jsonify({"industry": res})
+
 # Returns all information pertaining to a candidate cid
 @app.route('/<string:cid>/summary', methods = ['GET'])
 def getSummaryInfo(cid):
@@ -101,16 +134,6 @@ def getSummaryInfo(cid):
     dic = collection.find_one({"opensecrets_id": cid})
     dic.pop("_id")
     return jsonify({"summary": dic})
-
-# Returns all information pertaining to a candidate cid
-@app.route('/<string:cid>/industry', methods = ['GET'])
-def getIndustries(cid):
-    # getting data from our database
-    client = pymongo.MongoClient("mongodb://localhost:27017/")
-    db = client['comps']
-    collection = db['congresspeople']
-    dic = collection.find_one({"opensecrets_id": cid})
-    return jsonify({"industry": dic["industry"]})
 
 # Returns top individual contributors for a specific candidate cid
 @app.route('/<string:cid>/individual', methods = ['GET'])
