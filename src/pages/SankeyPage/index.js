@@ -1,9 +1,10 @@
 import React from 'react'
-import { Col, Row, Container, Stack, Form, Card, Dropdown } from 'react-bootstrap'
+import { Col, Row, Container, Stack, Form, Card, Button, Dropdown } from 'react-bootstrap'
 // import { ButtonGroup, ToggleButton, ListGroup, ListGroupItem } from 'react-bootstrap'
 import SankeyChart from '../HomePage/components/SankeyChart';
 import { useEffect, useReducer } from 'react';
 import PoliticianButton from './components/PoliticianButton';
+import StateButton from './components/StateButton';
 
 import { reducer, initialState } from './hooks/reducer';
 
@@ -37,7 +38,7 @@ function SankeyPage() {
                         {id: "Klobuchar", name: "Amy Klobuchar", party: "Democrat", chamber: "Senate", state: "Minnesota"}]
 
     function displayButtons() {
-        // console.log("HERE IN DISPLAY BUTTONS", filters.filteredPoliticians);
+        console.log("HERE IN DISPLAY BUTTONS", filters.filteredPoliticians);
         if (filters.filteredPoliticians.length === 0) {
             return(filters.originalPolList.map(person => 
             <PoliticianButton politician={person} func={dispatch}></PoliticianButton>));
@@ -62,7 +63,19 @@ function SankeyPage() {
 
     const handleFilter = (event) => {        
         var eligibleStates = filterItems(stateList, event.target.value);
-        console.log(eligibleStates);
+        // console.log(eligibleStates);
+        // console.log(event.code);
+        if (event.code === "Enter") {
+            console.log("AN ENTER KEY WAS PRESSED");
+            if (eligibleStates.length === 1) {
+                dispatch({
+                    type: 'ADD_STATE',
+                    value: eligibleStates[0],
+                })
+            }
+        }
+        // console.log(event.target.value);
+        // if (event)
         // var stuff = filterPoliticians(filters);
         // console.log(stuff);
         // return stateList.map(dep =>
@@ -72,6 +85,7 @@ function SankeyPage() {
 
     useEffect(() => {
         console.log("ins index.js:", filters);
+        // console.log("filtered states:", filters.selectedPoliticians);
     }, [filters]);
    
     return (
@@ -119,29 +133,12 @@ function SankeyPage() {
                     </Row>
                     <Row lg={1}>
                         <Col>
-                            {/* state type bar */}
-                            {/* <Form.Control 
-                                size="sm" 
-                                type="text" 
-                                placeholder="State" 
-                                class="mb-3"
-                                onChange={handleFilter}
-                                /> */}
+                           
                         <Dropdown drop='end'>
                             <Dropdown.Toggle variant="success" id="dropdown-basic">
                                 States
                             </Dropdown.Toggle>
                             <Dropdown.Menu>
-                                {/* <Dropdown>
-                                <Dropdown.Toggle>West Coast</Dropdown.Toggle>
-                                    <Dropdown.Item>WC1</Dropdown.Item>
-                                    <Dropdown.Item>WC2</Dropdown.Item>
-                                    <Dropdown.Item>WC3</Dropdown.Item>
-                                </Dropdown>
-                                <Dropdown.Toggle>East Coast</Dropdown.Toggle>
-                                <Dropdown.Toggle>New England</Dropdown.Toggle>
-                                <Dropdown.Toggle>South</Dropdown.Toggle>
-                                <Dropdown.Toggle>Midwest</Dropdown.Toggle> */}
                                 {stateList.map((state) => (
                                     <Dropdown.Item>
                                         <Form.Check
@@ -149,30 +146,33 @@ function SankeyPage() {
                                             type='checkbox'
                                             id={state}
                                             label={state}
-
-                                            // TODO: FIGURE THIS OUT!!!
-                                            
-                                            // onClick={
-                                            //     dispatch({
-                                            //         type: 'ADD_STATE', 
-                                            //         value: state,
-                                            //     })
-                                            // }
                                         />
                                     </Dropdown.Item>
                                 ))}
                             </Dropdown.Menu>
-                        </Dropdown>
+                        </Dropdown> 
+                        {/* state type bar */}
+                            <Form.Control 
+                                size="sm" 
+                                type="text" 
+                                placeholder="State" 
+                                class="mb-3"
+                                // onChange={handleFilter}
+                                onKeyDown={handleFilter}
+                                />
+                                {filters.selectedStates.map((state) => (
+                                    <StateButton state={state} func={dispatch}></StateButton>
+                                ))}
                         </Col>
                        
                     </Row>
-                    <Card style={{ width: '18rem' }}>
+                    {/* <Card style={{ width: '18rem' }}>
                         <Card.Body>
                             <Card.Text>
                             PLEASE SELECT MULTIPLE POLITICIANS BECAUSE IT IS POSSIBLE
                             </Card.Text>
                         </Card.Body>
-                    </Card>
+                    </Card> */}
                     {/* where the array of politicians will be listed */}
                     <Container>
                         <Row sm={2} md={2} lg={3}>
@@ -180,11 +180,24 @@ function SankeyPage() {
                         {displayButtons()}
                         </Row>
                     </Container>
+                    <Container>
+                        <Row>
+                            {/* need to figure this out */}
+                            {/* {filters.selectedPoliticians.map((pol) => (
+                                <Button>{pol}</Button>
+                            ))} */}
+                        </Row>
+                    </Container>
                 </Stack>
             </Col>
             <Col>
                 <div className='sankey-diagram'>
-                    <SankeyChart />
+                    {/* <SankeyChart /> */}
+                    {filters.selectedPoliticians.map((id) => (
+                        <SankeyChart cid={id}/>
+                    ))}
+                    {/* <SankeyChart cid="N00007360"/> */}
+
                 </div>
             </Col>
         </Row>
