@@ -37,9 +37,8 @@ function SankeyPage() {
                         {id: "Klobuchar", name: "Amy Klobuchar", party: "Democrat", chamber: "Senate", state: "Minnesota"}]
 
     function displayButtons() {
-        console.log("HERE IN DISPLAY BUTTONS", filters.filteredPoliticians);
+        // console.log("HERE IN DISPLAY BUTTONS", filters.filteredPoliticians);
         if (filters.filteredPoliticians.length === 0) {
-            console.log("in the case of no one");
             return(filters.originalPolList.map(person => 
             <PoliticianButton politician={person} func={dispatch}></PoliticianButton>));
         } else {
@@ -87,9 +86,6 @@ function SankeyPage() {
                                 size="sm"
                                 id="party"
                                 onChange={(event) => {
-                                    // console.log(event.target.value);
-                                    console.log("about to update selection with PARTY");
-
                                     dispatch({
                                         type: 'UPDATE_BUTTONS', 
                                         party: event.target.value,
@@ -97,10 +93,10 @@ function SankeyPage() {
                                         selectedStates: filters.selectedStates,
                                     })
                                 }}>
-                                <option>Party</option>
+                                <option value="">Party</option>
                                 <option value="Democrat">Democrat</option>
                                 <option value="Republican">Republican</option>
-                                <option value="">Other</option>
+                                <option value="Other">Other</option>
                             </Form.Select>
                         </Col>
                         <Col>
@@ -108,8 +104,6 @@ function SankeyPage() {
                                 size="sm"
                                 id="chamber"
                                 onChange={(event) => {
-                                    console.log(event.target.value);
-                                    console.log("about to update selectio with CHAMBER");
                                     dispatch({
                                         type: 'UPDATE_BUTTONS', 
                                         party: filters.party,
@@ -125,44 +119,48 @@ function SankeyPage() {
                     </Row>
                     <Row lg={1}>
                         <Col>
-                            <Form.Control 
+                            {/* state type bar */}
+                            {/* <Form.Control 
                                 size="sm" 
                                 type="text" 
                                 placeholder="State" 
                                 class="mb-3"
                                 onChange={handleFilter}
-                                />
-                        
-                        <Dropdown>
+                                /> */}
+                        <Dropdown drop='end'>
                             <Dropdown.Toggle variant="success" id="dropdown-basic">
                                 States
                             </Dropdown.Toggle>
-
-                            {/* <Form></Form> */}
-
                             <Dropdown.Menu>
-                                <Dropdown.Item href="#/action-1">Action</Dropdown.Item>
-                                <Dropdown.Item href="#/action-2">Another action</Dropdown.Item>
-                                <Dropdown.Item href="#/action-3">Something else</Dropdown.Item>
-                                <Form>
-                                {['checkbox', 'radio'].map((type) => (
-                                <div key={`default-${type}`} className="mb-3">
-                                <Form.Check 
-                                    type={type}
-                                    id={`default-${type}`}
-                                    label={`default ${type}`}
-                                    // feedback={}
-                                />
+                                {/* <Dropdown>
+                                <Dropdown.Toggle>West Coast</Dropdown.Toggle>
+                                    <Dropdown.Item>WC1</Dropdown.Item>
+                                    <Dropdown.Item>WC2</Dropdown.Item>
+                                    <Dropdown.Item>WC3</Dropdown.Item>
+                                </Dropdown>
+                                <Dropdown.Toggle>East Coast</Dropdown.Toggle>
+                                <Dropdown.Toggle>New England</Dropdown.Toggle>
+                                <Dropdown.Toggle>South</Dropdown.Toggle>
+                                <Dropdown.Toggle>Midwest</Dropdown.Toggle> */}
+                                {stateList.map((state) => (
+                                    <Dropdown.Item>
+                                        <Form.Check
+                                            feedback="i was clicked!"
+                                            type='checkbox'
+                                            id={state}
+                                            label={state}
 
-                                <Form.Check
-                                    disabled
-                                    type={type}
-                                    label={`disabled ${type}`}
-                                    id={`disabled-default-${type}`}
-                                />
-                                </div>
-                                
-                            ))}</Form>
+                                            // TODO: FIGURE THIS OUT!!!
+                                            
+                                            // onClick={
+                                            //     dispatch({
+                                            //         type: 'ADD_STATE', 
+                                            //         value: state,
+                                            //     })
+                                            // }
+                                        />
+                                    </Dropdown.Item>
+                                ))}
                             </Dropdown.Menu>
                         </Dropdown>
                         </Col>

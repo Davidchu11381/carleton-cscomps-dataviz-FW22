@@ -4,6 +4,7 @@ import requests
 import xmltodict
 import tweepy
 from flask_cors import CORS, cross_origin
+from collections import defaultdict
 
 opensecrets_key = "91a96cc61cceb54c2473df69372795f6" # API key
 
@@ -49,7 +50,40 @@ def home():
         message = "Hi, this is an API for politician data for the MoneyFlows comps project! \n"
         return message
 
-# Returns all demographic information pertaining to a candidate cid
+
+# Returns topic distribution for a congressperson
+@app.route('/<string:cid>/topics', methods = ['GET'])
+def getTopics(cid):
+    client = pymongo.MongoClient("mongodb://localhost:27017/")
+    db = client['comps']
+    collection = db['topics']
+    topics_dict = defaultdict(int)
+    topics_dict["opensecrets_id"] = cid
+
+    # get topic distributions for all tweets by this politician
+    for dict in collection.find({"opensecrets_id": cid}):
+
+        # get max topic distribution value
+        max_value = 0
+        for i in range(1,13):
+            topic = "topic_" + str(i)
+            if float(dict[topic]) > max_value:
+                max_value = float(dict[topic])
+
+        # find all topics with that value
+        max_topics = []
+        for i in range(1,13):
+            topic = "topic_" + str(i)
+            if float(dict[topic]) == max_value:
+                max_topics.append(topic)
+
+        # increment count for those topics
+        for topic in max_topics:
+            topics_dict[topic] += 1
+
+    return jsonify({"data": topics_dict})
+
+# Returns all information pertaining to a candidate cid
 @app.route('/<string:cid>/summary', methods = ['GET'])
 @cross_origin()
 def getSummaryInfo(cid):
@@ -117,6 +151,75 @@ def getTopIndividuals(cid):
     else:
         return f"There's a {response.status_code} error with your request"
   
+
+# Returns all Republicans sorted by alphabetical order
+@app.route('/republicans/<string:sort>', methods = ['GET'])
+def getAllRepublicans(sort):
+    client = pymongo.MongoClient("mongodb://localhost:27017/")
+    db = client['comps']
+    collection = db['congresspeople']
+    list = []
+    for dict in collection.find({"party": "Republican"}):
+        dict.pop("_id")
+        list.append(dict)
+    if sort == "alphabetical":
+        list.sort(key = lambda x: x["last_name"])
+    elif sort == "total":
+        list.sort(key = lambda x: x["total"])
+
+    return jsonify({"data": list})
+  
+# Returns all Democrats sorted by alphabetical order
+@app.route('/democrats/<string:sort>', methods = ['GET'])
+def getAllDemocrats(sort):
+    client = pymongo.MongoClient("mongodb://localhost:27017/")
+    db = client['comps']
+    collection = db['congresspeople']
+    list = []
+    for dict in collection.find({"party": "Democrat"}):
+        dict.pop("_id")
+        list.append(dict)
+    if sort == "alphabetical":
+        list.sort(key = lambda x: x["last_name"])
+    elif sort == "total":
+        list.sort(key = lambda x: x["total"])
+
+    return jsonify({"data": list})
+
+# Returns all Senators sorted by alphabetical order
+@app.route('/senators/<string:sort>', methods = ['GET'])
+def getAllSenators(sort):
+    client = pymongo.MongoClient("mongodb://localhost:27017/")
+    db = client['comps']
+    collection = db['congresspeople']
+    list = []
+    for dict in collection.find({"type": "sen"}):
+        dict.pop("_id")
+        list.append(dict)
+    if sort == "alphabetical":
+        list.sort(key = lambda x: x["last_name"])
+    elif sort == "total":
+        list.sort(key = lambda x: x["total"])
+
+    return jsonify({"data": list})
+
+# Returns all Representatives sorted by alphabetical order
+@app.route('/representatives/<string:sort>', methods = ['GET'])
+def getAllRepresentatives(sort):
+    client = pymongo.MongoClient("mongodb://localhost:27017/")
+    db = client['comps']
+    collection = db['congresspeople']
+    list = []
+    for dict in collection.find({"type": "rep"}):
+        dict.pop("_id")
+        list.append(dict)
+    if sort == "alphabetical":
+        list.sort(key = lambda x: x["last_name"])
+    elif sort == "total":
+        list.sort(key = lambda x: x["total"])
+
+    return jsonify({"data": list})
+
 # driver function
 if __name__ == '__main__':
     app.run(debug = True)
