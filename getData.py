@@ -31,7 +31,7 @@ def total_from_industry_by_cid(ind, cid):
 # Returns top 10 industries for a specific candidate cid
 def getTopIndustries(cid):
     endpoint = "https://www.opensecrets.org/api/?method=candIndustry&cid=" + cid + "&cycle=2022&apikey="
-    api = endpoint + opensecrets_key
+    api = endpoint + key
     response = requests.get(f"{api}")
     if response.status_code == 200:
         data_dict = xmltodict.parse(response.text)["response"]["industries"] # parse from XML to a JSON-dict format
