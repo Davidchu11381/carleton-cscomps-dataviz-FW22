@@ -66,11 +66,14 @@ def getTopics(cid_list):
     client = pymongo.MongoClient("mongodb://localhost:27017/")
     db = client['comps']
     collection = db['topics']
-
+    cid_set = set()
     topics_dict = defaultdict(int) # tracks topic names(keys) and the number of Tweets where a specific topic had the highest prob(values)
 
     # iterate through each congressperson
     for cid in cid_list:
+        if cid in cid_set:
+            continue
+        cid_set.add(cid)
         # get topic distributions for all tweets by this politician
         for dict in collection.find({"opensecrets_id": cid}):
 
@@ -103,11 +106,15 @@ def getIndustries(cid_list):
     db = client['comps']
     collection = db['congresspeople']
     cid_list = cid_list.split(",")
+    cid_set = set() # to make sure we don't ever duplicate same congressperson's info
     aggregate_industry_dict = defaultdict(float) # tracks industry names(keys) and total donations from those industries to the group(values)
     name_to_code = defaultdict(str) # maps industry names to their industry codes
     
     # iterate through each congressperson
     for cid in cid_list:
+        if cid in cid_set:
+            continue
+        cid_set.add(cid)
         dic = collection.find_one({"opensecrets_id": cid})
         if not "industry" in dic:
             continue
