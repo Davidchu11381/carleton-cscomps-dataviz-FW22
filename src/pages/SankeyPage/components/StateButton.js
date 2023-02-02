@@ -10,25 +10,25 @@ import { useState } from 'react';
 import { ToggleButton } from 'react-bootstrap';
 
 function StateButton( data ) {
-    const redFunc = data.func;
+    const dispatch = data.func;
     const info = data.state;
+    const filters = data.filters;
 
-    // buttons start out false => not selected
     const [initial, setInitial] = useState(true);
 
-    function updateList (state, dispatch) {
+    function updateList (state) {
         
-        if (state.checked === false) {
-            dispatch({
-                type: 'REMOVE_STATE',
-                value: state.id,
-            });	
-        } else {
-            dispatch({
-                type: 'ADD_STATE',
-                value: state.id,
-            });	
-        };
+        dispatch({
+            type: 'REMOVE_STATE',
+            value: state.id,
+        });	
+        dispatch({
+            type: 'UPDATE_BUTTONS', 
+            party: filters.party,
+            chamber: filters.party,
+            selectedStates: filters.selectedStates,
+        });
+        
     };
     
     return (
@@ -40,10 +40,8 @@ function StateButton( data ) {
             checked={initial}
             value="1"
             onChange={(e) => {
-                // console.log(e.currentTarget.id);
-                // console.log("the e.currentTarget", e.currentTarget);
                 setInitial(e.currentTarget.checked);
-                updateList(e.currentTarget, redFunc);
+                updateList(e.currentTarget);
             }}
         >
             {info}

@@ -74,7 +74,7 @@ function CongressPage() {
                                 <Card.Body>
                                     <Card.Title>Mitch McConnel (R)</Card.Title>
                                     <Card.Text>
-                                    Senate, New York
+                                    Senate, Kentucky
                                     </Card.Text>
                                     <Button variant="primary">Profile</Button>
                                 </Card.Body>
