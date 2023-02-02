@@ -5,6 +5,7 @@ import requests
 import xmltodict
 import tweepy
 from collections import defaultdict
+import heapq
 
 opensecrets_key = "91a96cc61cceb54c2473df69372795f6" # API key
 
@@ -129,6 +130,24 @@ def getIndustries(cid_list):
     res = getAggregateIndustryData(cid_list)
     return jsonify({"industry": res})
 
+# Returns all aggregate information pertaining to a group
+# group can be equal to anything of the following: "Republican", "Democrat", "Senator", "Representative"
+@app.route('/<string:group>/aggregate', methods = ['GET'])
+def getAggregateData(group):
+    # getting data from our database
+    client = pymongo.MongoClient("mongodb://localhost:27017/")
+    db = client['comps']
+    tweet_topics_collection = db['aggregate_tweet_topics']
+    industry_collection = db['aggregate_industry_data']
+
+    tweet_topics_dic = tweet_topics_collection.find_one({"group": group})
+    tweet_topics_dic.pop("_id")
+    industry_dic = industry_collection.find_one({"group": group})
+    industry_dic.pop("_id")
+    top_k = heapq.nlargest(10, industry_dic["industry"], key = lambda x : x["total"])
+
+    return jsonify({"group": group, "tweet_topics": tweet_topics_dic["tweet_topics"], "industry": top_k})
+
 # Returns all information pertaining to a candidate cid
 @app.route('/<string:cid>/summary', methods = ['GET'])
 def getSummaryInfo(cid):
@@ -155,22 +174,6 @@ def getTopIndividuals(cid):
         return jsonify(data_dict)
     else:
         return f"There's a {response.status_code} error with your request"
-
-# Returns all aggregate information pertaining to a group
-# group can be equal to anything of the following: "Republican", "Democrat", "Senator", "Representative"
-@app.route('/<string:group>/aggregate', methods = ['GET'])
-def getAggregateData(group):
-    # getting data from our database
-    client = pymongo.MongoClient("mongodb://localhost:27017/")
-    db = client['comps']
-    tweet_topics_collection = db['aggregate_tweet_topics']
-    industry_collection = db['aggregate_industry_data']
-
-    tweet_topics_dic = tweet_topics_collection.find_one({"group": group})
-    tweet_topics_dic.pop("_id")
-    industry_dic = industry_collection.find_one({"group": group})
-    industry_dic.pop("_id")
-    return jsonify({"group": group, "tweet_topics": tweet_topics_dic["tweet_topics"], "industry": industry_dic["industry"]})
 
 # Returns all Republicans sorted by alphabetical order or by total donations
 @app.route('/republicans/<string:sort>', methods = ['GET'])

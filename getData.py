@@ -183,7 +183,7 @@ def getTweetTopicData():
                 new_dict["topic_" + str(i - 4)] = row[i]
             new_collection.insert_one(new_dict)
 
-# saves aggregate topics data to our database for the following groups: "Republican", "Democrat", "Senator", "Representative"
+# saves aggregate data to our database for the following groups: "Republican", "Democrat", "Senator", "Representative"
 def saveAggregateData():
     client = pymongo.MongoClient("mongodb://localhost:27017/")
     db = client['comps']
