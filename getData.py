@@ -4,18 +4,18 @@ import xmltodict
 from collections import defaultdict
 import requests
 import time
-from politicianAPI import removeAtSymbol
+from politicianAPI import removeAtSymbol, getTopicsDict, getAggregateIndustryData, getAllRepublicans, getAllDemocrats, getAllSenators, getAllRepresentatives
 
 path_to_legislators = '/home/dataviz/Downloads/legislators-current.csv'
-# path_to_industries = '/home/dataviz/Downloads/CRPIndustryCodes.csv'
-# path_to_topics = '/home/dataviz/Downloads/topic_dist_by_doc.csv'
+path_to_industries = '/home/dataviz/Downloads/CRPIndustryCodes.csv'
+path_to_topics = '/home/dataviz/Downloads/topic_dist_by_doc.csv'
 
-#path_to_legislators = '/Users/kevin/Downloads/legislators-current.csv'
-#path_to_industries = '/Users/kevin/Downloads/CRPIndustryCodes.csv'
-#path_to_topics = '/Users/kevin/Downloads/topic_dist_by_doc.csv'
+# path_to_legislators = '/Users/kevin/Downloads/legislators-current.csv'
+# path_to_industries = '/Users/kevin/Downloads/CRPIndustryCodes.csv'
+# path_to_topics = '/Users/kevin/Downloads/topic_dist_by_doc.csv'
 
 key = "91a96cc61cceb54c2473df69372795f6" # API key
-
+        
 # returns total donations from specified industry for specified candidate cid
 def total_from_industry_by_cid(ind, cid):
         endpoint = "https://www.opensecrets.org/api/?method=candIndByInd&cid=" + cid + "&cycle=2020&ind=" + ind + "&apikey="
@@ -96,59 +96,6 @@ def get_politician_data2():
                 print(f"There's a {response.status_code} error with your request")
             new_collection.find_one_and_update({"opensecrets_id": new_dict["opensecrets_id"]}, {"$set": new_dict})
 
-# # saves a list of dictionaries containing demographic and financial information on congresspeople to our database 
-# def get_politician_data():
-#     client = pymongo.MongoClient("mongodb://localhost:27017/")
-#     db = client['comps']
-#     new_collection = db["congresspeople"] # create a new collection in the database
-#     # new_collection.drop() # clear anything already in it
-#     with open(path_to_legislators, 'r') as csvfile:
-#         csv_reader = csv.reader(csvfile)
-#         column_names = next(csv_reader)
-#         column_names = column_names[:14] + [column_names[18]] + [column_names[24]] # column names we want
-#         for row in csv_reader:
-#             row = row[:14] + [row[18]] + [row[24]]
-#             new_dict = {}
-
-#             # adding info from csv
-#             for index, var in enumerate(column_names):
-#                 new_dict[var] = row[index]
-
-#             # adding summary info from OpenSecrets
-#             endpoint = "http://www.opensecrets.org/api/?method=candSummary&cid=" + new_dict["opensecrets_id"] + "&cycle=2022&apikey="
-#             api = endpoint + key
-#             response = requests.get(f"{api}")
-#             if response.status_code == 200:
-#                 data_dict = xmltodict.parse(response.text)["response"]["summary"] # parse from XML to a JSON-dict format
-                
-#                 # removing @ symbols
-#                 data_dict = removeAtSymbol(data_dict)
-                
-#                 # adding to dictionary
-#                 new_dict["first_elected"] = data_dict["first_elected"]
-#                 new_dict["total"] = float(data_dict["total"])
-#                 new_dict["spent"] = float(data_dict["spent"])
-#                 new_dict["cash_on_hand"] = float(data_dict["cash_on_hand"])
-#                 new_dict["debt"] = float(data_dict["debt"])
-#                 new_dict["origin"] = data_dict["origin"]
-
-#             # adding industry info from OpenSecrets
-#             endpoint = "https://www.opensecrets.org/api/?method=candIndustry&cid=" + new_dict["opensecrets_id"] + "&cycle=2022&apikey="
-#             api = endpoint + key
-#             response = requests.get(f"{api}")
-#             if response.status_code == 200:
-#                 data_dict = xmltodict.parse(response.text)["response"]["industries"] # parse from XML to a JSON-dict format
-#                 # removing @ symbols
-#                 data_dict = removeAtSymbol(data_dict)
-#                 data_dict["industry"] = [removeAtSymbol(industry_dict) for industry_dict in data_dict["industry"]]
-                
-#                 # adding to dictionary
-#                 new_dict["industry"] = data_dict["industry"]
-
-#             else:
-#                 print(f"There's a {response.status_code} error with your request")
-#             new_collection.insert_one(new_dict)
-
 # returns a list of all candidate cid's
 def get_all_cid():
     with open(path_to_legislators, 'r') as csvfile:
@@ -211,10 +158,10 @@ def get_industry_data():
         new_collection.insert_one(new_dict)
 
 # Saves tweet topic data to our database
-def getTopicData():
+def getTweetTopicData():
     client = pymongo.MongoClient("mongodb://localhost:27017/")
     db = client['comps']
-    new_collection = db["topics"] # create a new collection in the database
+    new_collection = db["tweet_topics"] # create a new collection in the database
     new_collection.drop() # clear anything already in it
 
     with open(path_to_topics, 'r') as csvfile:
@@ -229,7 +176,36 @@ def getTopicData():
             for i in range(5,17):
                 new_dict["topic_" + str(i - 4)] = row[i]
             new_collection.insert_one(new_dict)
-get_politician_data2()
+
+# saves aggregate topics data to our database for the following groups: "Republican", "Democrat", "Senator", "Representative"
+def saveAggregateData():
+    client = pymongo.MongoClient("mongodb://localhost:27017/")
+    db = client['comps']
+    new_collection1 = db["aggregate_tweet_topics"] # create a new collection in the database
+    new_collection1.drop() # clear anything already in it
+
+    new_collection2 = db["aggregate_industry_data"] # create a new collection in the database
+    new_collection2.drop() # clear anything already in it
+
+    groups = ["Republican", "Democrat", "Senator", "Representative"]
+    for group in groups:
+        if group == "Republican":
+            cid_list = getAllRepublicans("total")
+        elif group == "Democrat":
+            cid_list = getAllDemocrats("total")
+        elif group == "Senator":
+            cid_list = getAllSenators("total")
+        else:
+            cid_list = getAllRepresentatives("total")
+
+        topics_dict = getTopicsDict(cid_list)
+        new_collection1.insert_one({"group":group, "tweet_topics": topics_dict})
+
+        industry_data = getAggregateIndustryData(cid_list)
+        new_collection2.insert_one({"group":group, "industry": industry_data})
+
+getTweetTopicData()
+saveAggregateData()
 
         
 
