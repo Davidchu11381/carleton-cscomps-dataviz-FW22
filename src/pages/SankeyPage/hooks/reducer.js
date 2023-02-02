@@ -18,18 +18,17 @@
 		state
 		chamber
 */
-function addPoliticians(a_list) {
-	a_list.push("string")
-	return a_list;
-}
+// function addPoliticians(a_list) {
+// 	a_list.push("string")
+// 	return a_list;
+// }
 
 export const initialState = {
 
 	// used for display
 	selectedPoliticians: [],
 	filteredPoliticians: [],
-	something: addPoliticians([]),
-	filtersUsed: 0,
+	// something: addPoliticians([]),
 
 	// used for filtering
     party: "",
@@ -40,13 +39,13 @@ export const initialState = {
 			{id: "Boozman", name: "John Boozman", party: "Republican", chamber: "House", state: "Arkansas"},
 			{id: "Huffman", name: "Jared Huffman", party: "Democrat", chamber: "House", state: "California"},
 			{id: "Klobuchar", name: "Amy Klobuchar", party: "Democrat", chamber: "Senate", state: "Minnesota"},
-			{id: "Sanders", name: "Bernie Sanders", party: "Independent", chamber: "Senate", state: "Texas"},]
+			{id: "Sanders", name: "Bernie Sanders", party: "Independent", chamber: "Senate", state: "Texas"},
+			{id: "Doe", name: "Jane Doe", party: "Minimalisy", chamber: "House", state: "Maine"},]
 
 };
 
 export const reducer = (state, action) => {
 	const value = action.value;
-	// console.log(action.type, value, ' in sankey filter reducer');
 	let index;
 
 	switch (action.type) {
@@ -61,6 +60,7 @@ export const reducer = (state, action) => {
 			if (state.chamber !== "") {
 				orgList = orgList.filter((el)=> el.chamber.includes(state.chamber));
 			} 
+
 			if (state.party !== "") {
 				if (state.party === "Democrat" || state.party === "Republican") {
 					orgList = orgList.filter((el)=> el.party.includes(state.party))
@@ -71,9 +71,15 @@ export const reducer = (state, action) => {
 				}
 			}
 
-			// if (state.selectedPoliticians !== []) {
-			// 	orgList = orgList.filter((el)=> el.chamber.includes(state.chamber));
-			// }
+			if (state.selectedStates.length !== 0) {
+				var theEnd = [];
+				var inter = [];
+				state.selectedStates.map((state) => (
+					inter = orgList.filter((el) => el.state.includes(state)),
+					inter.forEach(pol => theEnd.push(pol))
+				));
+				orgList = theEnd;
+			}
 
 			return {
 				...state,
@@ -81,8 +87,6 @@ export const reducer = (state, action) => {
 			}
 		
 		case 'ADD_STATE':
-			console.log("IN ADD STATE");
-			// need to check is state is already in there
 			if (state.selectedStates.includes(value)) {
 				return {
 					...state,

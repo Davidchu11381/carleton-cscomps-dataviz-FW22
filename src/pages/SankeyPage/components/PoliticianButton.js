@@ -10,24 +10,30 @@ import { useState } from 'react';
 import { ToggleButton } from 'react-bootstrap';
 
 function PoliticianButton( data ) {
-    const redFunc = data.func;
+    const dispatch = data.func;
     const info = data.politician;
 
     // buttons start out false => not selected
     const [initial, setInitial] = useState(false);
 
-    function updateList (person, dispatch) {
-        
-        if (person.checked === false) {
+    function updateList (person, status) {
+    
+        if (status === false) {
             dispatch({
                 type: 'REMOVE_PERSON',
                 value: person.id,
             });	
+            
+            // TODO: update the buttons again
+
         } else {
             dispatch({
                 type: 'ADD_PERSON',
                 value: person.id,
             });	
+            
+            // TODO: update the buttons again
+
         };
     };
     
@@ -40,9 +46,8 @@ function PoliticianButton( data ) {
             checked={initial}
             value="1"
             onChange={(e) => {
-                // console.log(e.currentTarget.id);
                 setInitial(e.currentTarget.checked);
-                updateList(e.currentTarget, redFunc);
+                updateList(info, e.currentTarget.checked);
             }}
         >
             {info.name}

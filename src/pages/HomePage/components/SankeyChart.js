@@ -13,7 +13,7 @@ class SankeyChart extends Component {
   }
 
   fetchData() {
-    fetch('http://127.0.0.1:5001/'+ this.cid +'/industry') 
+    fetch('http://127.0.0.1:5000/'+ this.cid +'/industry') 
       .then(response => response.json())
       .then(data => {
         this.setState({ data });
