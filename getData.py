@@ -4,7 +4,7 @@ import xmltodict
 from collections import defaultdict
 import requests
 import time
-from politicianAPI import removeAtSymbol, getTopicsDict, getAggregateIndustryData, getAllRepublicans, getAllDemocrats, getAllSenators, getAllRepresentatives
+from politicianAPI import removeAtSymbol, getTopicsDict, getAggregateIndustryData, getAllRepublicans, getAllDemocrats, getAllSenators, getAllRepresentatives, getProfilePic
 
 path_to_legislators = '/home/dataviz/Downloads/legislators-current.csv'
 path_to_industries = '/home/dataviz/Downloads/CRPIndustryCodes.csv'
@@ -15,7 +15,13 @@ path_to_topics = '/home/dataviz/Downloads/topic_dist_by_doc.csv'
 # path_to_topics = '/Users/kevin/Downloads/topic_dist_by_doc.csv'
 
 key = "91a96cc61cceb54c2473df69372795f6" # API key
-        
+
+# twitter keys
+consumer_key = "YauX4ahOHAxcsDgcX4zrtkWid"  #same as api key
+consumer_secret = "PNezX7Ne2xEAnkomoNBuPw7NWvgQt1w5OvtxTTzgRZZNgSsGRA"  #same as api secret
+access_key = "1572984312554786818-eoA2bVWAu0g9FHzhLprwAiOUOwSw5H"
+access_secret = "ieTStsQ3LsfFomPAMTEgLjnWU90fODIS543LDvnihfaSn"
+
 # returns total donations from specified industry for specified candidate cid
 def total_from_industry_by_cid(ind, cid):
         endpoint = "https://www.opensecrets.org/api/?method=candIndByInd&cid=" + cid + "&cycle=2020&ind=" + ind + "&apikey="
@@ -204,9 +210,17 @@ def saveAggregateData():
         industry_data = getAggregateIndustryData(cid_list)
         new_collection2.insert_one({"group":group, "industry": industry_data})
 
-getTweetTopicData()
-saveAggregateData()
 
+# updates a list of dictionaries containing demographic and financial information on congresspeople to our database 
+def getTwitterProfilePics():
+    client = pymongo.MongoClient("mongodb://localhost:27017/")
+    db = client['comps']
+    congresspeople = db["congresspeople"] # create a new collection in the database
+
+    for dic in congresspeople.find():
+        twitter_handle = dic["twitter"]
+        congresspeople.find_one_and_update({"opensecrets_id": dic["opensecrets_id"]}, {"$set": {"profile_pic": getProfilePic(twitter_handle)}})
+getTwitterProfilePics()
         
 
 

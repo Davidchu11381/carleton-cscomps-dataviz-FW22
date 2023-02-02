@@ -247,6 +247,20 @@ def getAllRepresentatives(sort):
 
     return cid_list
 
+# Returns all congresspeople from a state 
+@app.route('/<string:state>/state', methods = ['GET'])
+def getCongresspeopleByState(state):
+    client = pymongo.MongoClient("mongodb://localhost:27017/")
+    db = client['comps']
+    collection = db['congresspeople']
+    list = []
+    for dict in collection.find({"state": state}):
+        dict.pop("_id")
+        list.append(dict)
+
+    cid_list = [dict["opensecrets_id"] for dict in list]
+
+    return cid_list
 # driver function
 if __name__ == '__main__':
     app.run(debug = True)
