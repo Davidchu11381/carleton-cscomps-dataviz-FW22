@@ -13,9 +13,11 @@ class SankeyChart extends Component {
   }
 
   fetchData() {
-    fetch('http://137.22.4.60:5001/'+ this.cid +'/industry') 
+    // fetch('http://137.22.4.60:5001/'+ this.cid +'/industry') 
+    fetch('http://127.0.0.1:5000/'+ this.cid +'/industry') 
       .then(response => response.json())
       .then(data => {
+        console.log("the data:", data);
         this.setState({ data });
       });
   }

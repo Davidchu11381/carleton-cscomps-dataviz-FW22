@@ -17,6 +17,8 @@ function PoliticianButton( data ) {
     const [initial, setInitial] = useState(false);
 
     function updateList (person, status) {
+
+        console.log("something", person);
     
         if (status === false) {
             dispatch({

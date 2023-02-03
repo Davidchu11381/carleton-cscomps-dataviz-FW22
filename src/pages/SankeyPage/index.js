@@ -154,7 +154,7 @@ function SankeyPage() {
                         </Col>
                     </Row>
                     <Container>
-                        <Row sm={2} md={2} lg={3}>
+                        <Row sm={3} md={4} lg={3}>
                         {/* listing of the congresspoeple that fit the criteria go here */}
                         {displayButtons()}
                         </Row>
@@ -174,7 +174,7 @@ function SankeyPage() {
                 <h1>DATA VIZ STUFF GOES HERE</h1>
                     {/* <SankeyChart cid={id}/> */}
                     {filters.selectedPoliticians.map((id) => (
-                        <SankeyChart cid={id}/>
+                        <p>{id}'s info goes here</p>
                     ))}
                 </div>
             </Col>

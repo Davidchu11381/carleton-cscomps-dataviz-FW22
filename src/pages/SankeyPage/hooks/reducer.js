@@ -18,8 +18,13 @@
 		state
 		chamber
 */
-// function addPoliticians(a_list) {
-// 	a_list.push("string")
+// function collectPoliticians(a_list) {
+// 	fetch('http://127.0.0.1:5000/republicans') 
+// 	.then(response => response.json())
+// 	.then(data => {
+// 	  console.log("the data:", data);
+// 	  this.setState({ data });
+// 	});
 // 	return a_list;
 // }
 
@@ -40,7 +45,7 @@ export const initialState = {
 			{id: "Huffman", name: "Jared Huffman", party: "Democrat", chamber: "House", state: "California"},
 			{id: "Klobuchar", name: "Amy Klobuchar", party: "Democrat", chamber: "Senate", state: "Minnesota"},
 			{id: "Sanders", name: "Bernie Sanders", party: "Independent", chamber: "Senate", state: "Texas"},
-			{id: "Doe", name: "Jane Doe", party: "Minimalisy", chamber: "House", state: "Maine"},]
+			{id: "Doe", name: "Jane Doe", party: "Minimalisy", chamber: "House", state: "Maine"}]
 
 };
 
@@ -96,8 +101,7 @@ export const reducer = (state, action) => {
 				return {
 					...state,
 				}
-			}
-			
+			}	
 		
 		case 'REMOVE_STATE':
 			index = state.selectedStates.indexOf(value);
