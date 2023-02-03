@@ -5,6 +5,7 @@ import xmltodict
 import tweepy
 from flask_cors import CORS, cross_origin
 from collections import defaultdict
+import heapq
 
 opensecrets_key = "91a96cc61cceb54c2473df69372795f6" # API key
 
@@ -14,66 +15,20 @@ consumer_secret = "PNezX7Ne2xEAnkomoNBuPw7NWvgQt1w5OvtxTTzgRZZNgSsGRA"  #same as
 access_key = "1572984312554786818-eoA2bVWAu0g9FHzhLprwAiOUOwSw5H"
 access_secret = "ieTStsQ3LsfFomPAMTEgLjnWU90fODIS543LDvnihfaSn"
 
-# gets the Twitter profile picture of a Twitter handle
-def getProfilePic(handle):
-    # Twitter authentication
-    auth = tweepy.OAuthHandler(consumer_key, consumer_secret)   
-    auth.set_access_token(access_key, access_secret) 
-    
-    # Creating an API object 
-    api = tweepy.API(auth)
-
-    try:
-        api.verify_credentials()
-        user = api.get_user(screen_name=handle)
-        extension = user.profile_image_url[-3:]
-        url = user.profile_image_url[:-10]
-        url += "bigger." + extension
-        return url
-    except:
-        print('Failed authentication')
-        
-# removes all "@" symbols from keys in a dictionary
-def removeAtSymbol(dict):
-    return {x.translate({64:None}) : y for x, y in dict.items()}
-
-# creating a Flask app
-app = Flask(__name__)
-cors = CORS(app)
-app.config['CORS_HEADERS'] = 'Content-Type'
-
-# home route
-@app.route('/', methods = ['GET'])
-@cross_origin()
-def home():
-    if(request.method == 'GET'):
-        message = "Hi, this is an API for politician data for the MoneyFlows comps project! \n"
-        return message
-
-# just used to test the process of getting a cid list from the /senators endpoint and using it to get topics for the whole group
-# @app.route('/test', methods = ['GET'])
-# def test():
-#     response = requests.get("http://127.0.0.1:5001/republicans/total")
-#     cid_list = response.json()["data"]
-
-#     return getIndustries(cid_list)
-
-# Returns topic distribution for a congressperson(s)
-# For just one congressperson, cid_list is just the cid.
-# If there are multiple congresspeople, cid_list is a comma-delimited list of cid's. ex. "N00007360,N00007361,N00007362"
-@app.route('/<string:cid_list>/topics', methods = ['GET'])
-def getTopics(cid_list):
-    cid_list = cid_list.split(",") # splits input into a list of cid's
-
+# returns dict containing distribution of topics for the given cid list.
+def getTopicsDict(cid_list):
     # access our mongodb database
     client = pymongo.MongoClient("mongodb://localhost:27017/")
     db = client['comps']
-    collection = db['topics']
-
+    collection = db['tweet_topics']
+    cid_set = set()
     topics_dict = defaultdict(int) # tracks topic names(keys) and the number of Tweets where a specific topic had the highest prob(values)
 
     # iterate through each congressperson
     for cid in cid_list:
+        if cid in cid_set:
+            continue
+        cid_set.add(cid)
         # get topic distributions for all tweets by this politician
         for dict in collection.find({"opensecrets_id": cid}):
 
@@ -94,23 +49,21 @@ def getTopics(cid_list):
             # increment count for those topics
             for topic in max_topics:
                 topics_dict[topic] += 1
+    return topics_dict
 
-    return jsonify({"data": topics_dict})
-
-# Returns top 10 industries for a congressperson(s)
-# For just one congressperson, cid_list is just the cid.
-# If there are multiple congresspeople, cid_list is a comma-delimited list of cid's. ex. "N00007360,N00007361,N00007362"
-@app.route('/<string:cid_list>/industry', methods = ['GET'])
-def getIndustries(cid_list):
+def getAggregateIndustryData(cid_list):
     client = pymongo.MongoClient("mongodb://localhost:27017/")
     db = client['comps']
     collection = db['congresspeople']
-    cid_list = cid_list.split(",")
+    cid_set = set() # to make sure we don't ever duplicate same congressperson's info
     aggregate_industry_dict = defaultdict(float) # tracks industry names(keys) and total donations from those industries to the group(values)
     name_to_code = defaultdict(str) # maps industry names to their industry codes
     
     # iterate through each congressperson
     for cid in cid_list:
+        if cid in cid_set:
+            continue
+        cid_set.add(cid)
         dic = collection.find_one({"opensecrets_id": cid})
         if not "industry" in dic:
             continue
@@ -124,8 +77,76 @@ def getIndustries(cid_list):
     res = []
     for industry_name, total in aggregate_industry_dict.items():
         res.append({"industry_name": industry_name, "industry_code": name_to_code[industry_name], "total": total})
+    return res
+
+# removes all "@" symbols from keys in a dictionary
+def removeAtSymbol(dict):
+    return {x.translate({64:None}) : y for x, y in dict.items()}
+
+# gets the Twitter profile picture of a Twitter handle
+def getProfilePic(handle):
+    # Twitter authentication
+    auth = tweepy.OAuthHandler(consumer_key, consumer_secret)   
+    auth.set_access_token(access_key, access_secret) 
     
+    # Creating an API object 
+    api = tweepy.API(auth)
+
+    try:
+        api.verify_credentials()
+        user = api.get_user(screen_name=handle)
+        extension = user.profile_image_url[-3:]
+        url = user.profile_image_url[:-10]
+        url += "bigger." + extension
+        return url
+    except:
+        print('Failed authentication')
+
+# creating a Flask app
+app = Flask(__name__)
+
+# home route
+@app.route('/', methods = ['GET'])
+def home():
+    if(request.method == 'GET'):
+        message = "Hi, this is an API for politician data for the MoneyFlows comps project! \n"
+        return message
+
+# Returns topic distribution for a congressperson(s)
+# For just one congressperson, cid_list is just the cid.
+# If there are multiple congresspeople, cid_list is a comma-delimited list of cid's. ex. "N00007360,N00007361,N00007362"
+@app.route('/<string:cid_list>/topics', methods = ['GET'])
+def getTopics(cid_list):
+    cid_list = cid_list.split(",") # splits input into a list of cid's
+    topics_dict = getTopicsDict(cid_list)
+    return jsonify({"topics": topics_dict})
+
+# Returns top 10 industries for a congressperson(s)
+# For just one congressperson, cid_list is just the cid.
+# If there are multiple congresspeople, cid_list is a comma-delimited list of cid's. ex. "N00007360,N00007361,N00007362"
+@app.route('/<string:cid_list>/industry', methods = ['GET'])
+def getIndustries(cid_list):
+    cid_list = cid_list.split(",")
+    res = getAggregateIndustryData(cid_list)
     return jsonify({"industry": res})
+
+# Returns all aggregate information pertaining to a group
+# group can be equal to anything of the following: "Republican", "Democrat", "Senator", "Representative"
+@app.route('/<string:group>/aggregate', methods = ['GET'])
+def getAggregateData(group):
+    # getting data from our database
+    client = pymongo.MongoClient("mongodb://localhost:27017/")
+    db = client['comps']
+    tweet_topics_collection = db['aggregate_tweet_topics']
+    industry_collection = db['aggregate_industry_data']
+
+    tweet_topics_dic = tweet_topics_collection.find_one({"group": group})
+    tweet_topics_dic.pop("_id")
+    industry_dic = industry_collection.find_one({"group": group})
+    industry_dic.pop("_id")
+    top_k = heapq.nlargest(10, industry_dic["industry"], key = lambda x : x["total"])
+
+    return jsonify({"group": group, "tweet_topics": tweet_topics_dic["tweet_topics"], "industry": top_k})
 
 # Returns all information pertaining to a candidate cid
 @app.route('/<string:cid>/summary', methods = ['GET'])
@@ -157,7 +178,7 @@ def getTopIndividuals(cid):
         return f"There's a {response.status_code} error with your request"
   
 
-# Returns all Republicans sorted by alphabetical order
+# Returns all Republicans sorted by alphabetical order or by total donations
 @app.route('/republicans/<string:sort>', methods = ['GET'])
 def getAllRepublicans(sort):
     client = pymongo.MongoClient("mongodb://localhost:27017/")
@@ -173,10 +194,10 @@ def getAllRepublicans(sort):
         list.sort(key = lambda x: x["total"])
 
     cid_list = [dict["opensecrets_id"] for dict in list]
-
-    return jsonify({"data": ",".join(cid_list)})
+    # return jsonify({"data": ",".join(cid_list)})
+    return cid_list
   
-# Returns all Democrats sorted by alphabetical order
+# Returns all Democrats sorted by alphabetical order or by total donations
 @app.route('/democrats/<string:sort>', methods = ['GET'])
 def getAllDemocrats(sort):
     client = pymongo.MongoClient("mongodb://localhost:27017/")
@@ -192,10 +213,9 @@ def getAllDemocrats(sort):
         list.sort(key = lambda x: x["total"])
 
     cid_list = [dict["opensecrets_id"] for dict in list]
+    return cid_list
 
-    return jsonify({"data": ",".join(cid_list)})
-
-# Returns all Senators sorted by alphabetical order
+# Returns all Senators sorted by alphabetical order or by total donations
 @app.route('/senators/<string:sort>', methods = ['GET'])
 def getAllSenators(sort):
     client = pymongo.MongoClient("mongodb://localhost:27017/")
@@ -212,9 +232,9 @@ def getAllSenators(sort):
 
     cid_list = [dict["opensecrets_id"] for dict in list]
 
-    return jsonify({"data": ",".join(cid_list)})
+    return cid_list
 
-# Returns all Representatives sorted by alphabetical order
+# Returns all Representatives sorted by alphabetical order or by total donations
 @app.route('/representatives/<string:sort>', methods = ['GET'])
 def getAllRepresentatives(sort):
     client = pymongo.MongoClient("mongodb://localhost:27017/")
@@ -231,8 +251,22 @@ def getAllRepresentatives(sort):
 
     cid_list = [dict["opensecrets_id"] for dict in list]
 
-    return jsonify({"data": ",".join(cid_list)})
+    return cid_list
 
+# Returns all congresspeople from a state 
+@app.route('/<string:state>/state', methods = ['GET'])
+def getCongresspeopleByState(state):
+    client = pymongo.MongoClient("mongodb://localhost:27017/")
+    db = client['comps']
+    collection = db['congresspeople']
+    list = []
+    for dict in collection.find({"state": state}):
+        dict.pop("_id")
+        list.append(dict)
+
+    cid_list = [dict["opensecrets_id"] for dict in list]
+
+    return cid_list
 # driver function
 if __name__ == '__main__':
     app.run(debug = True)
