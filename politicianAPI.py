@@ -227,7 +227,7 @@ def getAllDemocrats(sort):
         list.sort(key = lambda x: x["total"])
 
     cid_list = [dict["opensecrets_id"] for dict in list]
-        response = jsonify({"data": cid_list})
+    response = jsonify({"data": cid_list})
     response.headers.add('Access-Control-Allow-Origin', 'http://localhost:3000')
     return response
 
