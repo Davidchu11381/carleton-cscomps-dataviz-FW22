@@ -130,7 +130,8 @@ def getTopics(cid_list):
 def getIndustries(cid_list):
     cid_list = cid_list.split(",")
     res = getAggregateIndustryData(cid_list)
-    response = jsonify({"industry": res})
+    top_k = heapq.nlargest(10, res, key = lambda x : x["total"]) 
+    response = jsonify({"industry": top_k})
     # resolve CORS errors
     response.headers.add('Access-Control-Allow-Origin', 'http://localhost:3000')
     return response
@@ -150,7 +151,7 @@ def getAggregateData(group):
     industry_dic = industry_collection.find_one({"group": group})
     industry_dic.pop("_id")
     top_k = heapq.nlargest(10, industry_dic["industry"], key = lambda x : x["total"])
-   
+    print("length of topk:", len(top_k))
     # resolve CORS errors
     response = jsonify({"group": group, "tweet_topics": tweet_topics_dic["tweet_topics"], "industry": top_k})
     response.headers.add('Access-Control-Allow-Origin', 'http://localhost:3000')
