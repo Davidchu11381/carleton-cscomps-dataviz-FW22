@@ -51,6 +51,7 @@ def getTopicsDict(cid_list):
                 topics_dict[topic] += 1
     return topics_dict
 
+# 
 def getAggregateIndustryData(cid_list):
     client = pymongo.MongoClient("mongodb://localhost:27017/")
     db = client['comps']
@@ -191,8 +192,7 @@ def getAllRepublicans(sort):
         list.sort(key = lambda x: x["total"])
 
     cid_list = [dict["opensecrets_id"] for dict in list]
-    # return jsonify({"data": ",".join(cid_list)})
-    return cid_list
+    return jsonify({"data": ",".join(cid_list)})
   
 # Returns all Democrats sorted by alphabetical order or by total donations
 @app.route('/democrats/<string:sort>', methods = ['GET'])
@@ -210,7 +210,7 @@ def getAllDemocrats(sort):
         list.sort(key = lambda x: x["total"])
 
     cid_list = [dict["opensecrets_id"] for dict in list]
-    return cid_list
+    return jsonify({"data": ",".join(cid_list)})
 
 # Returns all Senators sorted by alphabetical order or by total donations
 @app.route('/senators/<string:sort>', methods = ['GET'])
@@ -229,7 +229,7 @@ def getAllSenators(sort):
 
     cid_list = [dict["opensecrets_id"] for dict in list]
 
-    return cid_list
+    return jsonify({"data": ",".join(cid_list)})
 
 # Returns all Representatives sorted by alphabetical order or by total donations
 @app.route('/representatives/<string:sort>', methods = ['GET'])
@@ -248,7 +248,7 @@ def getAllRepresentatives(sort):
 
     cid_list = [dict["opensecrets_id"] for dict in list]
 
-    return cid_list
+    return jsonify({"data": ",".join(cid_list)})
 
 # Returns all congresspeople from a state 
 @app.route('/<string:state>/state', methods = ['GET'])
@@ -262,8 +262,8 @@ def getCongresspeopleByState(state):
         list.append(dict)
 
     cid_list = [dict["opensecrets_id"] for dict in list]
+    return jsonify({"data": ",".join(cid_list)})
 
-    return cid_list
 # driver function
 if __name__ == '__main__':
     app.run(debug = True)

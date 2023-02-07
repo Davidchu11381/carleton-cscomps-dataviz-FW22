@@ -4,7 +4,7 @@ import xmltodict
 from collections import defaultdict
 import requests
 import time
-from politicianAPI import removeAtSymbol, getTopicsDict, getAggregateIndustryData, getAllRepublicans, getAllDemocrats, getAllSenators, getAllRepresentatives, getProfilePic
+from politicianAPI import removeAtSymbol, getTopicsDict, getAggregateIndustryData, getProfilePic
 
 path_to_legislators = '/home/dataviz/Downloads/legislators-current.csv'
 path_to_industries = '/home/dataviz/Downloads/CRPIndustryCodes.csv'
@@ -163,7 +163,7 @@ def get_industry_data():
         new_dict = {"code": industry[:3], "name" : industry[4:], "total": total, "congresspeople" : industry_dict[industry]}
         new_collection.insert_one(new_dict)
 
-# Saves tweet topic data to our database
+# Saves all tweet topic data to our database
 def getTweetTopicData():
     client = pymongo.MongoClient("mongodb://localhost:27017/")
     db = client['comps']
@@ -183,7 +183,7 @@ def getTweetTopicData():
                 new_dict["topic_" + str(i - 4)] = row[i]
             new_collection.insert_one(new_dict)
 
-# saves aggregate data to our database for the following groups: "Republican", "Democrat", "Senator", "Representative"
+# saves aggregate data(tweet topics + industry funding) to our database for the following groups: "Republican", "Democrat", "Senator", "Representative"
 def saveAggregateData():
     client = pymongo.MongoClient("mongodb://localhost:27017/")
     db = client['comps']
@@ -196,13 +196,13 @@ def saveAggregateData():
     groups = ["Republican", "Democrat", "Senator", "Representative"]
     for group in groups:
         if group == "Republican":
-            cid_list = getAllRepublicans("total")
+            cid_list = getAllRepublicans2("total")
         elif group == "Democrat":
-            cid_list = getAllDemocrats("total")
+            cid_list = getAllDemocrats2("total")
         elif group == "Senator":
-            cid_list = getAllSenators("total")
+            cid_list = getAllSenators2("total")
         else:
-            cid_list = getAllRepresentatives("total")
+            cid_list = getAllRepresentatives2("total")
 
         topics_dict = getTopicsDict(cid_list)
         new_collection1.insert_one({"group":group, "tweet_topics": topics_dict})
@@ -211,7 +211,7 @@ def saveAggregateData():
         new_collection2.insert_one({"group":group, "industry": industry_data})
 
 
-# updates a list of dictionaries containing demographic and financial information on congresspeople to our database 
+# updates every congressperson's info with their twitter handle 
 def getTwitterProfilePics():
     client = pymongo.MongoClient("mongodb://localhost:27017/")
     db = client['comps']
@@ -224,6 +224,83 @@ getTwitterProfilePics()
         
 
 
+
+
+
+
+
+#########
+
+# Returns all Republicans sorted by alphabetical order or by total donations
+def getAllRepublicans2(sort):
+    client = pymongo.MongoClient("mongodb://localhost:27017/")
+    db = client['comps']
+    collection = db['congresspeople']
+    list = []
+    for dict in collection.find({"party": "Republican"}):
+        dict.pop("_id")
+        list.append(dict)
+    if sort == "alphabetical":
+        list.sort(key = lambda x: x["last_name"])
+    elif sort == "total":
+        list.sort(key = lambda x: x["total"])
+
+    cid_list = [dict["opensecrets_id"] for dict in list]
+    # return jsonify({"data": ",".join(cid_list)})
+    return cid_list
+  
+# Returns all Democrats sorted by alphabetical order or by total donations
+def getAllDemocrats2(sort):
+    client = pymongo.MongoClient("mongodb://localhost:27017/")
+    db = client['comps']
+    collection = db['congresspeople']
+    list = []
+    for dict in collection.find({"party": "Democrat"}):
+        dict.pop("_id")
+        list.append(dict)
+    if sort == "alphabetical":
+        list.sort(key = lambda x: x["last_name"])
+    elif sort == "total":
+        list.sort(key = lambda x: x["total"])
+
+    cid_list = [dict["opensecrets_id"] for dict in list]
+    return cid_list
+
+# Returns all Senators sorted by alphabetical order or by total donations
+def getAllSenators2(sort):
+    client = pymongo.MongoClient("mongodb://localhost:27017/")
+    db = client['comps']
+    collection = db['congresspeople']
+    list = []
+    for dict in collection.find({"type": "sen"}):
+        dict.pop("_id")
+        list.append(dict)
+    if sort == "alphabetical":
+        list.sort(key = lambda x: x["last_name"])
+    elif sort == "total":
+        list.sort(key = lambda x: x["total"])
+
+    cid_list = [dict["opensecrets_id"] for dict in list]
+
+    return cid_list
+
+# Returns all Representatives sorted by alphabetical order or by total donations
+def getAllRepresentatives2(sort):
+    client = pymongo.MongoClient("mongodb://localhost:27017/")
+    db = client['comps']
+    collection = db['congresspeople']
+    list = []
+    for dict in collection.find({"type": "rep"}):
+        dict.pop("_id")
+        list.append(dict)
+    if sort == "alphabetical":
+        list.sort(key = lambda x: x["last_name"])
+    elif sort == "total":
+        list.sort(key = lambda x: x["total"])
+
+    cid_list = [dict["opensecrets_id"] for dict in list]
+
+    return cid_list
 
 
 
