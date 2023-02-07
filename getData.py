@@ -50,7 +50,7 @@ def getTopIndustries(cid):
         return f"There's a {response.status_code} error with your request"
 
 # updates a list of dictionaries containing demographic and financial information on congresspeople to our database 
-def get_politician_data2():
+def get_politician_data():
     client = pymongo.MongoClient("mongodb://localhost:27017/")
     db = client['comps']
     new_collection = db["congresspeople"] # create a new collection in the database
@@ -220,9 +220,12 @@ def getTwitterProfilePics():
     for dic in congresspeople.find():
         twitter_handle = dic["twitter"]
         congresspeople.find_one_and_update({"opensecrets_id": dic["opensecrets_id"]}, {"$set": {"profile_pic": getProfilePic(twitter_handle)}})
-getTwitterProfilePics()
         
-
+def main():
+    get_politician_data() # get all summary information for congresspeople
+    getTweetTopicData() # get topic distribution for all tweets
+    saveAggregateData() # calculate aggregate topic and industry data for Republican, Democrat, Senator, Representative
+    getTwitterProfilePics() # save all profile pictures 
 
 
 

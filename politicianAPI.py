@@ -51,8 +51,8 @@ def getTopicsDict(cid_list):
                 topics_dict[topic] += 1
     return topics_dict
 
-# 
-def getAggregateIndustryData(cid_list):
+# gets industry funding data for a list of cid's
+def getIndustryData(cid_list):
     client = pymongo.MongoClient("mongodb://localhost:27017/")
     db = client['comps']
     collection = db['congresspeople']
@@ -128,13 +128,14 @@ def getTopics(cid_list):
 @app.route('/<string:cid_list>/industry', methods = ['GET'])
 def getIndustries(cid_list):
     cid_list = cid_list.split(",")
-    res = getAggregateIndustryData(cid_list)
-    return jsonify({"industry": res})
+    res = getIndustryData(cid_list)
+    top_k = heapq.nlargest(10, res, key = lambda x : x["total"])
+    return jsonify({"industry": top_k})
 
 # Returns all aggregate information pertaining to a group
 # group can be equal to anything of the following: "Republican", "Democrat", "Senator", "Representative"
 @app.route('/<string:group>/aggregate', methods = ['GET'])
-def getAggregateData(group):
+def getAggregatedData(group):
     # getting data from our database
     client = pymongo.MongoClient("mongodb://localhost:27017/")
     db = client['comps']
