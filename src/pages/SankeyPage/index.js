@@ -33,11 +33,17 @@ function SankeyPage() {
     function displayButtons() {
         if (filters.filteredPoliticians.length === 0) {
             return(filters.originalPolList.map(person => 
-            <PoliticianButton politician={person} func={dispatch}></PoliticianButton>));
+            <PoliticianButton politician={{name: person.name, id: person.id}} reduc={{data: filters, func: dispatch}} state={false}></PoliticianButton>));
         } else {
             return (filters.filteredPoliticians.map(person => 
-            <PoliticianButton politician={person} func={dispatch}></PoliticianButton>));
+            <PoliticianButton politician={{name: person.name, id: person.id}} reduc={{data: filters, func: dispatch}} state={false}></PoliticianButton>));
         };
+    }
+
+    function displayCoolButtons() {
+        var buttonArray = [ ...filters.selectedPoliticians.values() ];
+        return(buttonArray.map(person => 
+            <PoliticianButton politician={{name: person.name, id: person.id}} reduc={{data: filters, func: dispatch}} state={true}></PoliticianButton>));
     }
 
     // /**
@@ -154,17 +160,13 @@ function SankeyPage() {
                         </Col>
                     </Row>
                     <Container>
-                        <Row sm={3} md={4} lg={3}>
-                        {/* listing of the congresspoeple that fit the criteria go here */}
-                        {displayButtons()}
+                        <Row sm={3} md={3} lg={3} className={style.stuffyButtons}>
+                            {displayButtons()}
                         </Row>
                     </Container>
                     <Container>
                         <Row sm={2} md={2} lg={3}>
-                            {/* need to figure this out */}
-                            {filters.selectedPoliticians.map((pol) => (
-                                <Button>{pol}</Button>
-                            ))}
+                            {displayCoolButtons()}
                         </Row>
                     </Container>
                 </Stack>
@@ -173,8 +175,8 @@ function SankeyPage() {
                 <div className='sankey-diagram'>
                 <h1>DATA VIZ STUFF GOES HERE</h1>
                     {/* <SankeyChart cid={id}/> */}
-                    {filters.selectedPoliticians.map((id) => (
-                        <p>{id}'s info goes here</p>
+                    {[ ...filters.selectedPoliticians.values() ].map((id) => (
+                        <p>{id.name}'s stuff goes here</p>
                     ))}
                 </div>
             </Col>
