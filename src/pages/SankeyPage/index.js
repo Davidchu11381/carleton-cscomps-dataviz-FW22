@@ -1,7 +1,7 @@
 import React from 'react'
 import { Col, Row, Container, Stack, Form, Card, Button, Dropdown } from 'react-bootstrap'
 import SankeyChart from '../HomePage/components/SankeyChart';
-import { useEffect, useReducer } from 'react';
+import { useEffect, useReducer, useState } from 'react';
 import PoliticianButton from './components/PoliticianButton';
 import StateButton from './components/StateButton';
 import style from "./index.module.css"
@@ -19,6 +19,9 @@ import { reducer, initialState } from './hooks/reducer';
 function SankeyPage() {
 
     const [filters, dispatch] = useReducer(reducer, initialState);
+    const allPoliticians = new Map(); 
+    const [senators, setSenators] = useState(null);
+    const [representatives, setRepresentatives] = useState(null);   
 
     const stateList = ['Alabama','Alaska','Arizona','Arkansas',
         'California','Colorado','Connecticut','Delaware','Florida',
@@ -76,6 +79,25 @@ function SankeyPage() {
     useEffect(() => {
         console.log("ins index.js:", filters);
     }, [filters]);
+
+    // useEffect(() => {
+    //     fetch('http://137.22.4.60:5001/senators/total') 
+    // 	.then(response => response.json())
+    // 	.then(data => {
+    // 		console.log("all of the senators:", data);
+    //         // data.forEach(thing => console.log(thing));
+    //         setSenators(data);
+    // 	});
+
+    //     fetch('http://137.22.4.60:5001/representatives/total') 
+    //     .then(response => response.json())
+    //     .then(data => {
+    //       console.log("all of the representatives:", data);
+    //       setRepresentatives(data);
+    //     });
+
+    //     console.log(senators, representatives);
+    // }, []);
    
     return (
     <Container>

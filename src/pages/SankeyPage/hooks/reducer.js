@@ -18,19 +18,58 @@
 		state
 		chamber
 */
+// import React, { useState, useEffect } from 'react';
+
+// async function getPoliticianIDS() {
+// 	const allPoliticianIDs = [];
+
+// 	// getting all the senators
+// 	const response1 = await fetch('http://137.22.4.60:5001/senators/total');
+// 	const data1 = await response1.json();
+// 	data1.data.map(item => allPoliticianIDs.push(item));
+
+// 	// getting all the representatives
+// 	const response2 = await fetch('http://137.22.4.60:5001/representatives/total');
+// 	const data2 = await response2.json();
+// 	data2.data.map(item => allPoliticianIDs.push(item));
+
+// 	console.log("here!");
+
+// 	return allPoliticianIDs;
+// }
+
+// async function getSummaryAPICall(id) {
+// 	const response = await fetch('http://137.22.4.60:5001/senators/total');
+// 	const data = await response.json();
+// 	// data.data.map(item => allPoliticianIDs.push(item));
+// 	// console.log(data.data);
+// 	return 0;
+// }
+
+// async function getSummary(id) {
+// 	const data = await getSummaryAPICall(id);
+// 	console.log("what!");
+// 	return data;
+// }
 function collectPoliticians() {
+	
+	// const politicians = new Map();
+	// const allIDs = await getPoliticianIDS();
+	// const a_list = [];
 
-	// collected all of the senators
-	fetch('http://137.22.4.60:5001/senators/total') 
-	.then(response => response.json())
-	.then(data => {
-	  console.log("the data:", data);
-	//   this.setState({ data });
-	});
+	// allIDs.map((item) => {
+	// 	const response1 = getSummary(item);
+		
+	// 	// const data1 = response1.json();
+	// 	// data1.data.map(item => allPoliticianIDs.push(item));
+	// 	// console.log(response1);
+	// 	// a_list.push(response1);
+	// });
 
-	// create a map for the politician list (and the others)
+	// console.log("the list!", a_list);
+
+	// old code
 	const map = new Map();
-
 	const originalPolList = [{id: "N00007360", name: "Nancy Pelosi", party: "Democrat", chamber: "House", state: "California"}, 
 			{id: "N00003389", name: "Mitch McConnell", party: "Republican", chamber: "Senate", state: "Kentucky"},
 			{id: "Boozman", name: "John Boozman", party: "Republican", chamber: "House", state: "Arkansas"},
@@ -41,12 +80,10 @@ function collectPoliticians() {
 
 	originalPolList.forEach(per => map.set(per.id, per));
 
+	console.log(map);
+
 	return map;
 	
-}
-
-function printing(value, key, other) {
-	console.log("this is it:", key, value, other);
 }
 
 export const initialState = {
@@ -67,7 +104,8 @@ export const initialState = {
 			{id: "Klobuchar", name: "Amy Klobuchar", party: "Democrat", chamber: "Senate", state: "Minnesota"},
 			{id: "Sanders", name: "Bernie Sanders", party: "Independent", chamber: "Senate", state: "Texas"},
 			{id: "Doe", name: "Jane Doe", party: "Minimalisy", chamber: "House", state: "Maine"}],
-	easyAccessList: collectPoliticians()
+	easyAccessList: collectPoliticians(),
+	// something: collectPoliticians(),
 };
 
 export const reducer = (state, action) => {
@@ -77,7 +115,6 @@ export const reducer = (state, action) => {
 	switch (action.type) {
 
 		case 'UPDATE_BUTTONS': 
-
 			state.chamber = action.chamber;
 			state.party = action.party;
 			state.selectedStates = action.selectedStates;
