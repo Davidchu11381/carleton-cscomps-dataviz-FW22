@@ -5,7 +5,7 @@ import { useEffect, useReducer, useState } from 'react';
 import PoliticianButton from './components/PoliticianButton';
 import StateButton from './components/StateButton';
 import style from "./index.module.css"
-import CollectPoliticians from './components/CollectPoliticians';
+//import CollectPoliticians from './components/CollectPoliticians';
 
 import { reducer, initialState } from './hooks/reducer';
 import { setMaxIdleHTTPParsers } from 'http';
