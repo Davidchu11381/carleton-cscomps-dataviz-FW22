@@ -5,8 +5,10 @@ import { useEffect, useReducer, useState } from 'react';
 import PoliticianButton from './components/PoliticianButton';
 import StateButton from './components/StateButton';
 import style from "./index.module.css"
+import CollectPoliticians from './components/CollectPoliticians';
 
 import { reducer, initialState } from './hooks/reducer';
+import { setMaxIdleHTTPParsers } from 'http';
 
 // TALK ABOUT IN COMPS TOMORROW
 // when click on the line between fields == info?
@@ -18,10 +20,32 @@ import { reducer, initialState } from './hooks/reducer';
 
 function SankeyPage() {
 
+    /*
+    create a button that says select all ()
+    for the overall groups, make it easy to see
+        who's in the preset groups
+    
+    IDEAS:
+     - have a variable that correlates to a certain group based on selection
+      (maybe add different types to reducer based on selection)
+
+    NEXT STEPS:
+     - create a map of id -> summary info
+     - redesign the filtering system so that it's just pre-selections
+        per state, chamber, party
+     - ^^^ have the variable / buttons on there
+    */
+
     const [filters, dispatch] = useReducer(reducer, initialState);
     const allPoliticians = new Map(); 
     const [senators, setSenators] = useState(null);
-    const [representatives, setRepresentatives] = useState(null);   
+    const [representatives, setRepresentatives] = useState(null);  
+    const fetchDelay = [];
+    const addIds = [];
+    var count = 0;
+    const verifier = [];
+    // const [curID, setCurID] = useState(null);
+    const [summary, setSummary] = useState(null);
 
     const stateList = ['Alabama','Alaska','Arizona','Arkansas',
         'California','Colorado','Connecticut','Delaware','Florida',
@@ -76,28 +100,67 @@ function SankeyPage() {
         };
     };
 
+    // collecting the politician ids
+    useEffect(() => {
+
+        fetch('http://137.22.4.60:5001/senators/total') 
+    	.then(response => response.json())
+    	.then(data => {
+    		console.log("all of the senators:", data);
+            setSenators(data);
+    	});
+
+        fetch('http://137.22.4.60:5001/representatives/total') 
+        .then(response => response.json())
+        .then(data => {
+          console.log("all of the representatives:", data);
+          setRepresentatives(data);
+        });
+
+    }, []);
+
+    useEffect(() => {
+        console.log("adding ids to map");
+        if (count !== 1) {
+            if (senators !== null && representatives !== null) {
+                // senators first
+                senators.data.map((id) => {
+                    allPoliticians.set(id, "");
+                });
+                // next representatives
+                addIds.push("hello");
+            }
+        };
+        count = count + 1;
+        console.log("he cout", count);
+
+    }, [fetchDelay]);
+
+    useEffect(() => {
+        console.log("here", addIds);
+        if (addIds !== []) {
+            allPoliticians.forEach((value, key) => {
+                fetch('http://137.22.4.60:5001/' + key + '/summary')
+                .then(response => response.json())
+                .then(data => {
+                    allPoliticians.set(key, {
+                        name: data.summary.full_name,
+                        party: data.summary.party,
+                        chamber: data.summary.type,
+                        state: data.summary.state
+                    });
+                });
+            })
+            console.log("I am at the end", allPoliticians);
+        } 
+
+        filters.polList = allPoliticians;
+        
+    }, [addIds]);
+
     useEffect(() => {
         console.log("ins index.js:", filters);
     }, [filters]);
-
-    // useEffect(() => {
-    //     fetch('http://137.22.4.60:5001/senators/total') 
-    // 	.then(response => response.json())
-    // 	.then(data => {
-    // 		console.log("all of the senators:", data);
-    //         // data.forEach(thing => console.log(thing));
-    //         setSenators(data);
-    // 	});
-
-    //     fetch('http://137.22.4.60:5001/representatives/total') 
-    //     .then(response => response.json())
-    //     .then(data => {
-    //       console.log("all of the representatives:", data);
-    //       setRepresentatives(data);
-    //     });
-
-    //     console.log(senators, representatives);
-    // }, []);
    
     return (
     <Container>

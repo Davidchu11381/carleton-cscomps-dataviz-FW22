@@ -51,6 +51,7 @@
 // 	console.log("what!");
 // 	return data;
 // }
+
 function collectPoliticians() {
 	
 	// const politicians = new Map();
@@ -92,6 +93,7 @@ export const initialState = {
 	selectedPoliticians: new Map(),
 	filteredPoliticians: [],
 	filteredPoliticiansMap: new Map(),
+	polList: [],
 
 	// used for filtering
     party: "",
@@ -186,6 +188,13 @@ export const reducer = (state, action) => {
 			state.selectedPoliticians.delete(value);
 			return {
 				...state,
+			}
+
+		case 'ADD_IDS':
+			if (action.senators !== null && action.representatives !== null) {
+				console.log("THE DATA HAS BEEN SECURED");
+			} else {
+				console.log("STILL WAITING FOR THE DATA");
 			}
 		
 		default:

@@ -168,7 +168,7 @@ def getSummaryInfo(cid):
     dic = collection.find_one({"opensecrets_id": cid})
     dic.pop("_id")
     response = jsonify({"summary": dic})
-    response.headers.add('Access-Control-Allow-Origin', 'http://localhost:3000')
+    # response.headers.add('Access-Control-Allow-Origin', 'http://localhost:3000')
     return response
 
 # Returns top individual contributors for a specific candidate cid
