@@ -83,7 +83,7 @@ function HomePage() {
                 <SankeyChart cid_list="N00007360,N00003389"/>
                 <SankeyChart cid_list="N00003389"/>
                 <SankeyChart group="Republican"/>
-                <SankeyChart group="Democrat"/>
+                {/*<SankeyChart group="Democrat"/>*/}
             </div>
         </Container>
     );

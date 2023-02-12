@@ -1,4 +1,5 @@
 import React, { Component } from 'react'
+import { Placeholder } from 'react-bootstrap';
 import Chart from 'react-google-charts'
 
 class SankeyChart extends Component {
@@ -8,71 +9,157 @@ class SankeyChart extends Component {
     this.cid_list = props.cid_list; //pass in cid_list as props in html
     this.group = props.group
     this.state = {
-      ind_data : [],
-      top_data : []
+      sankey : []
     };
-    this.multiple_data = {}
-    this.datatest = Array.apply(null, Array(5)).map(function () {})
-
-    this.fetchData();
-    //this.fetchDataMultiple();
   }
 
-  /*
-  fetchDataMultiple() {
-    console.log("testing multiple ppl in one sankey");
-    console.log("datatest:",this.datatest)
-    this.datatest[0] = "hello"
-    console.log("datatest[0]",this.datatest[0])
-    var cids = this.cid_list.split(',');
-    console.log(cids);
-    for (let cid in cids) {
-      console.log("cid:", cid)
-      console.log("politician:", cids[cid]);
-      fetch('http://137.22.4.60:5001/'+ cids[cid] +'/industry') 
-        .then(response => response.json())
-        .then(result => {
-          console.log(result)
-          this.datatest[cid] = result 
-          //this is going to the wrong level somehow
-        });
+  //fetch data and format list when component is created
+  componentDidMount() {
+    this.formatList();
+  }
+  
+  // fetch data asynchronously
+  async fetchData() {
+    if (this.group === undefined) { //cid list
+      var data = {}
+      var cids = this.cid_list.split(',');
+      for (let cid in cids) {
+        console.log("cid:", cid);
+        console.log("politician:", cids[cid]);
+
+        //api calls
+        const responseInd = await fetch('http://137.22.4.60:5001/'+ cids[cid] +'/industry');
+        const resultInd = await responseInd.json();
+        const responseTop = await fetch('http://137.22.4.60:5001/'+ cids[cid] +'/topics');
+        const resultTop = await responseTop.json();
+        
+        var ind_topic_dict = {};
+        ind_topic_dict["industry"] = resultInd;
+        ind_topic_dict["topics"] = resultTop;
+        data[cids[cid]] = ind_topic_dict;
+      }
+
+      return(data)
+
+    } else { //group
+      const response = await fetch('http://137.22.4.60:5001/'+ this.group +'/aggregate');
+      const result = await response.json();
       
+      return(result)
     }
-    console.log("datatest:",this.datatest)
-    console.log("datatest[0]",this.datatest[0])
   }
 
-  formatListMultiple() {
-    console.log("in format list multiple")
-    var sankeyList = [['From', 'To', 'Weight']]
-    console.log("type of multiple_data:", typeof this.multiple_data)
-    for (let pol in this.multiple_data) {
-      console.log("in loop")
-      console.log("pol:", pol)
-      console.log("multiple_data[pol]:", this.multiple_data[pol])
-    }
-    console.log("at end of function")
-    return(sankeyList)
-  } */
+  //format list when given a cid list
+  formatListCids(data) {
+    var sankey_list = [['From', 'To', 'Weight']]
+    for (let cid in data) {
+      var industries = data[cid].industry.industry
+      var topics = data[cid].topics.topics
 
+      //add industries to sankey list, calculate total for scaling purposes
+      var ind_total = 0;
+      for (let ind in industries) {
+        sankey_list.push([industries[ind].industry_name, cid, parseInt(industries[ind].total)]);
+        ind_total  += parseInt(industries[ind].total)
+      }
+
+      // calculate topic total for scaling purposes
+      var topic_total = 0;
+      for (let topic in topics) {
+        topic_total += parseInt(topics[topic])
+      }
+
+      for (let topic in topics) {
+        //calculate weight to scale first
+        let sankey_weight = (parseInt(topics[topic]) * ind_total) / topic_total
+        sankey_list.push([cid, topic, sankey_weight]) // need to scale somehow
+      }
+    }
+    return(sankey_list)
+  }
+
+  //format list when given a group
+  formatListGroup(data) {
+    var sankey_list = [['From', 'To', 'Weight']] 
+    var industries = data.industry
+    var topics = data.tweet_topics
+    console.log("group topics:", topics)
+
+    //add industries to sankey list, calculate total for scaling purposes
+    var ind_total = 0;
+    for (let ind in industries) {
+      sankey_list.push([industries[ind].industry_name, data.group, parseInt(industries[ind].total)]);
+      ind_total  += parseInt(industries[ind].total)
+    }
+
+    // calculate topic total for scaling purposes
+    var topic_total = 0;
+    for (let topic in topics) {
+      topic_total += parseInt(topics[topic])
+    }
+
+    for (let topic in topics) {
+      //calculate weight to scale first
+      let sankey_weight = (parseInt(topics[topic]) * ind_total) / topic_total
+      sankey_list.push([data.group, topic, sankey_weight]) // need to scale somehow
+    }
+  
+    return(sankey_list)
+  }
+
+  //put data into list format for google charts sankey diagrams
+  async formatList() {
+    var data = await this.fetchData() // wait for data to fetch
+    var sankey_list = []
+
+    if (this.group === undefined) { //cid list
+      sankey_list = this.formatListCids(data)
+    } else { // group
+      sankey_list = this.formatListGroup(data)
+    }
+     
+    const sankey = sankey_list;
+    this.setState({sankey}); //set instance variable
+  } 
+
+  render() {
+    let sankeyData = this.state.sankey
+
+    return (
+      <div className="container mt-5">
+        <h2>Sankey Diagram</h2>
+        <Chart
+          width={'200'}
+          height={'350px'}
+          chartType="Sankey"
+          loader={<div>Loading Chart</div>}
+          data={sankeyData}
+          rootProps={{ 'data-testid': '1' }}
+        />
+      </div>
+    )
+  }
+}
+export default SankeyChart
+
+
+
+/* OLD STUFF
   fetchData() {
     console.log("group:", this.group)
     if (this.group === undefined) {
       console.log("in if")
-      //fetch('http://127.0.0.1:5000/'+ this.cid +'/industry') 
       fetch('http://137.22.4.60:5001/'+ this.cid_list +'/industry') 
         .then(response => response.json())
         .then(ind_data => {
           console.log("industry data:", ind_data);
           this.setState({ ind_data });
-          //this.setData(ind_data)
         });
       fetch('http://137.22.4.60:5001/'+ this.cid_list +'/topics') 
         .then(response => response.json())
         .then(top_data => {
           console.log("topic data:", top_data);
           this.setState({ top_data });
-          //this.setData(ind_data)
         });
     } else {
       console.log("in else")
@@ -118,25 +205,4 @@ class SankeyChart extends Component {
     console.log(sankeyList)
     return(sankeyList)
   }
-
-  render() {
-    //let sankeyData = this.formatListMultiple()
-    let sankeyData = this.formatList()
-    
-    return (
-
-      <div className="container mt-5">
-        <h2>Sankey Diagram</h2>
-        <Chart
-          width={'200'}
-          height={'350px'}
-          chartType="Sankey"
-          loader={<div>Loading Chart</div>}
-          data={sankeyData}
-          rootProps={{ 'data-testid': '1' }}
-          />
-      </div>
-    )
-  }
-}
-export default SankeyChart
+  */
