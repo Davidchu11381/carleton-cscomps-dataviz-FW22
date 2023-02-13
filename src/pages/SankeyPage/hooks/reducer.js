@@ -18,74 +18,6 @@
 		state
 		chamber
 */
-// import React, { useState, useEffect } from 'react';
-
-// async function getPoliticianIDS() {
-// 	const allPoliticianIDs = [];
-
-// 	// getting all the senators
-// 	const response1 = await fetch('http://137.22.4.60:5001/senators/total');
-// 	const data1 = await response1.json();
-// 	data1.data.map(item => allPoliticianIDs.push(item));
-
-// 	// getting all the representatives
-// 	const response2 = await fetch('http://137.22.4.60:5001/representatives/total');
-// 	const data2 = await response2.json();
-// 	data2.data.map(item => allPoliticianIDs.push(item));
-
-// 	console.log("here!");
-
-// 	return allPoliticianIDs;
-// }
-
-// async function getSummaryAPICall(id) {
-// 	const response = await fetch('http://137.22.4.60:5001/senators/total');
-// 	const data = await response.json();
-// 	// data.data.map(item => allPoliticianIDs.push(item));
-// 	// console.log(data.data);
-// 	return 0;
-// }
-
-// async function getSummary(id) {
-// 	const data = await getSummaryAPICall(id);
-// 	console.log("what!");
-// 	return data;
-// }
-
-function collectPoliticians() {
-	
-	// const politicians = new Map();
-	// const allIDs = await getPoliticianIDS();
-	// const a_list = [];
-
-	// allIDs.map((item) => {
-	// 	const response1 = getSummary(item);
-		
-	// 	// const data1 = response1.json();
-	// 	// data1.data.map(item => allPoliticianIDs.push(item));
-	// 	// console.log(response1);
-	// 	// a_list.push(response1);
-	// });
-
-	// console.log("the list!", a_list);
-
-	// old code
-	const map = new Map();
-	const originalPolList = [{id: "N00007360", name: "Nancy Pelosi", party: "Democrat", chamber: "House", state: "California"}, 
-			{id: "N00003389", name: "Mitch McConnell", party: "Republican", chamber: "Senate", state: "Kentucky"},
-			{id: "Boozman", name: "John Boozman", party: "Republican", chamber: "House", state: "Arkansas"},
-			{id: "Huffman", name: "Jared Huffman", party: "Democrat", chamber: "House", state: "California"},
-			{id: "Klobuchar", name: "Amy Klobuchar", party: "Democrat", chamber: "Senate", state: "Minnesota"},
-			{id: "Sanders", name: "Bernie Sanders", party: "Independent", chamber: "Senate", state: "Texas"},
-			{id: "Doe", name: "Jane Doe", party: "Minimalisy", chamber: "House", state: "Maine"}];
-
-	originalPolList.forEach(per => map.set(per.id, per));
-
-	console.log(map);
-
-	return map;
-	
-}
 
 export const initialState = {
 
@@ -93,7 +25,8 @@ export const initialState = {
 	selectedPoliticians: new Map(),
 	filteredPoliticians: [],
 	filteredPoliticiansMap: new Map(),
-	polList: [],
+	polList: new Map(),
+	groupSelected: new Map(),
 
 	// used for filtering
     party: "",
@@ -106,8 +39,6 @@ export const initialState = {
 			{id: "Klobuchar", name: "Amy Klobuchar", party: "Democrat", chamber: "Senate", state: "Minnesota"},
 			{id: "Sanders", name: "Bernie Sanders", party: "Independent", chamber: "Senate", state: "Texas"},
 			{id: "Doe", name: "Jane Doe", party: "Minimalisy", chamber: "House", state: "Maine"}],
-	easyAccessList: collectPoliticians(),
-	// something: collectPoliticians(),
 };
 
 export const reducer = (state, action) => {
@@ -177,7 +108,7 @@ export const reducer = (state, action) => {
 			}
 		
 		case 'ADD_PERSON':
-			state.selectedPoliticians.set(value, state.easyAccessList.get(value));
+			state.selectedPoliticians.set(value, state.polList.get(value));
 			return {
 				...state,
 			}
@@ -189,12 +120,61 @@ export const reducer = (state, action) => {
 			return {
 				...state,
 			}
+		
+		// case 'GROUP_SELECTION':
+		// 	// chambers
+		// 	if (value === "senator") {
+		// 		console.log("sen");
+		// 	} else if (value === "rep") {
+		// 		console.log("rep");
+		// 	}
 
-		case 'ADD_IDS':
-			if (action.senators !== null && action.representatives !== null) {
-				console.log("THE DATA HAS BEEN SECURED");
-			} else {
-				console.log("STILL WAITING FOR THE DATA");
+		// 	// parties
+		// 	else if (value === "dem") {
+		// 		console.log("dem");
+		// 	} else if (value === "rep") {
+		// 		console.log("rep");
+		// 	} else if (value === "other") {
+		// 		console.log("other")
+		// 	}
+
+		// 	// state
+		// 	else {
+		// 		console.log("state");
+		// 	}
+		
+		case 'ADD_VISUAL':
+			console.log("filtering by type");
+			var buttonArray = [ ...state.polList.values() ];
+			var thing = [];
+			if (value === "Democrat") {
+				thing = buttonArray.filter((el) => el.party.includes(value));
+				state.groupSelected.set(value, thing);
+			} else if (value === "Republican") {
+				thing = buttonArray.filter((el) => el.party.includes(value));
+				state.groupSelected.set(value, thing);
+			} else if (value === "Senate") {
+				thing = buttonArray.filter((el) => el.chamber.includes("sen"));
+				state.groupSelected.set("Senate", thing);
+			} else if (value === "House") {
+				thing = buttonArray.filter((el) => el.chamber.includes("rep"));
+				state.groupSelected.set("House", thing);
+			} else if (value === "Other") {
+				// filter out dems and republicans
+				state.groupSelected.set("House", thing);
+			}
+
+			console.log(thing);
+			return {
+				...state,
+			}
+		
+		case 'REMOVE_VISUAL':
+			console.log("removing a visual");
+			state.groupSelected.delete(value);
+			
+			return {
+				...state, 
 			}
 		
 		default:

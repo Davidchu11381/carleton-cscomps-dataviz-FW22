@@ -1,14 +1,12 @@
 /**
  * PoliticianButton.js
  * PoliticianButton for Sankey filtering system
- * Last updated 03-22-22
  */
 
 // import styles from './HeaderBar.module.css';
 import React from 'react';
 import { useState } from 'react';
 import { ToggleButton } from 'react-bootstrap';
-import style from './../index.module.css';
 
 function PoliticianButton( data ) {    
     const dispatch = data.reduc.func;
