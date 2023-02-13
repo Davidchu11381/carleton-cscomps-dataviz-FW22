@@ -9,7 +9,9 @@ class SankeyChart extends Component {
     this.cid_list = props.cid_list; //pass in cid_list as props in html
     this.group = props.group
     this.state = {
-      sankey : []
+      sankey : [],
+      indSankey : [],
+      topSankey : []
     };
   }
 
@@ -51,7 +53,9 @@ class SankeyChart extends Component {
 
   //format list when given a cid list
   formatListCids(data) {
-    var sankey_list = [['From', 'To', 'Weight']]
+    //var sankey_list = [['From', 'To', 'Weight']]
+    var ind_sankey_list = [['From', 'To', 'Weight']]
+    var top_sankey_list = [['From', 'To', 'Weight']]
     for (let cid in data) {
       var industries = data[cid].industry.industry
       var topics = data[cid].topics.topics
@@ -59,7 +63,7 @@ class SankeyChart extends Component {
       //add industries to sankey list, calculate total for scaling purposes
       var ind_total = 0;
       for (let ind in industries) {
-        sankey_list.push([industries[ind].industry_name, cid, parseInt(industries[ind].total)]);
+        ind_sankey_list.push([industries[ind].industry_name, cid, parseInt(industries[ind].total)]);
         ind_total  += parseInt(industries[ind].total)
       }
 
@@ -71,25 +75,27 @@ class SankeyChart extends Component {
 
       for (let topic in topics) {
         //calculate weight to scale first
-        let sankey_weight = (parseInt(topics[topic]) * ind_total) / topic_total
-        sankey_list.push([cid, topic, sankey_weight]) // need to scale somehow
+        let sankey_weight = parseInt(topics[topic]) / topic_total
+        top_sankey_list.push([cid, topic, sankey_weight]) // need to scale somehow
       }
     }
-    return(sankey_list)
+    return [ind_sankey_list, top_sankey_list]
   }
 
   //format list when given a group
   formatListGroup(data) {
-    var sankey_list = [['From', 'To', 'Weight']] 
+    //var sankey_list = [['From', 'To', 'Weight']] 
     var industries = data.industry
     var topics = data.tweet_topics
+    var ind_sankey_list = [['From', 'To', 'Weight']]
+    var top_sankey_list = [['From', 'To', 'Weight']]
     console.log("group topics:", topics)
 
     //add industries to sankey list, calculate total for scaling purposes
-    var ind_total = 0;
+   // var ind_total = 0;
     for (let ind in industries) {
-      sankey_list.push([industries[ind].industry_name, data.group, parseInt(industries[ind].total)]);
-      ind_total  += parseInt(industries[ind].total)
+      ind_sankey_list.push([industries[ind].industry_name, data.group, parseInt(industries[ind].total)]);
+     // ind_total  += parseInt(industries[ind].total)
     }
 
     // calculate topic total for scaling purposes
@@ -100,31 +106,43 @@ class SankeyChart extends Component {
 
     for (let topic in topics) {
       //calculate weight to scale first
-      let sankey_weight = (parseInt(topics[topic]) * ind_total) / topic_total
-      sankey_list.push([data.group, topic, sankey_weight]) // need to scale somehow
+      let sankey_weight = parseInt(topics[topic]) / topic_total
+      top_sankey_list.push([data.group, topic, sankey_weight]) // need to scale somehow
     }
   
-    return(sankey_list)
+    return([ind_sankey_list, top_sankey_list])
   }
 
   //put data into list format for google charts sankey diagrams
   async formatList() {
     var data = await this.fetchData() // wait for data to fetch
-    var sankey_list = []
+    var ind_sankey_list = []
+    var top_sankey_list = []
 
     if (this.group === undefined) { //cid list
-      sankey_list = this.formatListCids(data)
+      let lists = this.formatListCids(data)
+      ind_sankey_list = lists[0]
+      top_sankey_list = lists[1]
     } else { // group
-      sankey_list = this.formatListGroup(data)
+      let lists = this.formatListGroup(data)
+      ind_sankey_list = lists[0]
+      top_sankey_list = lists[1]
     }
-     
-    const sankey = sankey_list;
-    this.setState({sankey}); //set instance variable
+
+    const indSankey = ind_sankey_list
+    this.setState({indSankey})
+    const topSankey = top_sankey_list
+    this.setState({topSankey})
   } 
 
-  render() {
-    let sankeyData = this.state.sankey
 
+
+  render() {
+    //let sankeyData = this.state.sankey
+    let indData = this.state.indSankey
+    console.log("indData:", indData)
+    let topData = this.state.topSankey
+    console.log("topData:", topData)
     return (
       <div className="container mt-5">
         <h2>Sankey Diagram</h2>
@@ -133,7 +151,15 @@ class SankeyChart extends Component {
           height={'350px'}
           chartType="Sankey"
           loader={<div>Loading Chart</div>}
-          data={sankeyData}
+          data={indData}
+          rootProps={{ 'data-testid': '1' }}
+        />
+        <Chart
+          width={'200'}
+          height={'350px'}
+          chartType="Sankey"
+          loader={<div>Loading Chart</div>}
+          data={topData}
           rootProps={{ 'data-testid': '1' }}
         />
       </div>
