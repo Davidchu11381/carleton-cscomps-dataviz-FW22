@@ -14,7 +14,7 @@ function StateButton( data ) {
     const info = data.state;
     const filters = data.filters;
 
-    const [initial, setInitial] = useState(true);
+    const [initial, setInitial] = useState(false);
 
     function updateList (state) {
         
@@ -35,6 +35,7 @@ function StateButton( data ) {
         <ToggleButton
             className="mb-2"
             id={info}
+            size="sm"
             type="checkbox"
             variant="outline-primary"
             checked={initial}

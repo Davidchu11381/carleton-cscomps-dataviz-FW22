@@ -58,6 +58,14 @@ function SankeyPage() {
     'MI', 'MN', 'MO', 'MS', 'MT', 'NC', 'ND', 'NE', 'NH', 'NJ', 'NM',
     'NV', 'NY', 'OH', 'OK', 'OR', 'PA', 'RI', 'SC', 'SD', 'TN', 'TX',
     'UT', 'VA', 'VT', 'WA', 'WI', 'WV', 'WY'];
+
+    function displaySankey() {
+        if (filters.groupSelected.size !== 0) {
+            // note : only works with republican / democrat selection
+            var types = [ ...filters.groupSelected.keys() ];
+            return (types.map(type => <SankeyChart group={type}/>))
+        }
+    }
     
     function displayButtons() {
 
@@ -66,14 +74,6 @@ function SankeyPage() {
             return (buttonArray.map(person => 
             <PoliticianButton politician={{name: person[1].name, id: person[0]}} reduc={{data: filters, func: dispatch}} state={false}></PoliticianButton>));
         }
-
-        // if (filters.filteredPoliticians.length === 0) {
-        //     return(filters.originalPolList.map(person => 
-        //     <PoliticianButton politician={{name: person.name, id: person.id}} reduc={{data: filters, func: dispatch}} state={false}></PoliticianButton>));
-        // } else {
-        //     return (filters.filteredPoliticians.map(person => 
-        //     <PoliticianButton politician={{name: person.name, id: person.id}} reduc={{data: filters, func: dispatch}} state={false}></PoliticianButton>));
-        // };
     }
 
     function displayCoolButtons() {
@@ -187,129 +187,39 @@ function SankeyPage() {
    
     return (
     <Container>
-        <Row>
+        <Row md={2} lg={2}>
             <Col lg={4}>
                 <Stack gap={2}>
-                    <div></div>
-                    <h4>Filter below:</h4>
-                    <Row lg={2}>
-                        <Col>
-                            <Form.Select aria-label="party-select" 
-                                size="sm"
-                                id="party"
-                                onChange={(event) => {
-                                    dispatch({
-                                        type: 'UPDATE_BUTTONS', 
-                                        party: event.target.value,
-                                        chamber: filters.chamber,
-                                        selectedStates: filters.selectedStates,
-                                    })
-                                }}>
-                                <option value="">Party</option>
-                                <option value="Democrat">Democrat</option>
-                                <option value="Republican">Republican</option>
-                                <option value="Other">Other</option>
-                            </Form.Select>
-                        </Col>
-                        <Col>
-                            <Form.Select aria-label="chamber-select"
-                                size="sm"
-                                id="chamber"
-                                onChange={(event) => {
-                                    dispatch({
-                                        type: 'UPDATE_BUTTONS', 
-                                        party: filters.party,
-                                        chamber: event.target.value,
-                                        selectedStates: filters.selectedStates,
-                                    });
-                                }}>
-                                <option value="">Chamber</option>
-                                <option value="House">House of Representatives</option>
-                                <option value="Senate">United States Senate</option>
-                            </Form.Select>
-                        </Col>
-                    </Row>
-                    <Row lg={1}>
-                        <Col>
-                           
-                        {/* <Dropdown drop='end'>
-                            <Dropdown.Toggle variant="success" id="dropdown-basic">
-                                States
-                            </Dropdown.Toggle>
-                            <Dropdown.Menu>
-                                {stateList.map((state) => (
-                                    <Dropdown.Item>
-                                        <Form.Check
-                                            feedback="i was clicked!"
-                                            type='checkbox'
-                                            id={state}
-                                            label={state}
-                                        />
-                                    </Dropdown.Item>
-                                ))}
-                            </Dropdown.Menu>
-                        </Dropdown>  */}
 
-                        {/* state type bar */}
-                            <Form.Control 
-                                size="sm" 
-                                type="text" 
-                                placeholder="State" 
-                                class="mb-3"
-                                // onChange={handleFilter}
-                                onKeyDown={handleFilter}
-                                />
-                            <div className="selectedStateListing">
-                            {/* need to designate some space for it */}
-                                {filters.selectedStates.map((state) => (
-                                    <StateButton state={state} filters={filters} func={dispatch}></StateButton>
-                                ))}
-                            </div>
-                        </Col>
+                <h2>Filter by clicking the buttons below</h2>
+                <Row>
+                    <h3>By Chamber</h3>
+                    <Row lg={2}>
+                        <GroupSelectionButton type="Senate" func={dispatch}></GroupSelectionButton>
+                        <GroupSelectionButton type="House" func={dispatch}></GroupSelectionButton>
                     </Row>
-                    <Container>
-                        <Row sm={3} md={3} lg={3} className={style.stuffyButtons}>
-                            {/* {filters.polList.forEach((value, key) => displayButtons(key, value))} */}
-                            {displayButtons()}
-                        </Row>
-                    </Container>
-                    <Container>
-                        <Row sm={2} md={2} lg={3}>
-                            {displayCoolButtons()}
-                        </Row>
-                    </Container>
+                </Row>
+                <Row>
+                    <h3>By Party</h3>
+                    <Row lg={2}>
+                    <GroupSelectionButton type="Republican" func={dispatch}></GroupSelectionButton>
+                    <GroupSelectionButton type="Democrat" func={dispatch}></GroupSelectionButton>
+                    <GroupSelectionButton type="Other" func={dispatch}></GroupSelectionButton>
+                    </Row>
+                </Row>
+                <Row>
+                    <h3>By State</h3>
+                    <Row lg={8} md={3}>
+                        {stateAbbrv.map(state => {
+                            return (<StateButton state={state} filters={filters} func={dispatch}></StateButton>)
+                        })}
+                    </Row>
+                </Row>
                 </Stack>
             </Col>
             <Col>
-                {/* <div className='sankey-diagram'>
-                <h1>DATA VIZ STUFF GOES HERE</h1>
-                    <SankeyChart cid={id}/>
-                    {[ ...filters.selectedPoliticians.values() ].map((id) => (
-                        <p>{id.name}'s stuff goes here</p>
-                    ))}
-                </div> */}
-                <div>
-                <h1>Filter by the group selections below</h1>
-                <Row lg={2}>
-                    <Col>
-                        <h3>By Chamber</h3>
-                            <GroupSelectionButton type="Senate" func={dispatch}></GroupSelectionButton>
-                            <GroupSelectionButton type="House" func={dispatch}></GroupSelectionButton>
-                    </Col>
-                    <Col>
-                        <h3>By Party</h3>
-                        <GroupSelectionButton type="Republican" func={dispatch}></GroupSelectionButton>
-                        <GroupSelectionButton type="Democrat" func={dispatch}></GroupSelectionButton>
-                        <GroupSelectionButton type="Other" func={dispatch}></GroupSelectionButton>
-                    </Col>
-                </Row>
-                <Row lg={5}>
-                    <h3>By State</h3>
-                    {/* do it by state codes */}
-                </Row>
-                
-                
-                </div>
+                <h3>Sankey Diagrams goes here</h3>
+                {displaySankey()}
             </Col>
         </Row>
     </Container>
