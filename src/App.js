@@ -19,11 +19,11 @@ function App() {
             <Routes>
                 <Route exact path='/' element={<HomePage />} />
                 <Route path='/aboutUs' element={<AboutUs />} />
-                <Route path='/industry' element={<IndustryPage />} />
-                <Route path='/individual' element={<PersonPage />} />
-                <Route path='/barchart' element={<BarChartPage />} />
-                <Route path='/congress' element={<CongressPage />} />
-                <Route path='/sankey' element={<SankeyPage />} />
+                {/* <Route path='/industry' element={<IndustryPage />} /> */}
+                {/* <Route path='/individual' element={<PersonPage />} /> */}
+                {/* <Route path='/barchart' element={<BarChartPage />} /> */}
+                {/* <Route path='/congress' element={<CongressPage />} /> */}
+                <Route path='/congress_data' element={<SankeyPage />} />
             </Routes>
         </Router>
     </>

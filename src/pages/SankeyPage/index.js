@@ -209,6 +209,7 @@ function SankeyPage() {
                 </Row>
                 <Row>
                     <h3>By State</h3>
+                    {/* create a dropdown for the states and a variable for selected ones */}
                     <Row lg={8} md={3}>
                         {stateAbbrv.map(state => {
                             return (<StateButton state={state} filters={filters} func={dispatch}></StateButton>)

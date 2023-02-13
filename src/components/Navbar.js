@@ -10,11 +10,11 @@ function NavbarBand() {
             <Navbar.Toggle aria-controls="basic-navbar-nav" />
             <Navbar.Collapse id="basic-navbar-nav">
             <Nav className="me-auto">
-                <Nav.Link href="http://localhost:3000/">Home</Nav.Link>
-                <Nav.Link href="http://localhost:3000/industry">Industry</Nav.Link>
-                <Nav.Link href="http://localhost:3000/congress">Congress</Nav.Link>
-                <Nav.Link href="http://localhost:3000/sankey">Sankey</Nav.Link>
-                <Nav.Link href="http://localhost:3000/barchart">Bar Chart</Nav.Link>
+                {/* <Nav.Link href="http://localhost:3000/">Home</Nav.Link> */}
+                {/* <Nav.Link href="http://localhost:3000/industry">Industry</Nav.Link> */}
+                {/* <Nav.Link href="http://localhost:3000/congress">Congress</Nav.Link> */}
+                <Nav.Link href="http://localhost:3000/congress_data">Congress Members</Nav.Link>
+                {/* <Nav.Link href="http://localhost:3000/barchart">Bar Chart</Nav.Link> */}
                 <Nav.Link href="http://localhost:3000/aboutUs">About Us</Nav.Link>
             </Nav>
             </Navbar.Collapse>

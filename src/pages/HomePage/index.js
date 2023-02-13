@@ -59,16 +59,16 @@ function HomePage() {
                     
                     </Col>
                 </Row>
-                <Row>
+                {/* <Row>
                     <Col>
                     <Button variant="dark"
                             onClick={switchtoIndustryPage}
                             >
                         Sort by Industries
                     </Button>
-                    {/* <div>
+                    <div>
                         <Link to='/AboutUs' className="btn btn-primary">hello</Link>
-                    </div> */}
+                    </div>
                     </Col>
 
                     <Col>
@@ -79,7 +79,7 @@ function HomePage() {
                     </Button>
                     </Col>
 
-                </Row>
+                </Row> */}
                 <SankeyChart cid_list="N00007360,N00003389,N00031820"/>
                 <SankeyChart cid_list="N00003389"/>
                 <SankeyChart group="Republican"/>
