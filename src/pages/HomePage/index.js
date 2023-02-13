@@ -80,7 +80,7 @@ function HomePage() {
                     </Col>
 
                 </Row>
-                <SankeyChart cid_list="N00007360,N00003389"/>
+                <SankeyChart cid_list="N00007360,N00003389,N00031820"/>
                 <SankeyChart cid_list="N00003389"/>
                 <SankeyChart group="Republican"/>
                 {/*<SankeyChart group="Democrat"/>*/}
