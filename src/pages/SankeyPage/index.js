@@ -163,15 +163,17 @@ function SankeyPage() {
             // console.log("IN STEP 2 - INSIDE THE IF STATEMENT");
 
             // senators first
-            senators.data.map((id) => {
+            senators.data.split(',').map((id) => {
                 allPoliticians.set(id, "");
             });
             // next representatives
-            representatives.data.map((id) => {
+            representatives.data.split(",").map((id) => {
                 allPoliticians.set(id, "");
             });
             addIds.push("hello");
             apiCallCount.current = 2;
+
+            console.log(allPoliticians);
             // console.log("IN STEP 2 - DONE WITH THE OPERATION");
         }
 
@@ -213,32 +215,7 @@ function SankeyPage() {
    
     return (
     <Container>
-        <Row>
-            <p>INCLUDE SOME INFORMATION TO ON HOW TO USE THIS PART OF THE SITE</p>
-        </Row>
-        {/* this will contain the filtering buttons and such */}
-        <Row lg={3}>
 
-            {/* filter by party */}
-            <Col>
-                <Form.Select aria-label="party-select" 
-                    size="sm"
-                    id="party"
-                        onChange={(event) => {
-                        dispatch({
-                            type: 'UPDATE_BUTTONS', 
-                            party: event.target.value,
-                            chamber: event.target.value,
-                            selectedStates: filters.selectedStates,
-                        })
-                    }}>
-                    <option value="">Party</option>
-                    <option value="Democrat">Democrat</option>
-                    <option value="Republican">Republican</option>
-                    <option value="Other">Other</option>
-                </Form.Select>
-            </Col>
-        </Row>
         <Row md={2} lg={2}>
             <Col lg={4}>
                 <Stack gap={2}>
@@ -274,61 +251,18 @@ function SankeyPage() {
                 </Row>
                 </Stack>
             </Col>
-
-            {/* filter by chamber */}
-            <Col>
-                <Form.Select aria-label="chamber-select"
-                    size="sm"
-                    id="chamber"
-                    onChange={(event) => {
-                        dispatch({
-                            type: 'UPDATE_BUTTONS', 
-                            party: filters.party,
-                            chamber: event.target.value,
-                            selectedStates: filters.selectedStates,
-                        });
-                    }}>
-                    <option value="">Chamber</option>
-                    <option value="House">House of Representatives</option>
-                    <option value="Senate">United States Senate</option>
-                </Form.Select>
-            </Col>
-
-            {/* filter by state */}
-            <Col>
-            <DropdownButton id="dropdown-basic-button" title="States">
-                {stateAbbrv.map((state) => (
-                    <Form.Check 
-                    type={'checkbox'}
-                    onChange={updateStateList}
-                    id={state}
-                    label={state} />
-                ))}
-            </DropdownButton>
-            </Col>
             <Col>
                 <Button 
                     variant="primary"
                     // onClick={setExample(style.notHide)}
-                >Display Politicians</Button>
+                >Filter</Button>
             </Col>
         </Row>
+        {/* {displayCoolButtons()} */}
+        
         <Row>
-        <div className={style.hide}>
-        paragragh</div>
-            <Card>
-                <Card.Body>This is some text within a card body.</Card.Body>
-                <Row lg={4} md={4}>
-                    {displayButtons()}
-                </Row>
-            </Card>
-            {/* </div> */}
-        </Row>
-        {displayCoolButtons()}
-
-        {/* where the sankey diagrams will be saved */}
-        <Row>
-
+        {/* sankey diagrams will go here */}
+        
         </Row>
     </Container>
     );
