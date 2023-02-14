@@ -218,10 +218,10 @@ function SankeyPage() {
 
         <Row md={2} lg={2}>
             <Col lg={4}>
-                <Stack gap={2}>
+                <Stack gap={1}>
 
                 <div className="pt-3 h3">Overview</div>
-                <p className="lead">
+                <p className="lead mb-1">
                     You can filter by chamber, party or state to see sankey diagrams
                     of politicians with the selected features. 
                 </p>
@@ -250,14 +250,13 @@ function SankeyPage() {
                         })}
                     </Row>
                 </Row>
+                <Button className="mb-4 mt-4">
+                    Filter
+                </Button>
                 </Stack>
             </Col>
-            <Col>
-                <Button 
-                    variant="primary"
-                    // onClick={setExample(style.notHide)}
-                >Filter</Button>
-            </Col>
+
+
         </Row>
         {/* {displayCoolButtons()} */}
         

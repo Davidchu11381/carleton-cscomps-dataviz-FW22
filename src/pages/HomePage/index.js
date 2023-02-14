@@ -18,6 +18,8 @@ function HomePage() {
         navigate('/congress')
     }
 
+    const cid_map_test = {"N00003389": "Jane Smith", "N00007360": "John Doe"}
+
     return (
         <Container>
             <div className="HomePage">
@@ -77,8 +79,8 @@ function HomePage() {
                     </Col>
 
                 </Row> */}
-                {/*<SankeyChart cid_list="N00007360,N00003389,N00031820"/>
-                <SankeyChart cid_list="N00003389"/>*/}
+                {/*<SankeyChart cid_list="N00007360,N00003389,N00031820"/> */}
+                <SankeyChart cid_map={cid_map_test}/>
                 <SankeyChart group="Republican"/>
                 <SankeyChart group="Democrat"/>
                 <SankeyChart group="Senator"/>

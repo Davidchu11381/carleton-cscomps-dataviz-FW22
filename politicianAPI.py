@@ -166,8 +166,19 @@ def home():
 @app.route('/<string:cid_list>/tweet_topics', methods = ['GET'])
 def getTweetTopics(cid_list):
     cid_list = cid_list.split(",") # splits input into a list of cid's
-    topics_dict = getTopicsDict(cid_list)
-    response = jsonify({"topics": topics_dict})
+    topics_dict = getTweetTopicsDict(cid_list)
+    response = jsonify({"tweet_topics": topics_dict})
+    response.headers.add('Access-Control-Allow-Origin', 'http://localhost:3000')
+    return response
+
+# Returns statement topic distribution for a congressperson(s)
+# For just one congressperson, cid_list is just the cid.
+# If there are multiple congresspeople, cid_list is a comma-delimited list of cid's. ex. "N00007360,N00007361,N00007362"
+@app.route('/<string:cid_list>/statement_topics', methods = ['GET'])
+def getStatementTopics(cid_list):
+    cid_list = cid_list.split(",") # splits input into a list of cid's
+    topics_dict = getStatementTopicsDict(cid_list)
+    response = jsonify({"statement_topics": topics_dict})
     response.headers.add('Access-Control-Allow-Origin', 'http://localhost:3000')
     return response
 
@@ -186,10 +197,9 @@ def getStatementTopics(cid_list):
 @app.route('/<string:cid_list>/industry', methods = ['GET'])
 def getIndustries(cid_list):
     cid_list = cid_list.split(",")
-    res = getAggregateIndustryData(cid_list)
-    top_k = heapq.nlargest(10, res, key = lambda x : x["total"]) 
+    res = getIndustryData(cid_list)
+    top_k = heapq.nlargest(10, res, key = lambda x : x["total"])
     response = jsonify({"industry": top_k})
-    # resolve CORS errors
     response.headers.add('Access-Control-Allow-Origin', 'http://localhost:3000')
     return response
 
@@ -214,15 +224,13 @@ def getAggregatedData(group):
     statement_topics_dic.pop("_id")
 
     top_k = heapq.nlargest(10, industry_dic["industry"], key = lambda x : x["total"])
-    print("length of topk:", len(top_k))
-    # resolve CORS errors
-    response = jsonify({"group": group, "tweet_topics": tweet_topics_dic["tweet_topics"], "industry": top_k})
+
+    response = jsonify({"group": group, "tweet_topics": tweet_topics_dic["tweet_topics"], "statement_topics" : statement_topics_dic["statement_topics"], "industry": top_k})
     response.headers.add('Access-Control-Allow-Origin', 'http://localhost:3000')
     return response
 
 # Returns all information pertaining to a candidate cid
 @app.route('/<string:cid>/summary', methods = ['GET'])
-@cross_origin()
 def getSummaryInfo(cid):
     # getting data from our database
     client = pymongo.MongoClient("mongodb://localhost:27017/")
@@ -230,15 +238,12 @@ def getSummaryInfo(cid):
     collection = db['congresspeople']
     dic = collection.find_one({"opensecrets_id": cid})
     dic.pop("_id")
-    response = jsonify({"summary": dic})
-    # response.headers.add('Access-Control-Allow-Origin', 'http://localhost:3000')
-    return response
+    return jsonify({"summary": dic})
 
 # Returns top individual contributors for a specific candidate cid
 @app.route('/<string:cid>/individual', methods = ['GET'])
-@cross_origin()
 def getTopIndividuals(cid):
-    endpoint = "https://www.opensecrets.org/api/?method=candContrib&cid=" + cid + "&cycle=2020&apikey="
+    endpoint = "https://www.opensecrets.org/api/?method=candContrib&cid=" + cid + "&cycle=2022&apikey="
     api = endpoint + opensecrets_key
     response = requests.get(f"{api}")
     if response.status_code == 200:
@@ -252,7 +257,6 @@ def getTopIndividuals(cid):
         return response
     else:
         return f"There's a {response.status_code} error with your request"
-  
 
 # Returns all Republicans sorted by alphabetical order or by total donations
 @app.route('/republicans/<string:sort>', methods = ['GET'])
@@ -270,8 +274,7 @@ def getAllRepublicans(sort):
         list.sort(key = lambda x: x["total"])
 
     cid_list = [dict["opensecrets_id"] for dict in list]
-    # return jsonify({"data": ",".join(cid_list)})
-    response = jsonify({"data": cid_list})
+    response = jsonify({"data": ",".join(cid_list)})
     response.headers.add('Access-Control-Allow-Origin', 'http://localhost:3000')
     return response
   
@@ -291,7 +294,7 @@ def getAllDemocrats(sort):
         list.sort(key = lambda x: x["total"])
 
     cid_list = [dict["opensecrets_id"] for dict in list]
-    response = jsonify({"data": cid_list})
+    response = jsonify({"data": ",".join(cid_list)})
     response.headers.add('Access-Control-Allow-Origin', 'http://localhost:3000')
     return response
 
@@ -311,7 +314,8 @@ def getAllSenators(sort):
         list.sort(key = lambda x: x["total"])
 
     cid_list = [dict["opensecrets_id"] for dict in list]
-    response = jsonify({"data": cid_list})
+
+    response = jsonify({"data": ",".join(cid_list)})
     response.headers.add('Access-Control-Allow-Origin', 'http://localhost:3000')
     return response
 
@@ -331,7 +335,8 @@ def getAllRepresentatives(sort):
         list.sort(key = lambda x: x["total"])
 
     cid_list = [dict["opensecrets_id"] for dict in list]
-    response = jsonify({"data": cid_list})
+
+    response = jsonify({"data": ",".join(cid_list)})
     response.headers.add('Access-Control-Allow-Origin', 'http://localhost:3000')
     return response
 
@@ -347,9 +352,10 @@ def getCongresspeopleByState(state):
         list.append(dict)
 
     cid_list = [dict["opensecrets_id"] for dict in list]
-    response = jsonify({"data": cid_list})
+    response = jsonify({"data": ",".join(cid_list)})
     response.headers.add('Access-Control-Allow-Origin', 'http://localhost:3000')
     return response
+
 # driver function
 if __name__ == '__main__':
     app.run(debug = True)
