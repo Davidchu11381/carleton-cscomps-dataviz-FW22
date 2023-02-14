@@ -1,4 +1,3 @@
-
 from flask import Flask, jsonify, request
 import pymongo
 import requests
@@ -15,8 +14,51 @@ consumer_secret = "PNezX7Ne2xEAnkomoNBuPw7NWvgQt1w5OvtxTTzgRZZNgSsGRA"  #same as
 access_key = "1572984312554786818-eoA2bVWAu0g9FHzhLprwAiOUOwSw5H"
 access_secret = "ieTStsQ3LsfFomPAMTEgLjnWU90fODIS543LDvnihfaSn"
 
-# returns dict containing distribution of topics for the given cid list.
-def getTopicsDict(cid_list):
+# returns dict containing distribution of statement topics for the given cid list.
+def getStatementTopicsDict(cid_list):
+    # access our mongodb database
+    client = pymongo.MongoClient("mongodb://localhost:27017/")
+    db = client['comps']
+    collection = db['statement_topics']
+    cid_set = set()
+    topics_dict = defaultdict(int) # tracks topic names(keys) and the number of Tweets where a specific topic had the highest prob(values)
+    
+    junk_topics = ["topic_3", "topic_7", "topic_12", "topic_13", "topic_19", "topic_21"]
+    junk_topics = set(junk_topics)
+
+    # iterate through each congressperson
+    for cid in cid_list:
+        if cid in cid_set:
+            continue
+        cid_set.add(cid)
+        # get topic distributions for all statements by this politician
+        for dict in collection.find({"opensecrets_id": cid}):
+            # get max topic distribution value for this statement
+            max_value = 0
+            for i in range(1,26):
+                topic = "topic_" + str(i)
+                if float(dict[topic]) > max_value:
+                    max_value = float(dict[topic])
+            
+            # setting a threshold to include the statement in the calculation. If it's too low, skip to next
+            if max_value < 0.2:
+                continue
+
+            # find all topics with that value
+            max_topics = []
+            for i in range(1,26):
+                topic = "topic_" + str(i)
+                if float(dict[topic]) == max_value:
+                    max_topics.append(topic)
+
+            # increment count for those topics
+            for topic in max_topics:
+                if topic not in junk_topics:
+                    topics_dict[topic] += 1
+    return topics_dict
+
+# returns dict containing distribution of tweet topics for the given cid list.
+def getTweetTopicsDict(cid_list):
     # access our mongodb database
     client = pymongo.MongoClient("mongodb://localhost:27017/")
     db = client['comps']
@@ -38,6 +80,10 @@ def getTopicsDict(cid_list):
                 topic = "topic_" + str(i)
                 if float(dict[topic]) > max_value:
                     max_value = float(dict[topic])
+            
+            # setting a threshold to include the tweet in the calculation. If it's too low, skip to next
+            if max_value < 0.13:
+                continue
 
             # find all topics with that value
             max_topics = []
@@ -113,14 +159,23 @@ def home():
         message = "Hi, this is an API for politician data for the MoneyFlows comps project! \n"
         return message
 
-# Returns topic distribution for a congressperson(s)
+# Returns tweet topic distribution for a congressperson(s)
 # For just one congressperson, cid_list is just the cid.
 # If there are multiple congresspeople, cid_list is a comma-delimited list of cid's. ex. "N00007360,N00007361,N00007362"
-@app.route('/<string:cid_list>/topics', methods = ['GET'])
-def getTopics(cid_list):
+@app.route('/<string:cid_list>/tweet_topics', methods = ['GET'])
+def getTweetTopics(cid_list):
     cid_list = cid_list.split(",") # splits input into a list of cid's
-    topics_dict = getTopicsDict(cid_list)
-    return jsonify({"topics": topics_dict})
+    topics_dict = getTweetTopicsDict(cid_list)
+    return jsonify({"tweet_topics": topics_dict})
+
+# Returns statement topic distribution for a congressperson(s)
+# For just one congressperson, cid_list is just the cid.
+# If there are multiple congresspeople, cid_list is a comma-delimited list of cid's. ex. "N00007360,N00007361,N00007362"
+@app.route('/<string:cid_list>/statement_topics', methods = ['GET'])
+def getStatementTopics(cid_list):
+    cid_list = cid_list.split(",") # splits input into a list of cid's
+    topics_dict = getStatementTopicsDict(cid_list)
+    return jsonify({"statement_topics": topics_dict})
 
 # Returns top 10 industries for a congressperson(s)
 # For just one congressperson, cid_list is just the cid.
@@ -141,14 +196,20 @@ def getAggregatedData(group):
     db = client['comps']
     tweet_topics_collection = db['aggregate_tweet_topics']
     industry_collection = db['aggregate_industry_data']
+    statement_topics_collection = db['aggregate_statement_topics']
 
     tweet_topics_dic = tweet_topics_collection.find_one({"group": group})
     tweet_topics_dic.pop("_id")
+
     industry_dic = industry_collection.find_one({"group": group})
     industry_dic.pop("_id")
+
+    statement_topics_dic = statement_topics_collection.find_one({"group": group})
+    statement_topics_dic.pop("_id")
+
     top_k = heapq.nlargest(10, industry_dic["industry"], key = lambda x : x["total"])
 
-    return jsonify({"group": group, "tweet_topics": tweet_topics_dic["tweet_topics"], "industry": top_k})
+    return jsonify({"group": group, "tweet_topics": tweet_topics_dic["tweet_topics"], "statement_topics" : statement_topics_dic["statement_topics"], "industry": top_k})
 
 # Returns all information pertaining to a candidate cid
 @app.route('/<string:cid>/summary', methods = ['GET'])
