@@ -12,11 +12,6 @@ function HomePage() {
         console.log("switching to industry page");
         navigate('/industry');
     }
-
-    const showRepublicans = () => {
-        //????
-        document.getElementById("Republicans").style.display = "block";
-    }
     
     const switchtoCongressPage = () => {
         console.log("switching to congress page");
@@ -29,11 +24,11 @@ function HomePage() {
                 <Row>
                     <Col>
                         <div className="pt-3 h3">
-                            What is MoneyFlows?
+                            Overview
                         </div>
                         <div className="pt-3" >
                             <p className="lead">
-                                MoneyFlows is a web application that lets you explore the relationships between funding sources and speech
+                                MoneyFlow is a web application that lets you explore the relationships between funding sources and speech
                                 for members of congress. We have gathered data on funding broken down by industry, statements made on the floor
                                 of congress, and tweets for each politician. We then performed topic modeling on the statements and tweets
                                 to gather quantitative data about what topics politicians speek about.
@@ -43,23 +38,21 @@ function HomePage() {
                     </Col>
                     <Col>
                         <div className="pt-3 h4">
-                            <p>Interacting with Our Data</p>
+                            <p>How To Use</p>
                         </div>
                         <div className="pt-3 mb-3 pb-3 lead">
                             <p>You can explore these relationships through Sankey diagrams, which show the flows of money
-                            to congresspeople and congresspeople to topics. To see data aggregated by group, such as
-                            Republicans or Senators, click on the appropriate group below. To look at a specific congressperson
-                            or set of congresspeople, go to our Congress Members tab.</p>
-                    
+                            to congresspeople and congresspeople to topics. This Overview Page contains diagrams depicting
+                            different subsets of politicians, like Republicans or Senators</p>
+                            <p>If you'd like to explore further funding flows, you can 
+                            head to "Filter by Congress" to curate your own filters and 
+                            see the resulting diagrams.
+                            </p>
                         </div>
-                        {/* <YoutubeEmbed embedId="ugrcQhQm4YI" /> */}
                     
                     </Col>
                 </Row>
-                <Row>
-                    <Col>
-                    </Col>
-
+                {/*<Row>
                     <Col>
                     <Button variant="dark"
                             onClick={switchtoCongressPage}
@@ -72,7 +65,7 @@ function HomePage() {
                         Representatives
                     </Button>
                     <Button variant="dark"
-                            onClick={showRepublicans}
+                            onClick={switchtoIndustryPage}
                             >
                         Republicans
                     </Button>
@@ -83,7 +76,7 @@ function HomePage() {
                     </Button>
                     </Col>
 
-                </Row> 
+                </Row> */}
                 {/*<SankeyChart cid_list="N00007360,N00003389,N00031820"/>
                 <SankeyChart cid_list="N00003389"/>*/}
                 <SankeyChart group="Republican"/>

@@ -191,7 +191,11 @@ function SankeyPage() {
             <Col lg={4}>
                 <Stack gap={2}>
 
-                <h2>Filter by clicking the buttons below</h2>
+                <div className="pt-3 h3">Overview</div>
+                <p className="lead">
+                    You can filter by chamber, party or state to see sankey diagrams
+                    of politicians with the selected features. 
+                </p>
                 <Row>
                     <h3>By Chamber</h3>
                     <Row lg={2}>
