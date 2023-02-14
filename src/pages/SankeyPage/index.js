@@ -197,24 +197,25 @@ function SankeyPage() {
                     of politicians with the selected features. 
                 </p>
                 <Row>
-                    <h3>By Chamber</h3>
-                    <Row lg={2}>
+                <div className="pt-3 h4">By Chamber</div>
+                    <Row lg={3}>
                         <GroupSelectionButton type="Senate" func={dispatch}></GroupSelectionButton>
                         <GroupSelectionButton type="House" func={dispatch}></GroupSelectionButton>
                     </Row>
                 </Row>
                 <Row>
-                    <h3>By Party</h3>
-                    <Row lg={2}>
+                <div className="pt-3 h4">By Party</div>
+                    <Row lg={4}>
                     <GroupSelectionButton type="Republican" func={dispatch}></GroupSelectionButton>
                     <GroupSelectionButton type="Democrat" func={dispatch}></GroupSelectionButton>
                     <GroupSelectionButton type="Other" func={dispatch}></GroupSelectionButton>
                     </Row>
                 </Row>
                 <Row>
-                    <h3>By State</h3>
+                    
+                <div className="pt-3 h4">By State</div>
                     {/* create a dropdown for the states and a variable for selected ones */}
-                    <Row lg={8} md={3}>
+                    <Row lg={8} md={6}>
                         {stateAbbrv.map(state => {
                             return (<StateButton state={state} filters={filters} func={dispatch}></StateButton>)
                         })}

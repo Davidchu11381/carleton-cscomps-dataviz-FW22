@@ -30,7 +30,7 @@ function GroupSelectionButton( data ) {
     
     return (
         <ToggleButton
-            className="m-2"
+            className="m-1"
             id={info}
             type="checkbox"
             variant="outline-primary"
