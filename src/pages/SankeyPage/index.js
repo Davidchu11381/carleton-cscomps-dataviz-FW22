@@ -188,6 +188,7 @@ function SankeyPage() {
         if (addIds !== [] && apiCallCount.current === 2 && allPoliticians.size > 0) {
             // console.log("IN STEP 3 - BEFORE THE API CALL");
             allPoliticians.forEach((value, key) => {
+                console.log(key);
                 fetch('http://137.22.4.60:5001/' + key + '/summary')
                 .then(response => response.json())
                 .then(data => {
