@@ -3,8 +3,8 @@ import { Col, Row, Container, Stack, Form, DropdownButton, Card, Button } from '
 import SankeyChart from '../HomePage/components/SankeyChart';
 import { useEffect, useReducer, useState, useRef } from 'react';
 import PoliticianButton from './components/PoliticianButton';
-// import StateButton from './components/StateButton';
-// import GroupSelectionButton from './components/GroupSelectionButton';
+import StateButton from './components/StateButton';
+import GroupSelectionButton from './components/GroupSelectionButton';
 import style from "./index.module.css"
 
 import { reducer, initialState } from './hooks/reducer';
@@ -213,7 +213,6 @@ function SankeyPage() {
    
     return (
     <Container>
-<<<<<<< HEAD
         <Row>
             <p>INCLUDE SOME INFORMATION TO ON HOW TO USE THIS PART OF THE SITE</p>
         </Row>
@@ -238,7 +237,8 @@ function SankeyPage() {
                     <option value="Republican">Republican</option>
                     <option value="Other">Other</option>
                 </Form.Select>
-=======
+            </Col>
+        </Row>
         <Row md={2} lg={2}>
             <Col lg={4}>
                 <Stack gap={2}>
@@ -273,7 +273,6 @@ function SankeyPage() {
                     </Row>
                 </Row>
                 </Stack>
->>>>>>> 7b7e1db8f2c2bc824d99b9792476858f45cd97de
             </Col>
 
             {/* filter by chamber */}
