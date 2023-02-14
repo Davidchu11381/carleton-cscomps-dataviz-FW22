@@ -22,7 +22,7 @@ def getStatementTopicsDict(cid_list):
     collection = db['statement_topics']
     cid_set = set()
     topics_dict = defaultdict(int) # tracks topic names(keys) and the number of Tweets where a specific topic had the highest prob(values)
-    
+    threshold = 0.15 # threshold for probability value to determine that a statement belongs with a certain topic
     junk_topics = ["topic_3", "topic_7", "topic_12", "topic_13", "topic_19", "topic_21"]
     junk_topics = set(junk_topics)
 
@@ -31,26 +31,13 @@ def getStatementTopicsDict(cid_list):
         if cid in cid_set:
             continue
         cid_set.add(cid)
-        # get topic distributions for all statements by this politician
+        # get topic distributions for all statements by this congressperson
         for dict in collection.find({"opensecrets_id": cid}):
-            # get max topic distribution value for this statement
-            max_value = 0
-            for i in range(1,26):
-                topic = "topic_" + str(i)
-                if float(dict[topic]) > max_value:
-                    max_value = float(dict[topic])
-            
-            # setting a threshold to include the statement in the calculation. If it's too low, skip to next
-            if max_value < 0.2:
-                continue
-
-            # find all topics with that value
             max_topics = []
             for i in range(1,26):
                 topic = "topic_" + str(i)
-                if float(dict[topic]) == max_value:
+                if float(dict[topic]) > threshold:
                     max_topics.append(topic)
-
             # increment count for those topics
             for topic in max_topics:
                 if topic not in junk_topics:
@@ -86,14 +73,17 @@ def getTweetTopicsDict(cid_list):
                 continue
 
             # find all topics with that value
-            max_topics = []
+            max_topics = set()
             for i in range(1,13):
                 topic = "topic_" + str(i)
                 if float(dict[topic]) == max_value:
-                    max_topics.append(topic)
+                    # combines topic 5 and 2
+                    if topic == "topic_5":
+                        topic = "topic_2"
+                    max_topics.add(topic)
 
             # increment count for those topics
-            for topic in max_topics:
+            for topic in list(max_topics):
                 topics_dict[topic] += 1
     return topics_dict
 
