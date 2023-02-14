@@ -6,14 +6,15 @@ function NavbarBand() {
     
         <Navbar className="p-3" bg="light" expand="lg">
         <Container>
-            <Navbar.Brand href="/">MoneyFlows</Navbar.Brand>
+            <Navbar.Brand href="/">MoneyFlow</Navbar.Brand>
             <Navbar.Toggle aria-controls="basic-navbar-nav" />
             <Navbar.Collapse id="basic-navbar-nav">
             <Nav className="me-auto">
+                <Nav.Link href="http://localhost:3000/"> Home </Nav.Link>
                 {/* <Nav.Link href="http://localhost:3000/">Home</Nav.Link> */}
                 {/* <Nav.Link href="http://localhost:3000/industry">Industry</Nav.Link> */}
                 {/* <Nav.Link href="http://localhost:3000/congress">Congress</Nav.Link> */}
-                <Nav.Link href="http://localhost:3000/congress_data">Congress Members</Nav.Link>
+                <Nav.Link href="http://localhost:3000/congress_data"> Filter By Congress</Nav.Link>
                 {/* <Nav.Link href="http://localhost:3000/barchart">Bar Chart</Nav.Link> */}
                 <Nav.Link href="http://localhost:3000/aboutUs">About Us</Nav.Link>
             </Nav>

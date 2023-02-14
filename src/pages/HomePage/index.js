@@ -2,7 +2,7 @@ import React from 'react';
 import {Container, Row, Col, Button} from 'react-bootstrap';
 // import YoutubeEmbed from './components/YoutubeEmbed';
 import SankeyChart from './components/SankeyChart';
-import { useNavigate } from 'react-router-dom';
+import { renderMatches, useNavigate } from 'react-router-dom';
 
 function HomePage() {
 
@@ -12,7 +12,7 @@ function HomePage() {
         console.log("switching to industry page");
         navigate('/industry');
     }
-
+    
     const switchtoCongressPage = () => {
         console.log("switching to congress page");
         navigate('/congress')
@@ -24,66 +24,65 @@ function HomePage() {
                 <Row>
                     <Col>
                         <div className="pt-3 h3">
-                            What is MoneyFlow?
+                            Overview
                         </div>
                         <div className="pt-3" >
                             <p className="lead">
-                                MoneyFlow is a web application that contains interactive data visualization
-                                show casing information on the various funding sources of politicians in congress. There is
-                                also a compiled list of statements/tweets that these politicians have made.
-                            </p>
-                            <p className="lead">
-                                You can explore the relationship of funders to politicians, and what these politicians have
-                                said in regards to different topics and issues. 
-                                It is not exhaustive, but our team hope it will act as a good starting point for learning and
-                                becoming more informed about the US political system. 
+                                MoneyFlow is a web application that lets you explore the relationships between funding sources and speech
+                                for members of congress. We have gathered data on funding broken down by industry, statements made on the floor
+                                of congress, and tweets for each politician. We then performed topic modeling on the statements and tweets
+                                to gather quantitative data about what topics politicians speek about.
                             </p>
                             
                         </div>
                     </Col>
                     <Col>
                         <div className="pt-3 h4">
-                            <p>Interacting with the Sankey Diagram</p>
+                            <p>How To Use</p>
                         </div>
                         <div className="pt-3 mb-3 pb-3 lead">
-                            <p>You can filter the diagrams based on the three sections: 
-                            Industries, Congresspeople, and Topics/Issues. If you are curious
-                            about the congresspeople from your state. There is a filter next to
-                            the heading in which you can simply click on the state(s) you want to see. </p>
-                            <p>If you would like to dig deeper into a particular industry, congress person
-                                or topics, simply click on it in the diagram so it will take you to the in depth 
-                                page(s) that will tell you more about them.
+                            <p>You can explore these relationships through Sankey diagrams, which show the flows of money
+                            to congresspeople and congresspeople to topics. This Overview Page contains diagrams depicting
+                            different subsets of politicians, like Republicans or Senators</p>
+                            <p>If you'd like to explore further funding flows, you can 
+                            head to "Filter by Congress" to curate your own filters and 
+                            see the resulting diagrams.
                             </p>
                         </div>
-                        {/* <YoutubeEmbed embedId="ugrcQhQm4YI" /> */}
                     
                     </Col>
                 </Row>
-                {/* <Row>
-                    <Col>
-                    <Button variant="dark"
-                            onClick={switchtoIndustryPage}
-                            >
-                        Sort by Industries
-                    </Button>
-                    <div>
-                        <Link to='/AboutUs' className="btn btn-primary">hello</Link>
-                    </div>
-                    </Col>
-
+                {/*<Row>
                     <Col>
                     <Button variant="dark"
                             onClick={switchtoCongressPage}
                             >
-                        Sort by Congresspeople
+                        Senators
+                    </Button>
+                    <Button variant="dark"
+                            onClick={switchtoCongressPage}
+                            >
+                        Representatives
+                    </Button>
+                    <Button variant="dark"
+                            onClick={switchtoIndustryPage}
+                            >
+                        Republicans
+                    </Button>
+                    <Button variant="dark"
+                            onClick={switchtoIndustryPage}
+                            >
+                        Democrats
                     </Button>
                     </Col>
 
                 </Row> */}
-                <SankeyChart cid_list="N00007360,N00003389,N00031820"/>
-                <SankeyChart cid_list="N00003389"/>
+                {/*<SankeyChart cid_list="N00007360,N00003389,N00031820"/>
+                <SankeyChart cid_list="N00003389"/>*/}
                 <SankeyChart group="Republican"/>
-                {/*<SankeyChart group="Democrat"/>*/}
+                <SankeyChart group="Democrat"/>
+                <SankeyChart group="Senator"/>
+                <SankeyChart group="Representative"/>
             </div>
         </Container>
     );

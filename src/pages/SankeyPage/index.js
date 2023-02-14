@@ -213,6 +213,7 @@ function SankeyPage() {
    
     return (
     <Container>
+<<<<<<< HEAD
         <Row>
             <p>INCLUDE SOME INFORMATION TO ON HOW TO USE THIS PART OF THE SITE</p>
         </Row>
@@ -237,6 +238,42 @@ function SankeyPage() {
                     <option value="Republican">Republican</option>
                     <option value="Other">Other</option>
                 </Form.Select>
+=======
+        <Row md={2} lg={2}>
+            <Col lg={4}>
+                <Stack gap={2}>
+
+                <div className="pt-3 h3">Overview</div>
+                <p className="lead">
+                    You can filter by chamber, party or state to see sankey diagrams
+                    of politicians with the selected features. 
+                </p>
+                <Row>
+                    <h3>By Chamber</h3>
+                    <Row lg={2}>
+                        <GroupSelectionButton type="Senate" func={dispatch}></GroupSelectionButton>
+                        <GroupSelectionButton type="House" func={dispatch}></GroupSelectionButton>
+                    </Row>
+                </Row>
+                <Row>
+                    <h3>By Party</h3>
+                    <Row lg={2}>
+                    <GroupSelectionButton type="Republican" func={dispatch}></GroupSelectionButton>
+                    <GroupSelectionButton type="Democrat" func={dispatch}></GroupSelectionButton>
+                    <GroupSelectionButton type="Other" func={dispatch}></GroupSelectionButton>
+                    </Row>
+                </Row>
+                <Row>
+                    <h3>By State</h3>
+                    {/* create a dropdown for the states and a variable for selected ones */}
+                    <Row lg={8} md={3}>
+                        {stateAbbrv.map(state => {
+                            return (<StateButton state={state} filters={filters} func={dispatch}></StateButton>)
+                        })}
+                    </Row>
+                </Row>
+                </Stack>
+>>>>>>> 7b7e1db8f2c2bc824d99b9792476858f45cd97de
             </Col>
 
             {/* filter by chamber */}
