@@ -4,15 +4,15 @@ import xmltodict
 import requests
 from politicianAPI import removeAtSymbol, getTweetTopicsDict, getIndustryData, getProfilePic, getStatementTopicsDict
 
-# path_to_legislators = '/home/dataviz/Downloads/legislators-current.csv'
-# path_to_industries = '/home/dataviz/Downloads/CRPIndustryCodes.csv'
-# path_to_tweet_topics = '/home/dataviz/Downloads/topic_dist_by_doc.csv'
-# path_to_statement_topics = '/home/dataviz/Downloads/topic_dist_by_doc.csv'
+path_to_legislators = '/home/dataviz/Downloads/legislators-current.csv'
+path_to_industries = '/home/dataviz/Downloads/CRPIndustryCodes.csv'
+path_to_tweet_topics = '/home/dataviz/Downloads/tweets_topics_dist.csv'
+path_to_statement_topics = '/home/dataviz/Downloads/statement_topics_dist2.csv'
 
-path_to_legislators = '/Users/kevin/Downloads/legislators-current.csv'
-path_to_industries = '/Users/kevin/Downloads/CRPIndustryCodes.csv'
-path_to_tweet_topics = '/Users/kevin/Downloads/tweets_topics_dist.csv'
-path_to_statement_topics = '/Users/kevin/Downloads/statement_topics_dist2.csv'
+#path_to_legislators = '/Users/kevin/Downloads/legislators-current.csv'
+#path_to_industries = '/Users/kevin/Downloads/CRPIndustryCodes.csv'
+#path_to_tweet_topics = '/Users/kevin/Downloads/tweets_topics_dist.csv'
+#path_to_statement_topics = '/Users/kevin/Downloads/statement_topics_dist2.csv'
 
 key = "91a96cc61cceb54c2473df69372795f6" # API key
 
@@ -247,8 +247,8 @@ def getTwitterProfilePics():
         
 def main():
     # get_politician_data() # get all summary information for congresspeople
-    # getTweetTopicData() # get topic distribution for all tweets
-    # getStatementTopicData() # get topic distribution for all statements
-    # saveAggregateData() # calculate and save aggregate topic and industry data for Republican, Democrat, Senator, Representative
+    getTweetTopicData() # get topic distribution for all tweets
+    getStatementTopicData() # get topic distribution for all statements
+    saveAggregateData() # calculate and save aggregate topic and industry data for Republican, Democrat, Senator, Representative
     getTwitterProfilePics() # save all profile pictures 
 main()
