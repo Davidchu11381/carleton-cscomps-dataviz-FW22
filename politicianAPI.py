@@ -182,6 +182,15 @@ def getStatementTopics(cid_list):
     response.headers.add('Access-Control-Allow-Origin', 'http://localhost:3000')
     return response
 
+# Returns statement topic distribution for a congressperson(s)
+# For just one congressperson, cid_list is just the cid.
+# If there are multiple congresspeople, cid_list is a comma-delimited list of cid's. ex. "N00007360,N00007361,N00007362"
+@app.route('/<string:cid_list>/statement_topics', methods = ['GET'])
+def getStatementTopics(cid_list):
+    cid_list = cid_list.split(",") # splits input into a list of cid's
+    topics_dict = getStatementTopicsDict(cid_list)
+    return jsonify({"statement_topics": topics_dict})
+
 # Returns top 10 industries for a congressperson(s)
 # For just one congressperson, cid_list is just the cid.
 # If there are multiple congresspeople, cid_list is a comma-delimited list of cid's. ex. "N00007360,N00007361,N00007362"

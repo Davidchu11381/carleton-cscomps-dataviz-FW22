@@ -1,6 +1,6 @@
-import React, { Component } from 'react'
+import React, { Component } from 'react';
 import { Placeholder } from 'react-bootstrap';
-import Chart from 'react-google-charts'
+import Chart from 'react-google-charts';
 
 class SankeyChart extends Component {
 

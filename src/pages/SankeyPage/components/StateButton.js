@@ -33,7 +33,7 @@ function StateButton( data ) {
     
     return (
         <ToggleButton
-            className="ms-1 mb-1"
+            className="m-1"
             id={info}
             size="sm"
             type="checkbox"

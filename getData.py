@@ -1,18 +1,18 @@
 import csv
 import pymongo
 import xmltodict
-from collections import defaultdict
 import requests
-import time
-from politicianAPI import removeAtSymbol, getTopicsDict, getAggregateIndustryData, getAllRepublicans, getAllDemocrats, getAllSenators, getAllRepresentatives, getProfilePic
+from politicianAPI import removeAtSymbol, getTweetTopicsDict, getIndustryData, getProfilePic, getStatementTopicsDict
 
 path_to_legislators = '/home/dataviz/Downloads/legislators-current.csv'
 path_to_industries = '/home/dataviz/Downloads/CRPIndustryCodes.csv'
-path_to_topics = '/home/dataviz/Downloads/topic_dist_by_doc.csv'
+path_to_tweet_topics = '/home/dataviz/Downloads/tweets_topics_dist.csv'
+path_to_statement_topics = '/home/dataviz/Downloads/statement_topics_dist2.csv'
 
-# path_to_legislators = '/Users/kevin/Downloads/legislators-current.csv'
-# path_to_industries = '/Users/kevin/Downloads/CRPIndustryCodes.csv'
-# path_to_topics = '/Users/kevin/Downloads/topic_dist_by_doc.csv'
+#path_to_legislators = '/Users/kevin/Downloads/legislators-current.csv'
+#path_to_industries = '/Users/kevin/Downloads/CRPIndustryCodes.csv'
+#path_to_tweet_topics = '/Users/kevin/Downloads/tweets_topics_dist.csv'
+#path_to_statement_topics = '/Users/kevin/Downloads/statement_topics_dist2.csv'
 
 key = "91a96cc61cceb54c2473df69372795f6" # API key
 
@@ -22,17 +22,78 @@ consumer_secret = "PNezX7Ne2xEAnkomoNBuPw7NWvgQt1w5OvtxTTzgRZZNgSsGRA"  #same as
 access_key = "1572984312554786818-eoA2bVWAu0g9FHzhLprwAiOUOwSw5H"
 access_secret = "ieTStsQ3LsfFomPAMTEgLjnWU90fODIS543LDvnihfaSn"
 
-# returns total donations from specified industry for specified candidate cid
-def total_from_industry_by_cid(ind, cid):
-        endpoint = "https://www.opensecrets.org/api/?method=candIndByInd&cid=" + cid + "&cycle=2020&ind=" + ind + "&apikey="
-        api = endpoint + key
-        response = requests.get(f"{api}")
-        if response.status_code == 200:
-            print("Successfully retrieved total for industry code" + ind +  " for cid: " + cid)
-            return response
-        else:
-            print(
-                f"There's a {response.status_code} error with your request")
+
+#########
+
+# Returns all Republicans sorted by alphabetical order or by total donations
+def getAllRepublicans2(sort):
+    client = pymongo.MongoClient("mongodb://localhost:27017/")
+    db = client['comps']
+    collection = db['congresspeople']
+    list = []
+    for dict in collection.find({"party": "Republican"}):
+        dict.pop("_id")
+        list.append(dict)
+    if sort == "alphabetical":
+        list.sort(key = lambda x: x["last_name"])
+    elif sort == "total":
+        list.sort(key = lambda x: x["total"])
+
+    cid_list = [dict["opensecrets_id"] for dict in list]
+    return cid_list
+  
+# Returns all Democrats sorted by alphabetical order or by total donations
+def getAllDemocrats2(sort):
+    client = pymongo.MongoClient("mongodb://localhost:27017/")
+    db = client['comps']
+    collection = db['congresspeople']
+    list = []
+    for dict in collection.find({"party": "Democrat"}):
+        dict.pop("_id")
+        list.append(dict)
+    if sort == "alphabetical":
+        list.sort(key = lambda x: x["last_name"])
+    elif sort == "total":
+        list.sort(key = lambda x: x["total"])
+
+    cid_list = [dict["opensecrets_id"] for dict in list]
+    return cid_list
+
+# Returns all Senators sorted by alphabetical order or by total donations
+def getAllSenators2(sort):
+    client = pymongo.MongoClient("mongodb://localhost:27017/")
+    db = client['comps']
+    collection = db['congresspeople']
+    list = []
+    for dict in collection.find({"type": "sen"}):
+        dict.pop("_id")
+        list.append(dict)
+    if sort == "alphabetical":
+        list.sort(key = lambda x: x["last_name"])
+    elif sort == "total":
+        list.sort(key = lambda x: x["total"])
+
+    cid_list = [dict["opensecrets_id"] for dict in list]
+
+    return cid_list
+
+# Returns all Representatives sorted by alphabetical order or by total donations
+def getAllRepresentatives2(sort):
+    client = pymongo.MongoClient("mongodb://localhost:27017/")
+    db = client['comps']
+    collection = db['congresspeople']
+    list = []
+    for dict in collection.find({"type": "rep"}):
+        dict.pop("_id")
+        list.append(dict)
+    if sort == "alphabetical":
+        list.sort(key = lambda x: x["last_name"])
+    elif sort == "total":
+        list.sort(key = lambda x: x["total"])
+
+    cid_list = [dict["opensecrets_id"] for dict in list]
+
+    return cid_list
 
 # Returns top 10 industries for a specific candidate cid
 def getTopIndustries(cid):
@@ -49,8 +110,8 @@ def getTopIndustries(cid):
     else:
         return f"There's a {response.status_code} error with your request"
 
-# updates a list of dictionaries containing demographic and financial information on congresspeople to our database 
-def get_politician_data2():
+# updates a list of dictionaries containing demographic and financial information on congresspeople 
+def get_politician_data():
     client = pymongo.MongoClient("mongodb://localhost:27017/")
     db = client['comps']
     new_collection = db["congresspeople"] # create a new collection in the database
@@ -102,88 +163,46 @@ def get_politician_data2():
                 print(f"There's a {response.status_code} error with your request")
             new_collection.find_one_and_update({"opensecrets_id": new_dict["opensecrets_id"]}, {"$set": new_dict})
 
-# returns a list of all candidate cid's
-def get_all_cid():
-    with open(path_to_legislators, 'r') as csvfile:
-        csv_reader = csv.reader(csvfile)
-        list_of_cid = []
-        temp = next(csv_reader)
-        for row in csv_reader:
-            list_of_cid.append(row[24])
-        return list_of_cid
-
-# returns a list of all industry codes and names in the following format:
-# industry code [blank space] industry name
-# A01 Banking
-def get_all_industries():
-    with open(path_to_industries, 'r') as csvfile:
-        csv_reader = csv.reader(csvfile)
-        industries_set = set()
-        temp = next(csv_reader)
-        for row in csv_reader:
-            industries_set.add(row[2] + " " + row[3])
-        return list(industries_set)
-
-# saves industry donation data to congresspeople (grouped by industry) to our database
-# takes ~ 4 days to completely run.
-# DO NOT RUN UNLESS YOU KNOW WHAT YOU'RE DOING. It will clear everything in our database and will take days to rerun it.
-def get_industry_data():
-    industry_dict = defaultdict(list)
-    cid_list = get_all_cid()
-    industry_list = get_all_industries()
-
-    cid_list = cid_list[:5]
-    industry_list = industry_list[:5]
-
-    client = pymongo.MongoClient("mongodb://localhost:27017/")
-    db = client['comps']
-    new_collection = db["industries"] # create a new collection in the database
-    new_collection.drop() # clear anything already in it
-
-    count = 0 # counts number of calls we have made in order to make sure we don't exceed 20000 calls per day
-    for industry in industry_list:
-        total = 0 # keeps track of total amount of donations from this industry
-        for cid in cid_list:
-            response = total_from_industry_by_cid(industry[:3], cid)
-            count += 1
-            print(count)
-            if count > 15000:
-                count = 0
-                time.sleep(90000)
-            if response:    
-                data_dict = xmltodict.parse(response.text) # parse from XML to a JSON-dict format
-                new_cand_dict = {}
-                new_cand_dict["cid"] = data_dict["response"]["candIndus"]["@cid"]
-                new_cand_dict["name"] = data_dict["response"]["candIndus"]["@cand_name"]
-                donation_amount = int(data_dict["response"]["candIndus"]["@total"])
-                new_cand_dict["total"] = donation_amount
-                total += donation_amount # updates total amount of donations
-                industry_dict[industry].append(new_cand_dict) # adds this candidate's info to the list 
-
-        new_dict = {"code": industry[:3], "name" : industry[4:], "total": total, "congresspeople" : industry_dict[industry]}
-        new_collection.insert_one(new_dict)
-
-# Saves tweet topic data to our database
+# Saves all tweet topic data to our database
 def getTweetTopicData():
     client = pymongo.MongoClient("mongodb://localhost:27017/")
     db = client['comps']
     new_collection = db["tweet_topics"] # create a new collection in the database
     new_collection.drop() # clear anything already in it
 
-    with open(path_to_topics, 'r') as csvfile:
+    with open(path_to_tweet_topics, 'r') as csvfile:
         csv_reader = csv.reader(csvfile)
         temp = next(csv_reader)
         for row in csv_reader:
             new_dict = {}
             new_dict["doc_id"] = row[1]
-            new_dict["created_at"] = row[2]
-            new_dict["opensecrets_id"] = row[3]
-            new_dict["twitter"] = row[4]
+            new_dict["opensecrets_id"] = row[4]
             for i in range(5,17):
-                new_dict["topic_" + str(i - 4)] = row[i]
+                topic_num = i - 4
+                new_dict["topic_" + str(topic_num)] = row[i]
             new_collection.insert_one(new_dict)
 
-# saves aggregate data to our database for the following groups: "Republican", "Democrat", "Senator", "Representative"
+
+# Saves all statement topic data to our database
+def getStatementTopicData():
+    client = pymongo.MongoClient("mongodb://localhost:27017/")
+    db = client['comps']
+    new_collection = db["statement_topics"] # create a new collection in the database
+    new_collection.drop() # clear anything already in it
+
+    with open(path_to_statement_topics, 'r') as csvfile:
+        csv_reader = csv.reader(csvfile)
+        temp = next(csv_reader)
+        for row in csv_reader:
+            new_dict = {}
+            new_dict["doc_id"] = row[2]
+            new_dict["opensecrets_id"] = row[3]
+            for i in range(4,29):
+                topic_num = i - 3
+                new_dict["topic_" + str(topic_num)] = row[i]
+            new_collection.insert_one(new_dict)
+
+# saves aggregate data(tweet topics + industry funding) to our database for the following groups: "Republican", "Democrat", "Senator", "Representative"
 def saveAggregateData():
     client = pymongo.MongoClient("mongodb://localhost:27017/")
     db = client['comps']
@@ -193,25 +212,30 @@ def saveAggregateData():
     new_collection2 = db["aggregate_industry_data"] # create a new collection in the database
     new_collection2.drop() # clear anything already in it
 
+    new_collection3 = db["aggregate_statement_topics"] # create a new collection in the database
+    new_collection3.drop() # clear anything already in it
+
     groups = ["Republican", "Democrat", "Senator", "Representative"]
     for group in groups:
         if group == "Republican":
-            cid_list = getAllRepublicans("total")
+            cid_list = getAllRepublicans2("total")
         elif group == "Democrat":
-            cid_list = getAllDemocrats("total")
+            cid_list = getAllDemocrats2("total")
         elif group == "Senator":
-            cid_list = getAllSenators("total")
+            cid_list = getAllSenators2("total")
         else:
-            cid_list = getAllRepresentatives("total")
+            cid_list = getAllRepresentatives2("total")
 
-        topics_dict = getTopicsDict(cid_list)
+        topics_dict = getTweetTopicsDict(cid_list)
         new_collection1.insert_one({"group":group, "tweet_topics": topics_dict})
 
-        industry_data = getAggregateIndustryData(cid_list)
+        industry_data = getIndustryData(cid_list)
         new_collection2.insert_one({"group":group, "industry": industry_data})
 
+        statements_dict = getStatementTopicsDict(cid_list)
+        new_collection3.insert_one({"group":group, "statement_topics": statements_dict})
 
-# updates a list of dictionaries containing demographic and financial information on congresspeople to our database 
+# updates every congressperson's info with their twitter handle 
 def getTwitterProfilePics():
     client = pymongo.MongoClient("mongodb://localhost:27017/")
     db = client['comps']
@@ -220,14 +244,11 @@ def getTwitterProfilePics():
     for dic in congresspeople.find():
         twitter_handle = dic["twitter"]
         congresspeople.find_one_and_update({"opensecrets_id": dic["opensecrets_id"]}, {"$set": {"profile_pic": getProfilePic(twitter_handle)}})
-getTwitterProfilePics()
         
-
-
-
-
-
-
-        
-    
-
+def main():
+    # get_politician_data() # get all summary information for congresspeople
+    getTweetTopicData() # get topic distribution for all tweets
+    getStatementTopicData() # get topic distribution for all statements
+    saveAggregateData() # calculate and save aggregate topic and industry data for Republican, Democrat, Senator, Representative
+    getTwitterProfilePics() # save all profile pictures 
+main()
