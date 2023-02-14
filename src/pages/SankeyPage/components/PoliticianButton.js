@@ -30,17 +30,13 @@ function PoliticianButton( data ) {
                 value: person.id,
             });	
         };
-        // dispatch({
-        //     type: 'UPDATE_BUTTONS',
-        //     value: person.id,
-        // });	
 
-        dispatch({
-            type: 'UPDATE_BUTTONS', 
-            party: filterStuff.party,
-            chamber: filterStuff.chamber,
-            selectedStates: filterStuff.selectedStates,
-        });
+        // dispatch({
+        //     type: 'UPDATE_BUTTONS', 
+        //     party: filterStuff.party,
+        //     chamber: filterStuff.chamber,
+        //     selectedStates: filterStuff.selectedStates,
+        // });
     };
     
     return (

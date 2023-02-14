@@ -4,10 +4,10 @@ import '../node_modules/bootstrap/dist/css/bootstrap.min.css'
 import HomePage from './pages/HomePage/index.js'
 import AboutUs from './pages/AboutPage/index.js'
 import NavbarBand from './components/Navbar.js'
-import IndustryPage from './pages/IndustryPage';
-import PersonPage from './pages/PersonPage';
-import CongressPage from './pages/CongressPage'
-import BarChartPage from './pages/BarChartPage';
+// import IndustryPage from './pages/IndustryPage';
+// import PersonPage from './pages/PersonPage';
+// import CongressPage from './pages/CongressPage'
+// import BarChartPage from './pages/BarChartPage';
 import SankeyPage from './pages/SankeyPage';
 
 

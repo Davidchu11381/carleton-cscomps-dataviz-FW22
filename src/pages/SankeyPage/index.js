@@ -1,5 +1,5 @@
 import React from 'react'
-import { Col, Row, Container, Stack, Form } from 'react-bootstrap'
+import { Col, Row, Container, Stack, Form, DropdownButton, Card, Button } from 'react-bootstrap'
 import SankeyChart from '../HomePage/components/SankeyChart';
 import { useEffect, useReducer, useState, useRef } from 'react';
 import PoliticianButton from './components/PoliticianButton';
@@ -43,6 +43,8 @@ function SankeyPage() {
     const addIds = [];
     const apiCallCount = useRef(0);
 
+    // const [example, setExample] = useState(style.hide);
+
     const stateList = ['Alabama','Alaska','Arizona','Arkansas',
         'California','Colorado','Connecticut','Delaware','Florida',
         'Georgia','Hawaii','Idaho','Illinois','Indiana','Iowa',
@@ -66,9 +68,8 @@ function SankeyPage() {
             return (types.map(type => <SankeyChart group={type}/>))
         }
     }
-    
-    function displayButtons() {
 
+    function displayButtons() {
         if (filters.polList.size !== 0) {
             var buttonArray = [ ...filters.polList.entries() ];
             return (buttonArray.map(person => 
@@ -82,8 +83,33 @@ function SankeyPage() {
             <PoliticianButton politician={{name: person.name, id: person.id}} reduc={{data: filters, func: dispatch}} state={true}></PoliticianButton>));
     }
 
+    function doThis() {
+        return (
+            <Card>
+                <Card.Body>This is some text within a card body.</Card.Body>
+                <Row lg={4} md={4}>
+                    {displayButtons()}
+                </Row>
+            </Card>
+        )
+    }
+
     function filterItems(arr, query) {
         return arr.filter((el) => el.toLowerCase().includes(query.toLowerCase()));
+    }
+
+    const updateStateList = (event) => {
+        if (event.target.checked) {
+            dispatch({
+                type: 'ADD_STATE',
+                value: event.target.id,
+            })
+        } else {
+            dispatch({
+                type: 'REMOVE_STATE',
+                value: event.target.id,
+            })
+        }
     }
 
     const handleFilter = (event) => {        
@@ -187,6 +213,32 @@ function SankeyPage() {
    
     return (
     <Container>
+        <Row>
+            <p>INCLUDE SOME INFORMATION TO ON HOW TO USE THIS PART OF THE SITE</p>
+        </Row>
+        {/* this will contain the filtering buttons and such */}
+        <Row lg={3}>
+
+            {/* filter by party */}
+            <Col>
+                <Form.Select aria-label="party-select" 
+                    size="sm"
+                    id="party"
+                        onChange={(event) => {
+                        dispatch({
+                            type: 'UPDATE_BUTTONS', 
+                            party: event.target.value,
+                            chamber: event.target.value,
+                            selectedStates: filters.selectedStates,
+                        })
+                    }}>
+                    <option value="">Party</option>
+                    <option value="Democrat">Democrat</option>
+                    <option value="Republican">Republican</option>
+                    <option value="Other">Other</option>
+                </Form.Select>
+            </Col>
+        </Row>
         <Row md={2} lg={2}>
             <Col lg={4}>
                 <Stack gap={2}>
@@ -223,10 +275,61 @@ function SankeyPage() {
                 </Row>
                 </Stack>
             </Col>
+
+            {/* filter by chamber */}
             <Col>
-                <h3>Sankey Diagrams goes here</h3>
-                {displaySankey()}
+                <Form.Select aria-label="chamber-select"
+                    size="sm"
+                    id="chamber"
+                    onChange={(event) => {
+                        dispatch({
+                            type: 'UPDATE_BUTTONS', 
+                            party: filters.party,
+                            chamber: event.target.value,
+                            selectedStates: filters.selectedStates,
+                        });
+                    }}>
+                    <option value="">Chamber</option>
+                    <option value="House">House of Representatives</option>
+                    <option value="Senate">United States Senate</option>
+                </Form.Select>
             </Col>
+
+            {/* filter by state */}
+            <Col>
+            <DropdownButton id="dropdown-basic-button" title="States">
+                {stateAbbrv.map((state) => (
+                    <Form.Check 
+                    type={'checkbox'}
+                    onChange={updateStateList}
+                    id={state}
+                    label={state} />
+                ))}
+            </DropdownButton>
+            </Col>
+            <Col>
+                <Button 
+                    variant="primary"
+                    // onClick={setExample(style.notHide)}
+                >Display Politicians</Button>
+            </Col>
+        </Row>
+        <Row>
+        <div className={style.hide}>
+        paragragh</div>
+            <Card>
+                <Card.Body>This is some text within a card body.</Card.Body>
+                <Row lg={4} md={4}>
+                    {displayButtons()}
+                </Row>
+            </Card>
+            {/* </div> */}
+        </Row>
+        {displayCoolButtons()}
+
+        {/* where the sankey diagrams will be saved */}
+        <Row>
+
         </Row>
     </Container>
     );

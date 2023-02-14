@@ -12,6 +12,14 @@
     justify-content: space-around;
 }
 
+.hide {
+    display: none;
+}
+
+.notHide {
+    display: block;
+}
+
 .huh {
     background-color: red;
 }
