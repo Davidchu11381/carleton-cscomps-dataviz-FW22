@@ -10,28 +10,27 @@ import { ToggleButton } from 'react-bootstrap';
 
 function GroupSelectionButton( data ) {    
     const dispatch = data.func;
-    const info = data.type;
+    const type = data.type;
     const [initial, setInitial] = useState(false);
 
-    function updateList (type, status) {
-        
-        if (status === false) {
+    function updateList () {
+        if (type === "chamber") {
             dispatch({
-                type: 'REMOVE_VISUAL',
-                value: type,
-            });	
-        } else {
+                type: 'UPDATE_CHAMBER',
+                value: data.id,
+            })
+        } else if (type === "party") {
             dispatch({
-                type: 'ADD_VISUAL',
-                value: type,
-            });	
-        };
+                type: 'UPDATE_PARTY',
+                value: data.id,
+            })
+        }
     };
     
     return (
         <ToggleButton
             className="m-1"
-            id={info}
+            id={data.id}
             type="checkbox"
             variant="outline-primary"
             checked={initial}
@@ -39,10 +38,10 @@ function GroupSelectionButton( data ) {
             value="1"
             onChange={(e) => {
                 setInitial(e.currentTarget.checked);
-                updateList(info, e.currentTarget.checked);
+                updateList();
             }}
         >
-            {info}
+            {data.value}
         </ToggleButton>
     );
 }
