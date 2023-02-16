@@ -26,9 +26,9 @@ class SankeyChart extends Component {
     if (this.group === undefined) { //cid list
       var data = {}
      // var cids = this.cid_list.split(',');
-    
-
-      var cids = Object.keys(this.cid_map)
+      var cids = [ ... this.cid_map.keys() ]
+      // var cids = Object.keys(this.cid_map)
+      console.log(this.cid_map)
       console.log("cids", cids)
       for (let cid in cids) {
         console.log("cid:", cid);
@@ -49,7 +49,7 @@ class SankeyChart extends Component {
         ind_topic_dict["statement_topics"] = resultStatements;
         data[cids[cid]] = ind_topic_dict;
       }
-
+      console.log("this is the datain sankey", data)
       return(data)
 
     } else { //group
@@ -67,7 +67,7 @@ class SankeyChart extends Component {
     var tweet_sankey_list = [['From', 'To', 'Weight']]
     var statement_sankey_list = [['From', 'To', 'Weight']]
     for (let cid in data) {
-      var memberName = this.cid_map[cid]
+      var memberName = this.cid_map.get(cid)
       console.log("memberName:", memberName)
       console.log("data[cid]:", data[cid])
       var industries = data[cid].industry.industry

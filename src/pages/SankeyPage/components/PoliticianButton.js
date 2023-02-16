@@ -10,7 +10,7 @@ import { ToggleButton } from 'react-bootstrap';
 
 function PoliticianButton( data ) {    
     const dispatch = data.reduc.func;
-    const filterStuff = data.reduc.data;
+    const filters = data.reduc.data;
     const info = data.politician;
     const hahaState = data.state;
 
@@ -30,13 +30,13 @@ function PoliticianButton( data ) {
                 value: person.id,
             });	
         };
-
-        // dispatch({
-        //     type: 'UPDATE_BUTTONS', 
-        //     party: filterStuff.party,
-        //     chamber: filterStuff.chamber,
-        //     selectedStates: filterStuff.selectedStates,
-        // });
+        console.log("here");
+        dispatch({
+            type: 'DISPLAY_BUTTONS', 
+            value: "",
+            buttonState: false,
+        });
+        console.log("did it")
     };
     
     return (

@@ -49,7 +49,7 @@ export const reducer = (state, action) => {
                     showHouse: true,
                     houseIndex: 1,
                 }
-            } else if (value === "Senate") {
+            } else if (value === "Senator") {
                 return {
                     ...state,
                     showSen: true,
@@ -82,7 +82,7 @@ export const reducer = (state, action) => {
                     showHouse: false,
                     houseIndex: 0,
                 }
-            } else if (value === "Senate") {
+            } else if (value === "Senator") {
                 return {
                     ...state,
                     showSen: false,

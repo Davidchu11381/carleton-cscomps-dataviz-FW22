@@ -9,7 +9,8 @@ export const initialState = {
 	selectedPoliticians: new Map(),
 	filteredPoliticians: new Map(),
 	polList: new Map(),
-	// groupSelected: new Map(),
+	displayPoli: new Map (),
+	sankeyReady: false,
 
 	// used for filtering
     party: [],
@@ -23,6 +24,14 @@ export const reducer = (state, action) => {
 	let index;
 
 	switch (action.type) {
+
+		case 'DISPLAY_SANKEY':
+			console.log("this is hte buttonstate", state.buttonState);
+			return {
+				...state,
+				displayPoli: value,
+				sankeyReady: action.buttonState,
+			}
 
 		case 'UPDATE_PARTY':
 			if (state.party.includes(value)) {
@@ -59,24 +68,22 @@ export const reducer = (state, action) => {
 		
 		// related to selected politician window
 		case 'ADD_PERSON':
+			var haha = false;
 			state.selectedPoliticians.set(value, state.polList.get(value));
 			return {
 				...state,
+				sankeyReady: haha,
 			}
 		
 		case 'REMOVE_PERSON':
-			// index = state.selectedPoliticians.indexOf(value);
-			// state.selectedPoliticians.splice(index, 1);
+			var hehe = false;
 			state.selectedPoliticians.delete(value);
 			return {
 				...state,
+				sankeyReady: hehe,
 			}
 		
 		case 'DISPLAY_BUTTONS': 
-			// state.chamber = action.chamber;
-			// state.party = action.party;
-			// state.selectedStates = action.selectedStates;
-			// var orgList = state.originalPolList;
 			var arrayPolList = [ ...state.polList ];
 
 			if (state.chamber.length === 1) {
@@ -103,13 +110,10 @@ export const reducer = (state, action) => {
 			
 			state.filteredPoliticians.clear();
 			arrayPolList.forEach(per => state.filteredPoliticians.set(per[0], per[1]));
-			
-			// // this is working!
-			// state.selectedPoliticians.forEach((value, key) => state.filteredPoliticians.delete(key));
+			state.selectedPoliticians.forEach((value, key) => state.filteredPoliticians.delete(key));
 			
 			return {
 			    ...state,
-			    // filteredPoliticians: orgList,
 			}
 		
 		default:

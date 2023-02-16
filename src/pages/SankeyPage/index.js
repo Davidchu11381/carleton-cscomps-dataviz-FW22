@@ -26,6 +26,13 @@ function SankeyPage() {
     const fetchDelay = [];
     const addIds = [];
     const apiCallCount = useRef(0);
+    const [isLoading, setLoading] = useState(false);
+    const [dataThere, setDataThere] = useState(false);
+
+    // to load sankey charts
+    const cid_map2 = new Map();
+    cid_map2.set("N00003389", "Jane Smith");
+    cid_map2.set("N00007360", "John Doe");
 
     const stateAbbrv = [ 'AK', 'AL', 'AR', 'AZ', 'CA', 'CO', 'CT', 'DC', 'DE', 'FL', 'GA',
     'HI', 'IA', 'ID', 'IL', 'IN', 'KS', 'KY', 'LA', 'MA', 'MD', 'ME',
@@ -33,19 +40,46 @@ function SankeyPage() {
     'NV', 'NY', 'OH', 'OK', 'OR', 'PA', 'RI', 'SC', 'SD', 'TN', 'TX',
     'UT', 'VA', 'VT', 'WA', 'WI', 'WV', 'WY'];
 
-    // function displaySankey() {
-    //     if (filters.groupSelected.size !== 0) {
-    //         // note : only works with republican / democrat selection
-    //         var types = [ ...filters.groupSelected.keys() ];
-    //         return (types.map(type => <SankeyChart group={type}/>))
-    //     }
-    // }
+    function displaySankey() {
+        if (filters.selectedPoliticians.size !== 0) {
+            let data = new Map();
+            filters.selectedPoliticians.forEach((el) => {
+                data.set(el.id, el.name);
+            });
+            setDataThere(true);
 
-    function theButtons() {
-        var list = [ ...filters.filteredPoliticians ];
-        var buttonList = [];
+            dispatch({
+                type: 'DISPLAY_SANKEY',
+                value: data,
+                buttonState: true,
+            })            
+        }
+    }
+
+    useEffect(() => {
+        console.log("done loading everything")
+        if (isLoading) {
+            displaySankey();
+            setLoading(false);
+        }
+    }, [isLoading]);
+
+    const loading = () => setLoading(true);
+
+    function theFilteredButtons() {
+        let list = [ ...filters.filteredPoliticians ];
+        let buttonList = [];
         list.map((pol) => {
             buttonList.push(<PoliticianButton politician={{name: pol[1].name, id: pol[0]}} reduc={{data: filters, func: dispatch}} state={false}></PoliticianButton>);
+        })
+        return buttonList;
+    }
+
+    function theSelectedButtons() {
+        let list = [ ...filters.selectedPoliticians ];
+        let buttonList = [];
+        list.map((pol) => {
+            buttonList.push(<PoliticianButton politician={{name: pol[1].name, id: pol[0]}} reduc={{data: filters, func: dispatch}} state={true}></PoliticianButton>);
         })
         return buttonList;
     }
@@ -55,12 +89,6 @@ function SankeyPage() {
             type: 'DISPLAY_BUTTONS',
             value: "",
         })
-    }
-
-    function displayCoolButtons() {
-        var buttonArray = [ ...filters.selectedPoliticians.values() ];
-        return(buttonArray.map(person => 
-            <PoliticianButton politician={{name: person.name, id: person.id}} reduc={{data: filters, func: dispatch}} state={true}></PoliticianButton>));
     }
 
     // collecting the politician ids
@@ -123,7 +151,7 @@ function SankeyPage() {
     <Container>
 
         <Row md={2} lg={2}>
-            <Col lg={4}>
+            <Col lg={5}>
                 <Stack gap={1}>
                     <div className="pt-3 h3">Overview</div>
                     <p className="lead mb-1">
@@ -140,9 +168,9 @@ function SankeyPage() {
                     <Row>
                     <div className="pt-3 h4">By Party</div>
                         <Row lg={4}>
-                        <GroupSelectionButton type="party" id="Republican" value="Republican" func={dispatch}></GroupSelectionButton>
-                        <GroupSelectionButton type="party" id="Democrat" value="Democrat" func={dispatch}></GroupSelectionButton>
-                        <GroupSelectionButton type="party" id="Independent" value="Independent" func={dispatch}></GroupSelectionButton>
+                            <GroupSelectionButton type="party" id="Republican" value="Republican" func={dispatch}></GroupSelectionButton>
+                            <GroupSelectionButton type="party" id="Democrat" value="Democrat" func={dispatch}></GroupSelectionButton>
+                            <GroupSelectionButton type="party" id="Independent" value="Independent" func={dispatch}></GroupSelectionButton>
                         </Row>
                     </Row>
                     <Row>
@@ -167,26 +195,39 @@ function SankeyPage() {
 
                     {/* filtered politcians */}
                     <Col>
-                        {theButtons()}
-
+                        <div className="pt-3 h4">Filtered Politicians</div>
+                        {theFilteredButtons()}
                     </Col>
-                    {/* selected politicians */}
-                        {theButtons()}
                     <Col>
-
+                        {/* selected politicians */}
+                        <div className="pt-3 h4">Selected Politicians</div>
+                        {theSelectedButtons()}
                     </Col>
                 </Row>
-
-                {/* {
-                    filters.filteredPoliticians.forEach((pol) => {
-                    return (
-                        <PoliticianButton politician={{name: pol.name, id: pol.id}} reduc={{data: filters, func: dispatch}} state={true}></PoliticianButton>
-                    )
-                })} */}
-                
+                <Row>
+                    <Button
+                        onClick={
+                            !isLoading? loading : null}
+                        disabled={isLoading}
+                        >
+                        {isLoading? 'Loading...' : 'Display Sankey'}
+                    </Button>
+                </Row>
+                <Row>
+                    {/* {[ ...filters.selectedPoliticians ].map((el) => { 
+                        console.log("the different politicians:", el);
+                        let haha = new Map();
+                        haha.set(el.id, el.name); 
+                        console.log("inside loop = this is the given data:", haha);                     
+                        return <SankeyChart cid_map={haha}/>
+                    })} */}
+                    {filters.sankeyReady? <SankeyChart cid_map={filters.displayPoli}/> : null}
+                </Row>                
             </Col>
         </Row>
-        {/* {displayCoolButtons()} */}
+        {/* <div className={style.hide}>
+            <SankeyChart cid_map={cid_map2}/>
+        </div> */}
     </Container>
     );
 }

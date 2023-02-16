@@ -12,10 +12,8 @@ import { reducer, initialState } from './components/reducer';
 function HomePage() {
 
     const [filters, dispatch] = useReducer(reducer, initialState);
-    // const [showRepublican, changeShowRep] = useState("Show Republicans")
 
     const addSankey = (id) => {
-        // changeShowRep("Hide");
 
         dispatch({
             type: 'ADD_VIZ',
@@ -28,30 +26,25 @@ function HomePage() {
             type: 'REMOVE_VIZ',
             value: id,
         });
-        // if (showRepublican !== "Show Republicans") {
-        //     changeShowRep("Show Republicans");
-        // }
     }
 
-    function displaySankeys() {
-        if (filters.desiredSankeys.length !== 0) {
-            filters.desiredSankeys.map(type => {
-                return (<SankeyChart group={type}/>)
-            })
-
-            // {stateAbbrv.map(state => {
-            //     return (<StateButton state={state} filters={filters} func={dispatch}></StateButton>)
-            // })}
-            // <SankeyChart group="Representative"/>
-        }
-        return (<p>This is where the sankeys would appear</p>)
-    }
+    // function displaySankeys() {
+    //     if (filters.desiredSankeys.length !== 0) {
+    //         filters.desiredSankeys.map(type => {
+    //             return (<SankeyChart group={type}/>)
+    //         })
+    //     }
+    //     return (<p>This is where the sankeys would appear</p>)
+    // }
 
     useEffect(() => {
         console.log(filters);
     }, [filters]);
 
     const cid_map_test = {"N00003389": "Jane Smith", "N00007360": "John Doe"}
+    const cid_map2 = new Map();
+    cid_map2.set("N00003389", "Jane Smith");
+    cid_map2.set("N00007360", "John Doe");
 
     return (
         <Container>
@@ -111,24 +104,16 @@ function HomePage() {
                         {filters.houseText[filters.houseIndex]}
                     </Button> {' '}
                     <Button 
-                        id="Senate"
+                        id="Senator"
                         onClick={(e) => 
                         !filters.showSen ? addSankey(e.currentTarget.id) : removeSankey(e.currentTarget.id)}
                         >    
                         {filters.senText[filters.senIndex]}
                     </Button>
                 </Row>
-                {/* {displaySankeys()} */}
                 {filters.desiredSankeys.map(type => {
-                return (<SankeyChart group={type}/>)
-                })}
-                <div className={style.hide}>
-                    <SankeyChart cid_map={cid_map_test}/>
-                </div>
-                {/* <SankeyChart group="Republican"/>
-                <SankeyChart group="Democrat"/>
-                <SankeyChart group="Senator"/>
-                <SankeyChart group="Representative"/> */}
+                    return (<SankeyChart group={type}/>)
+                    })}
             </div>
         </Container>
     );
