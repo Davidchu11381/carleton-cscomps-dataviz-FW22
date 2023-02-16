@@ -12,23 +12,13 @@ import { ToggleButton } from 'react-bootstrap';
 function StateButton( data ) {
     const dispatch = data.func;
     const info = data.state;
-    const filters = data.filters;
-
     const [initial, setInitial] = useState(false);
 
-    function updateList (state) {
-        
+    function updateList () {
         dispatch({
-            type: 'REMOVE_STATE',
-            value: state.id,
-        });	
-        dispatch({
-            type: 'UPDATE_BUTTONS', 
-            party: filters.party,
-            chamber: filters.party,
-            selectedStates: filters.selectedStates,
-        });
-        
+            type: 'UPDATE_STATES',
+            value: info,
+        })       
     };
     
     return (
@@ -42,7 +32,7 @@ function StateButton( data ) {
             value="1"
             onChange={(e) => {
                 setInitial(e.currentTarget.checked);
-                updateList(e.currentTarget);
+                updateList();
             }}
         >
             {info}

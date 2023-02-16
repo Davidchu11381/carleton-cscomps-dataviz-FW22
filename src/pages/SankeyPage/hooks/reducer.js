@@ -7,114 +7,137 @@ export const initialState = {
 
 	// used for display
 	selectedPoliticians: new Map(),
-	filteredPoliticians: [],
-	filteredPoliticiansMap: new Map(),
+	filteredPoliticians: new Map(),
 	polList: new Map(),
-	// groupSelected: new Map(),
+	displayPoli: new Map (),
+	sankeyReady: false,
 
 	// used for filtering
-    party: "",
-    chamber: "",
+    party: [],
+    chamber: [],
     selectedStates: [],
 };
 
 export const reducer = (state, action) => {
+	console.log(action.type, action.value);
 	const value = action.value;
 	let index;
 
 	switch (action.type) {
 
-		// related to party form input
-		case 'UPDATE_PARTY':
+		case 'DISPLAY_SANKEY':
+			console.log("this is hte buttonstate", state.buttonState);
 			return {
 				...state,
-				party: value,
+				displayPoli: value,
+				sankeyReady: action.buttonState,
+			}
+
+		case 'UPDATE_PARTY':
+			if (state.party.includes(value)) {
+				index = state.party.indexOf(value);
+				state.party.splice(index, 1);
+			} else {
+				state.party.push(value);
+			}
+			return {
+				...state,
 			}
 		
 		case 'UPDATE_CHAMBER':
+			if (state.chamber.includes(value)) {
+				index = state.chamber.indexOf(value);
+				state.chamber.splice(index, 1);
+			} else {
+				state.chamber.push(value);
+			}
 			return {
 				...state,
-				chamber: value,
 			}
 		
-		// related to state dropdown
-		case 'ADD_STATE':
-			if (state.selectedStates.includes(value)) {
-				return {
-					...state,
-				}
+		case 'UPDATE_STATES':
+			if(state.selectedStates.includes(value)) {
+				index = state.selectedStates.indexOf(value);
+				state.selectedStates.splice(index, 1);
 			} else {
 				state.selectedStates.push(value);
-				return {
-					...state,
-				}
-			}	
-		
-		case 'REMOVE_STATE':
-			index = state.selectedStates.indexOf(value);
-			state.selectedStates.splice(index, 1);
+			}
 			return {
 				...state,
 			}
 		
 		// related to selected politician window
 		case 'ADD_PERSON':
+			var haha = false;
 			state.selectedPoliticians.set(value, state.polList.get(value));
 			return {
 				...state,
+				sankeyReady: haha,
 			}
 		
 		case 'REMOVE_PERSON':
-			// index = state.selectedPoliticians.indexOf(value);
-			// state.selectedPoliticians.splice(index, 1);
+			var hehe = false;
 			state.selectedPoliticians.delete(value);
 			return {
 				...state,
+				sankeyReady: hehe,
 			}
 		
-		// case 'UPDATE_BUTTONS': 
-		// 	state.chamber = action.chamber;
-		// 	state.party = action.party;
-		// 	state.selectedStates = action.selectedStates;
-		// 	var orgList = state.originalPolList;
+		case 'DISPLAY_BUTTONS': 
+			var arrayPolList = [ ...state.polList ];
+
+			if (state.chamber.length === 1) {
+				arrayPolList = arrayPolList.filter((el) => el[1].chamber.includes(state.chamber[0]));
+			}
+
+			if (state.party.length === 1) {
+				arrayPolList = arrayPolList.filter((el) => el[1].party.includes(state.party[0]));
+			} else if (state.party.length === 2) {
+				var first = arrayPolList.filter((el) => el[1].party.includes(state.party[0]));
+				var second = arrayPolList.filter((el) => el[1].party.includes(state.party[1]));
+				arrayPolList = first.concat(second);
+			}
+
+			if (state.selectedStates.length !== 0) {
+				let total = [];
+				let inter;
+				state.selectedStates.map((state) => {
+					inter = arrayPolList.filter((el) => el[1].state.includes(state));
+					total = total.concat(inter);
+				})
+				arrayPolList = total;
+			}
 			
-		// 	if (state.chamber !== "") {
-		// 	    orgList = orgList.filter((el)=> el.chamber.includes(state.chamber));
-		// 	} 
+			state.filteredPoliticians.clear();
+			arrayPolList.forEach(per => state.filteredPoliticians.set(per[0], per[1]));
+			state.selectedPoliticians.forEach((value, key) => state.filteredPoliticians.delete(key));
 			
-		// 	if (state.party !== "") {
-		// 	    if (state.party === "Democrat" || state.party === "Republican") {
-		// 	        orgList = orgList.filter((el)=> el.party.includes(state.party))
-		// 	    } else {
-		// 	        // filters out the two main parties
-		// 	        orgList = orgList.filter(el => { return !el.party.includes("Democrat")});
-		// 	        orgList = orgList.filter(el => { return !el.party.includes("Republican")});
-		// 	    }
-		// 	}
-			
-		// 	if (state.selectedStates.length !== 0) {
-		// 	    var theEnd = [];
-		// 	    var inter = [];
-		// 	    state.selectedStates.map((state) => (
-		// 	        inter = orgList.filter((el) => el.state.includes(state)),
-		// 	        inter.forEach(pol => theEnd.push(pol))
-		// 	    ));
-		// 	    orgList = theEnd;
-		// 	}
-			
-		// 	state.filteredPoliticiansMap.clear();
-		// 	orgList.forEach(per => state.filteredPoliticiansMap.set(per.id, per));
-			
-		// 	// this is working!
-		// 	state.selectedPoliticians.forEach((value, key) => state.filteredPoliticiansMap.delete(key));
-			
-		// 	return {
-		// 	    ...state,
-		// 	    filteredPoliticians: orgList,
-		// 	}
-			
+			return {
+			    ...state,
+			}
 		
 		default:
 			return state;
 	}
 };
+
+// OLD CODE
+
+	// case 'ADD_STATE':
+	// 	if (state.selectedStates.includes(value)) {
+	// 		return {
+	// 			...state,
+	// 		}
+	// 	} else {
+	// 		state.selectedStates.push(value);
+	// 		return {
+	// 			...state,
+	// 		}
+	// 	}	
+
+	// case 'REMOVE_STATE':
+	// 	index = state.selectedStates.indexOf(value);
+	// 	state.selectedStates.splice(index, 1);
+	// 	return {
+	// 		...state,
+	// 	}
