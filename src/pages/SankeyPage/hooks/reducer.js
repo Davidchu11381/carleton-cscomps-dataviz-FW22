@@ -110,7 +110,7 @@ export const reducer = (state, action) => {
 			
 			state.filteredPoliticians.clear();
 			arrayPolList.forEach(per => state.filteredPoliticians.set(per[0], per[1]));
-			state.selectedPoliticians.forEach((value, key) => state.filteredPoliticians.delete(key));
+			// state.selectedPoliticians.forEach((value, key) => state.filteredPoliticians.delete(key));
 			
 			return {
 			    ...state,

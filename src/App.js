@@ -17,13 +17,13 @@ function App() {
         <Router>
             <NavbarBand />
             <Routes>
-                <Route exact path='/' element={<HomePage />} />
+                <Route exact path='/' element={<SankeyPage />} />
                 <Route path='/aboutUs' element={<AboutUs />} />
                 {/* <Route path='/industry' element={<IndustryPage />} /> */}
                 {/* <Route path='/individual' element={<PersonPage />} /> */}
                 {/* <Route path='/barchart' element={<BarChartPage />} /> */}
                 {/* <Route path='/congress' element={<CongressPage />} /> */}
-                <Route path='/congress_data' element={<SankeyPage />} />
+                <Route path='/overview' element={<HomePage />} />
             </Routes>
         </Router>
     </>

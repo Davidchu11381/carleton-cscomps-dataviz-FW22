@@ -23,3 +23,19 @@
 .huh {
     background-color: red;
 }
+
+.topPart {
+    height: 40vh;
+    overflow-y: auto;
+}
+
+.buttonListing {
+    background-color: lightblue;
+    min-height: 5vh;
+    max-height: 25vh;
+    overflow-y: auto;
+}
+
+.filterSystem {
+    background-color: lightcoral;
+}

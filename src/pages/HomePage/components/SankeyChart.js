@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import { Col, Row, Container, Stack, Form, Card } from 'react-bootstrap'
 import { Placeholder } from 'react-bootstrap';
 import Chart from 'react-google-charts';
 
@@ -209,38 +210,75 @@ class SankeyChart extends Component {
     let chartName = this.getChartName()
 
     return (
+      <Container>
       <div className="container mt-5">
-        <h2>{chartName}</h2>
-        <p>Funding</p>
-        <Chart
-          width={'200'}
-          height={'350px'}
-          chartType="Sankey"
-          loader={<div>Loading Chart</div>}
-          data={indData}
-          rootProps={{ 'data-testid': '1' }}
-        />
+        <Row lg={2} md={2}>
+          {/* the sankey */}
+          <Col>
+            <h2>{chartName}</h2>
+              <p>Funding</p>
+              <Chart
+                width={'200'}
+                height={'350px'}
+                chartType="Sankey"
+                loader={<div>Loading Chart</div>}
+                data={indData}
+                rootProps={{ 'data-testid': '1' }}
+              />
+          </Col>
+            {/* the legend about funding */}
+          <Col>
+            <Card>
+              <Card.Title>Funding</Card.Title>
+              <Card.Body>information</Card.Body>
+              <Card.Footer><a href="/info#funding">More Information About Industry Funding Data</a></Card.Footer>
+            </Card>
+          </Col>
+        </Row>
         <p></p>
-        <p>Tweets</p>
-        <Chart
-          width={'200'}
-          height={'350px'}
-          chartType="Sankey"
-          loader={<div>Loading Chart</div>}
-          data={tweetData}
-          rootProps={{ 'data-testid': '1' }}
-        />
+        <Row lg={2} md={2}>
+          <Col>
+            <p>Tweets</p>
+            <Chart
+              width={'200'}
+              height={'350px'}
+              chartType="Sankey"
+              loader={<div>Loading Chart</div>}
+              data={tweetData}
+              rootProps={{ 'data-testid': '1' }}
+            />
+          </Col>
+          <Col>
+            <Card>
+              <Card.Title>Tweets</Card.Title>
+              <Card.Body>information</Card.Body>
+              <Card.Footer><a href="/info#tweets">More Information About Tweet Data</a></Card.Footer>
+            </Card>
+          </Col>
+        </Row>
         <p></p>
-        <p>Statements</p>
-        <Chart
-          width={'200'}
-          height={'350px'}
-          chartType="Sankey"
-          loader={<div>Loading Chart</div>}
-          data={statementData}
-          rootProps={{ 'data-testid': '1' }}
-        />
+        <Row lg={2} md={2}>
+          <Col>
+            <p>Statements</p>
+            <Chart
+              width={'200'}
+              height={'350px'}
+              chartType="Sankey"
+              loader={<div>Loading Chart</div>}
+              data={statementData}
+              rootProps={{ 'data-testid': '1' }}
+            />
+          </Col>
+          <Col>
+            <Card>
+              <Card.Title>Statements</Card.Title>
+              <Card.Body>information</Card.Body>
+              <Card.Footer><a href="/info#statements">More Information About Statement Data</a></Card.Footer>
+            </Card>
+          </Col>
+        </Row>
       </div>
+      </Container>
     )
   }
 }
