@@ -358,6 +358,24 @@ def getCongresspeopleByState(state):
     response.headers.add('Access-Control-Allow-Origin', 'http://localhost:3000')
     return response
 
+@app.route('/allSummaries', methods = ['GET'])
+def getAllSummaries():
+    allSen = getAllSenators("total")
+    allRep = getAllRepresentatives("total")
+    response = jsonify({"sen": allSen, "rep": allRep})
+    # client = pymongo.MongoClient("mongodb://localhost:27017/")
+    # db = client['comps']
+    # collection = db['congresspeople']
+    # list = []
+    # for dict in collection.find({"state": state}):
+    #     dict.pop("_id")
+    #     list.append(dict)
+
+    # cid_list = [dict["opensecrets_id"] for dict in list]
+    # response = jsonify({"data": ",".join(cid_list)})
+    response.headers.add('Access-Control-Allow-Origin', 'http://localhost:3000')
+    return response
+
 # driver function
 if __name__ == '__main__':
     app.run(debug = True)

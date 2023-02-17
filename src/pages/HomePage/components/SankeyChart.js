@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { Placeholder } from 'react-bootstrap';
 import Chart from 'react-google-charts';
+import { tweetTopicLabels, statementTopicLabels} from '../topicLabels.js';
 
 class SankeyChart extends Component {
 
@@ -90,8 +91,10 @@ class SankeyChart extends Component {
 
       for (let topic in tweet_topics) {
         //calculate weight to scale first
+        let topic_name = tweetTopicLabels[topic]
+        console.log("topic, topic_name", topic, topic_name)
         let sankey_weight = parseInt(tweet_topics[topic]) / tweet_topic_total
-        tweet_sankey_list.push([memberName, topic, sankey_weight]) 
+        tweet_sankey_list.push([memberName, topic_name, sankey_weight]) 
       }
 
       // Statements
@@ -102,9 +105,10 @@ class SankeyChart extends Component {
       }
 
       for (let topic in statement_topics) {
+        let topic_name = statementTopicLabels[topic]
         //calculate weight to scale first
         let sankey_weight = parseInt(statement_topics[topic]) / statement_topic_total
-        statement_sankey_list.push([memberName, topic, sankey_weight]) 
+        statement_sankey_list.push([memberName, topic_name, sankey_weight]) 
       }
     }
     return [ind_sankey_list, tweet_sankey_list, statement_sankey_list]
@@ -133,9 +137,11 @@ class SankeyChart extends Component {
     }
 
     for (let topic in tweet_topics) {
+      let topic_name = tweetTopicLabels[topic]
+      console.log("topic, topic_name", topic, topic_name)
       //calculate weight to scale first
       let sankey_weight = parseInt(tweet_topics[topic]) / tweet_topic_total
-      tweet_sankey_list.push([data.group, topic, sankey_weight]) 
+      tweet_sankey_list.push([data.group, topic_name, sankey_weight]) 
     }
 
     // Statements
@@ -146,9 +152,10 @@ class SankeyChart extends Component {
     }
 
     for (let topic in statement_topics) {
+      let topic_name = statementTopicLabels[topic]
       //calculate weight to scale first
       let sankey_weight = parseInt(statement_topics[topic]) / statement_topic_total
-      statement_sankey_list.push([data.group, topic, sankey_weight]) 
+      statement_sankey_list.push([data.group, topic_name, sankey_weight]) 
     }
   
     return([ind_sankey_list, tweet_sankey_list, statement_sankey_list])
