@@ -219,38 +219,6 @@ class SankeyChart extends Component {
     return (
       <Container>
       <div className="container mt-5">
-<<<<<<< HEAD
-        <h2>{chartName}</h2>
-        <p>Funding</p>
-        <Chart
-          width={'100'}
-          height={'350px'}
-          chartType="Sankey"
-          loader={<div>Loading Chart</div>}
-          data={indData}
-          rootProps={{ 'data-testid': '1' }}
-        />
-        <p></p>
-        <p>Tweets</p>
-        <Chart
-          width={'100'}
-          height={'350px'}
-          chartType="Sankey"
-          loader={<div>Loading Chart</div>}
-          data={tweetData}
-          rootProps={{ 'data-testid': '1' }}
-        />
-        <p></p>
-        <p>Statements</p>
-        <Chart
-          width={'100'}
-          height={'350px'}
-          chartType="Sankey"
-          loader={<div>Loading Chart</div>}
-          data={statementData}
-          rootProps={{ 'data-testid': '1' }}
-        />
-=======
         <Row lg={2} md={2}>
           {/* the sankey */}
           <Col>
@@ -316,7 +284,6 @@ class SankeyChart extends Component {
             </Card>
           </Col>
         </Row>
->>>>>>> 6945c9b36eed87f04b4bf6742f9f1492972c42a6
       </div>
       </Container>
     )
