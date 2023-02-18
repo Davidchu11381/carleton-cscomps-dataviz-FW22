@@ -27,12 +27,6 @@ function SankeyPage() {
     const addIds = [];
     const apiCallCount = useRef(0);
     const [isLoading, setLoading] = useState(false);
-    const [dataThere, setDataThere] = useState(false);
-
-    // to load sankey charts
-    const cid_map2 = new Map();
-    cid_map2.set("N00003389", "Jane Smith");
-    cid_map2.set("N00007360", "John Doe");
 
     const stateAbbrv = [ 'AK', 'AL', 'AR', 'AZ', 'CA', 'CO', 'CT', 'DC', 'DE', 'FL', 'GA',
     'HI', 'IA', 'ID', 'IL', 'IN', 'KS', 'KY', 'LA', 'MA', 'MD', 'ME',
@@ -46,8 +40,6 @@ function SankeyPage() {
             filters.selectedPoliticians.forEach((el) => {
                 data.set(el.id, el.name);
             });
-            setDataThere(true);
-
             dispatch({
                 type: 'DISPLAY_SANKEY',
                 value: data,
@@ -57,7 +49,6 @@ function SankeyPage() {
     }
 
     useEffect(() => {
-        console.log("done loading everything")
         if (isLoading) {
             displaySankey();
             setLoading(false);
@@ -70,7 +61,7 @@ function SankeyPage() {
         let list = [ ...filters.filteredPoliticians ];
         let buttonList = [];
         list.map((pol) => {
-            buttonList.push(<PoliticianButton politician={{name: pol[1].name, id: pol[0]}} reduc={{data: filters, func: dispatch}} state={false}></PoliticianButton>);
+            buttonList.push(<PoliticianButton politician={{name: pol[1].name, id: pol[0]}} reduc={{data: filters, func: dispatch}} state={true}></PoliticianButton>);
         })
         return buttonList;
     }
@@ -150,14 +141,31 @@ function SankeyPage() {
     return (
     <Container>
 
+        {/* the top w text and filter */}
         <Row md={2} lg={2}>
-            <Col lg={5}>
+            <Col>
+                
+                <div className="pt-3 h3">Overview</div>
+                <p className="lead mb-1">
+                    You can filter by chamber, party or state to see sankey diagrams
+                    of politicians with the selected features. 
+                </p>
+                <p>A paragraph of text that will provide some contenxt to the
+                    content on this page for a first-time user</p>
+
+                <Button className="mb-4 mt-4"
+                    onClick={displayButtons}
+                >
+                    Filter
+                </Button>
+            </Col>
+
+            {/* the filtering system */}        
+            <div className={style.topPart}>
+
+            <Col>
+                
                 <Stack gap={1}>
-                    <div className="pt-3 h3">Overview</div>
-                    <p className="lead mb-1">
-                        You can filter by chamber, party or state to see sankey diagrams
-                        of politicians with the selected features. 
-                    </p>
                     <Row>
                     <div className="pt-3 h4">By Chamber</div>
                         <Row lg={3}>
@@ -176,58 +184,71 @@ function SankeyPage() {
                     <Row>
                         
                     <div className="pt-3 h4">By State</div>
-                        {/* create a dropdown for the states and a variable for selected ones */}
-                        <Row lg={8} md={6}>
-                            {stateAbbrv.map(state => {
-                                return (<StateButton state={state} filters={filters} func={dispatch}></StateButton>)
-                            })}
-                        </Row>
+                    {/* create a dropdown for the states and a variable for selected ones */}
+                    <Row lg={8} md={6}>
+                        {stateAbbrv.map(state => {
+                            return (<StateButton state={state} filters={filters} func={dispatch}></StateButton>)
+                        })}
                     </Row>
-                        <Button className="mb-4 mt-4"
-                            onClick={displayButtons}
-                        >
-                            Filter
-                        </Button>
+                    <Row>
+                    </Row>
+                    </Row>
+                        
                 </Stack>
-            </Col>
+            </Col></div>
+        </Row>
+        <Row>
+            {/* listing of politcian buttons */}
+            <div className={style.buttonListing}>
             <Col>
-                <Row lg={2}>
+                <Row lg={5} md={4}>
 
-                    {/* filtered politcians */}
-                    <Col>
+                {theFilteredButtons()}
+
+                    {/* <Col>
                         <div className="pt-3 h4">Filtered Politicians</div>
                         {theFilteredButtons()}
                     </Col>
                     <Col>
-                        {/* selected politicians */}
                         <div className="pt-3 h4">Selected Politicians</div>
                         {theSelectedButtons()}
-                    </Col>
+                    </Col> */}
                 </Row>
-                <Row>
-                    <Button
-                        onClick={
-                            !isLoading? loading : null}
-                        disabled={isLoading}
-                        >
-                        {isLoading? 'Loading...' : 'Display Sankey'}
+            </Col></div>
+        </Row>
+        <Row lg={2} md={2}>
+            <Col>
+                <Button
+                    onClick={
+                        !isLoading? loading : null}
+                    disabled={isLoading}
+                    >
+                    {isLoading? 'Loading...' : 'Display Sankey'}
+                </Button>
+            </Col>
+            <Col>
+                <Button>
+                        Clear
                     </Button>
-                </Row>
-                <Row>
-                    {/* {[ ...filters.selectedPoliticians ].map((el) => { 
-                        console.log("the different politicians:", el);
-                        let haha = new Map();
-                        haha.set(el.id, el.name); 
-                        console.log("inside loop = this is the given data:", haha);                     
-                        return <SankeyChart cid_map={haha}/>
-                    })} */}
-                    {filters.sankeyReady? <SankeyChart cid_map={filters.displayPoli}/> : null}
-                </Row>                
             </Col>
         </Row>
-        {/* <div className={style.hide}>
-            <SankeyChart cid_map={cid_map2}/>
-        </div> */}
+        <Row>
+            {filters.sankeyReady? <SankeyChart cid_map={filters.displayPoli}/> : null}
+        </Row>
+        {/* need to hide this until display sankey is displayed */}
+        {/* <Row>
+            <Button>
+                Back to Top
+            </Button>
+        </Row> */}
+
+            {/* {[ ...filters.selectedPoliticians ].map((el) => { 
+                console.log("the different politicians:", el);
+                let haha = new Map();
+                haha.set(el.id, el.name); 
+                console.log("inside loop = this is the given data:", haha);                     
+                return <SankeyChart cid_map={haha}/>
+            })} */}
     </Container>
     );
 }

@@ -14,7 +14,7 @@ function NavbarBand() {
                 {/* <Nav.Link href="http://localhost:3000/">Home</Nav.Link> */}
                 {/* <Nav.Link href="http://localhost:3000/industry">Industry</Nav.Link> */}
                 {/* <Nav.Link href="http://localhost:3000/congress">Congress</Nav.Link> */}
-                <Nav.Link href="http://localhost:3000/congress_data"> Filter By Congress</Nav.Link>
+                <Nav.Link href="http://localhost:3000/overview"> Overview </Nav.Link>
                 {/* <Nav.Link href="http://localhost:3000/barchart">Bar Chart</Nav.Link> */}
                 <Nav.Link href="http://localhost:3000/aboutUs">About Us</Nav.Link>
             </Nav>
