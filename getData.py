@@ -246,9 +246,9 @@ def getTwitterProfilePics():
         congresspeople.find_one_and_update({"opensecrets_id": dic["opensecrets_id"]}, {"$set": {"profile_pic": getProfilePic(twitter_handle)}})
         
 def main():
-    get_politician_data() # get all summary information for congresspeople
-    #getTweetTopicData() # get topic distribution for all tweets
-    #getStatementTopicData() # get topic distribution for all statements
-    #saveAggregateData() # calculate and save aggregate topic and industry data for Republican, Democrat, Senator, Representative
-    #getTwitterProfilePics() # save all profile pictures 
+    # get_politician_data() # get all summary information for congresspeople
+    # getTweetTopicData() # get topic distribution for all tweets
+    # getStatementTopicData() # get topic distribution for all statements
+    # saveAggregateData() # calculate and save aggregate topic and industry data for Republican, Democrat, Senator, Representative
+    getTwitterProfilePics() # save all profile pictures 
 main()
