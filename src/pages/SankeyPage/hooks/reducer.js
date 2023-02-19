@@ -11,6 +11,7 @@ export const initialState = {
 	polList: new Map(),
 	displayPoli: new Map (),
 	sankeyReady: false,
+	buttonState: false,
 
 	// used for filtering
     party: [],
@@ -78,6 +79,7 @@ export const reducer = (state, action) => {
 		case 'REMOVE_PERSON':
 			var hehe = false;
 			state.selectedPoliticians.delete(value);
+			console.log("INSIDE REMOVE PERSON:", state.selectedPoliticians, state.selectedPoliticians.size);
 			return {
 				...state,
 				sankeyReady: hehe,
@@ -108,12 +110,25 @@ export const reducer = (state, action) => {
 				arrayPolList = total;
 			}
 			
+			state.selectedPoliticians.clear();
+			arrayPolList.forEach(per => state.selectedPoliticians.set(per[0], per[1]));
 			state.filteredPoliticians.clear();
 			arrayPolList.forEach(per => state.filteredPoliticians.set(per[0], per[1]));
 			// state.selectedPoliticians.forEach((value, key) => state.filteredPoliticians.delete(key));
 			
 			return {
 			    ...state,
+			}
+		
+		case 'CLEAR_FILTER':
+			state.selectedPoliticians.clear();
+			state.filteredPoliticians.clear();
+
+			return {
+				...state,
+				party: [],
+				chamber: [],
+				selectedStates: [],
 			}
 		
 		default:

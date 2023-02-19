@@ -8,6 +8,7 @@ import NavbarBand from './components/Navbar.js'
 // import PersonPage from './pages/PersonPage';
 // import CongressPage from './pages/CongressPage'
 // import BarChartPage from './pages/BarChartPage';
+import DataPage from './pages/DataPage';
 import SankeyPage from './pages/SankeyPage';
 
 
@@ -23,6 +24,7 @@ function App() {
                 {/* <Route path='/individual' element={<PersonPage />} /> */}
                 {/* <Route path='/barchart' element={<BarChartPage />} /> */}
                 {/* <Route path='/congress' element={<CongressPage />} /> */}
+                <Route path='/data' element={<DataPage />} />
                 <Route path='/overview' element={<HomePage />} />
             </Routes>
         </Router>

@@ -30,11 +30,11 @@ class SankeyChart extends Component {
      // var cids = this.cid_list.split(',');
       var cids = [ ... this.cid_map.keys() ]
       // var cids = Object.keys(this.cid_map)
-      console.log(this.cid_map)
+      // console.log(this.cid_map)
       console.log("cids", cids)
       for (let cid in cids) {
-        console.log("cid:", cid);
-        console.log("politician:", cids[cid]);
+        // console.log("cid:", cid);
+        // console.log("politician:", cids[cid]);
 
         //api calls
         const responseInd = await fetch('http://137.22.4.60:5001/'+ cids[cid] +'/industry');
@@ -93,7 +93,7 @@ class SankeyChart extends Component {
       for (let topic in tweet_topics) {
         //calculate weight to scale first
         let topic_name = tweetTopicLabels[topic]
-        console.log("topic, topic_name", topic, topic_name)
+        // console.log("topic, topic_name", topic, topic_name)
         let sankey_weight = parseInt(tweet_topics[topic]) / tweet_topic_total
         tweet_sankey_list.push([memberName, topic_name, sankey_weight]) 
       }
@@ -139,7 +139,7 @@ class SankeyChart extends Component {
 
     for (let topic in tweet_topics) {
       let topic_name = tweetTopicLabels[topic]
-      console.log("topic, topic_name", topic, topic_name)
+      // console.log("topic, topic_name", topic, topic_name)
       //calculate weight to scale first
       let sankey_weight = parseInt(tweet_topics[topic]) / tweet_topic_total
       tweet_sankey_list.push([data.group, topic_name, sankey_weight]) 
