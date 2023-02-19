@@ -89,7 +89,7 @@ export const reducer = (state, action) => {
 			var arrayPolList = [ ...state.polList ];
 
 			if (state.chamber.length === 1) {
-				arrayPolList = arrayPolList.filter((el) => el[1].chamber.includes(state.chamber[0]));
+				arrayPolList = arrayPolList.filter((el) => el[1].type.includes(state.chamber[0]));
 			}
 
 			if (state.party.length === 1) {
