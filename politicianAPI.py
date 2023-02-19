@@ -23,7 +23,7 @@ def getStatementTopicsDict(cid_list):
     cid_set = set()
     topics_dict = defaultdict(int) # tracks topic names(keys) and the number of Tweets where a specific topic had the highest prob(values)
     threshold = 0.15 # threshold for probability value to determine that a statement belongs with a certain topic
-    junk_topics = ["topic_3", "topic_7", "topic_12", "topic_13", "topic_19", "topic_21"]
+    junk_topics = ["topic_1", "topic_6", "topic_7", "topic_11", "topic_14", "topic_15", "topic_21"]
     junk_topics = set(junk_topics)
 
     # iterate through each congressperson
