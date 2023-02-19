@@ -1,5 +1,5 @@
 import React from 'react'
-import { Col, Row, Container, Stack, Form, DropdownButton, Card, Button } from 'react-bootstrap'
+import { Col, Row, Container, Stack, Form, DropdownButton, Button, Accordion } from 'react-bootstrap'
 import SankeyChart from '../HomePage/components/SankeyChart';
 import { useEffect, useReducer, useState, useRef } from 'react';
 import PoliticianButton from './components/PoliticianButton';
@@ -21,10 +21,8 @@ function SankeyPage() {
 
     const [filters, dispatch] = useReducer(reducer, initialState);
     const allPoliticians = new Map(); 
-    const [senators, setSenators] = useState(null);
-    const [representatives, setRepresentatives] = useState(null);  
+    const [allData, setAllData] = useState(null);
     const fetchDelay = [];
-    const addIds = [];
     const apiCallCount = useRef(0);
     const [isLoading, setLoading] = useState(false);
 
@@ -38,7 +36,7 @@ function SankeyPage() {
         if (filters.selectedPoliticians.size !== 0) {
             let data = new Map();
             filters.selectedPoliticians.forEach((el) => {
-                data.set(el.id, el.name);
+                data.set(el.id, el.full_name);
             });
             dispatch({
                 type: 'DISPLAY_SANKEY',
@@ -61,16 +59,7 @@ function SankeyPage() {
         let list = [ ...filters.filteredPoliticians ];
         let buttonList = [];
         list.map((pol) => {
-            buttonList.push(<PoliticianButton politician={{name: pol[1].name, id: pol[0]}} reduc={{data: filters, func: dispatch}} state={true}></PoliticianButton>);
-        })
-        return buttonList;
-    }
-
-    function theSelectedButtons() {
-        let list = [ ...filters.selectedPoliticians ];
-        let buttonList = [];
-        list.map((pol) => {
-            buttonList.push(<PoliticianButton politician={{name: pol[1].name, id: pol[0]}} reduc={{data: filters, func: dispatch}} state={true}></PoliticianButton>);
+            buttonList.push(<PoliticianButton politician={{name: pol[1].full_name, id: pol[0], party: pol[1].party}} func={dispatch} state={true}></PoliticianButton>);
         })
         return buttonList;
     }
@@ -82,158 +71,148 @@ function SankeyPage() {
         })
     }
 
-    // collecting the politician ids
+    const clearFilter = () => {
+        dispatch({
+            type: 'CLEAR_FILTER',
+            value: "",
+        })
+    }
+
+    // collecting data for politicians needed for filtering
     useEffect(() => {
-        // STEP 1
-        fetch('http://137.22.4.60:5001/senators/total') 
-    	.then(response => response.json())
-    	.then(data => {
-            setSenators(data);
-    	});
-        fetch('http://137.22.4.60:5001/representatives/total') 
+        fetch('http://137.22.4.60:5001/cid_to_summary')
         .then(response => response.json())
         .then(data => {
-          setRepresentatives(data);
-        });
+            setAllData(data.data);
+        })
         apiCallCount.current = 1;
         fetchDelay.push("done");
     }, []);
 
     useEffect(() => {
-        // STEP 2
-        if (senators !== null && representatives !== null && apiCallCount.current === 1) {
-            senators.data.split(',').map((id) => {
-                allPoliticians.set(id, "");
-            });
-            representatives.data.split(",").map((id) => {
-                allPoliticians.set(id, "");
-            });
-            addIds.push("hello");
-            apiCallCount.current = 2;
+        if (apiCallCount.current === 1 && allData !== null) {
+            for (var poli in allData) {
+                allPoliticians.set(poli, allData[poli]);
+            }
+            filters.polList = allPoliticians;
         }
     }, [fetchDelay]);
 
     useEffect(() => {
-        // STEP 3
-        if (addIds !== [] && apiCallCount.current === 2 && allPoliticians.size > 0) {
-            allPoliticians.forEach((value, key) => {
-                fetch('http://137.22.4.60:5001/' + key + '/summary')
-                .then(response => response.json())
-                .then(data => {
-                    allPoliticians.set(key, {
-                        name: data.summary.full_name,
-                        party: data.summary.party,
-                        chamber: data.summary.type,
-                        state: data.summary.state,
-                        id: data.summary.opensecrets_id,
-                    });
-                });
-            });
-            apiCallCount.current = 3;
-            filters.polList = allPoliticians; 
-        };        
-    }, [addIds]);
-
-    useEffect(() => {
-        console.log("ins index.js:", filters);
+        console.log("ins index.js:", filters, filters.selectedPoliticians.size);
     }, [filters]);
    
     return (
     <Container>
-
-        {/* the top w text and filter */}
-        <Row md={2} lg={2}>
-            <Col>
-                
-                <div className="pt-3 h3">Overview</div>
-                <p className="lead mb-1">
-                    You can filter by chamber, party or state to see sankey diagrams
-                    of politicians with the selected features. 
+        {/* the top w text */}
+        <Row>
+            {/* <div className="pt-3 h3">Overview</div> */}
+            <p className="pt-3 h3">What is MoneyFlow?</p>
+            <p className="lead">
+                MoneyFlow is a web application that lets you explore the relationships between funding sources and speech
+                for members of congress. We have gathered data on funding broken down by industry, statements made on the floor
+                of congress, and tweets for each politician. We then performed topic modeling on the statements and tweets
+                to gather quantitative data about what topics politicians speek about.
+            </p>
+            <p className="pt-3 h5">How is the data represented?</p>
+            <div className="pt-3 mb-3 pb-3 lead">
+                <p>You can explore these relationships through Sankey diagrams, which show the flows of money
+                to congresspeople and congresspeople to topics.</p>
+                <p>If you'd like to learn more about the data that's being represented, head to <a href="/data">the page about the data collection</a>.
                 </p>
-                <p>A paragraph of text that will provide some contenxt to the
-                    content on this page for a first-time user</p>
-
-                <Button className="mb-4 mt-4"
-                    onClick={displayButtons}
-                >
-                    Filter
-                </Button>
-            </Col>
-
+            <div className={style.line}></div>
+            </div>
+            <p className="lead mb-1">
+                Filter by chamber, party or state to see sankey diagrams
+                of politicians with the selected features. 
+            </p>
+        </Row>
+        <Row lg={2} md={2}>
             {/* the filtering system */}        
-            <div className={style.topPart}>
-
             <Col>
-                
                 <Stack gap={1}>
-                    <Row>
-                    <div className="pt-3 h4">By Chamber</div>
-                        <Row lg={3}>
-                            <GroupSelectionButton type="chamber" id="sen" value="Senate" func={dispatch}></GroupSelectionButton>
-                            <GroupSelectionButton type="chamber" id="rep" value="House" func={dispatch}></GroupSelectionButton>
-                        </Row>
+                    <Row lg={2} md={2}>
+                        <Col>
+                            <div className="pt-3 h5">By Chamber</div>
+                            <Row lg={1} md={1}>
+                                <GroupSelectionButton type="chamber" id="sen" value="Senate" func={dispatch}></GroupSelectionButton>
+                                <GroupSelectionButton type="chamber" id="rep" value="House" func={dispatch}></GroupSelectionButton>
+                            </Row>
+                        </Col>
+                        <Col>
+                            <div className="pt-3 h5">By Party</div>
+                            <Row lg={1} md={1}>
+                                <GroupSelectionButton type="party" id="Republican" value="Republican" func={dispatch}></GroupSelectionButton>
+                                <GroupSelectionButton type="party" id="Democrat" value="Democrat" func={dispatch}></GroupSelectionButton>
+                                <GroupSelectionButton type="party" id="Independent" value="Independent" func={dispatch}></GroupSelectionButton>
+                            </Row>
+                        </Col>
                     </Row>
-                    <Row>
-                    <div className="pt-3 h4">By Party</div>
-                        <Row lg={4}>
-                            <GroupSelectionButton type="party" id="Republican" value="Republican" func={dispatch}></GroupSelectionButton>
-                            <GroupSelectionButton type="party" id="Democrat" value="Democrat" func={dispatch}></GroupSelectionButton>
-                            <GroupSelectionButton type="party" id="Independent" value="Independent" func={dispatch}></GroupSelectionButton>
-                        </Row>
-                    </Row>
-                    <Row>
-                        
-                    <div className="pt-3 h4">By State</div>
-                    {/* create a dropdown for the states and a variable for selected ones */}
-                    <Row lg={8} md={6}>
-                        {stateAbbrv.map(state => {
-                            return (<StateButton state={state} filters={filters} func={dispatch}></StateButton>)
-                        })}
-                    </Row>
-                    <Row>
-                    </Row>
-                    </Row>
-                        
                 </Stack>
-            </Col></div>
+            </Col>
+            <Col>
+                <div className="pt-3 h5">By State</div>
+                {/* create a dropdown for the states and a variable for selected ones */}
+                {/* <Row lg={8} md={6}> */}
+                {/* <Row lg={1} md={1}> */}
+                    {/* <Accordion>
+                    <Accordion.Item eventKey="1">
+                        <Accordion.Header>States</Accordion.Header>
+                        <Accordion.Body> */}
+                    {stateAbbrv.map(state => {
+                        return (<StateButton state={state} filters={filters} func={dispatch}></StateButton>)
+                    })}
+                        {/* </Accordion.Body>
+                    </Accordion.Item>
+                    </Accordion> */}
+                {/* </Row> */}
+            </Col>
         </Row>
         <Row>
+        {/* <Row lg={2}>
+            <Col>
+                <Button
+                    onClick={clearFilter}>
+                        Clear
+                    </Button>
+            </Col> */}
+            {/* <Col> */}
+                <Button className="mb-4 mt-4"
+                        onClick={displayButtons}
+                    >
+                        Filter
+                    </Button>
+            {/* </Col> */}
+        </Row>
+        <Row>
+            <Col lg={4}>
+                <p className="lead">Politicians Based on Filtering</p>
+            </Col>
             {/* listing of politcian buttons */}
             <div className={style.buttonListing}>
-            <Col>
+            {/* this will prob be in a box so that we can keep them "contained somehow" */}
+            <Col lg>
                 <Row lg={5} md={4}>
-
-                {theFilteredButtons()}
-
-                    {/* <Col>
-                        <div className="pt-3 h4">Filtered Politicians</div>
-                        {theFilteredButtons()}
-                    </Col>
-                    <Col>
-                        <div className="pt-3 h4">Selected Politicians</div>
-                        {theSelectedButtons()}
-                    </Col> */}
+                    {theFilteredButtons()}
                 </Row>
             </Col></div>
         </Row>
-        <Row lg={2} md={2}>
+        <Row>
             <Col>
                 <Button
                     onClick={
                         !isLoading? loading : null}
                     disabled={isLoading}
                     >
-                    {isLoading? 'Loading...' : 'Display Sankey'}
+                    {isLoading? 'Loading...' : 'Display Information'}
                 </Button>
-            </Col>
-            <Col>
-                <Button>
-                        Clear
-                    </Button>
             </Col>
         </Row>
         <Row>
             {filters.sankeyReady? <SankeyChart cid_map={filters.displayPoli}/> : null}
+        </Row>
+        <Row className="pt-3 h3">
+            this is just some random text...
         </Row>
         {/* need to hide this until display sankey is displayed */}
         {/* <Row>

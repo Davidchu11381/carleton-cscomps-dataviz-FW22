@@ -30,12 +30,18 @@
 }
 
 .buttonListing {
-    background-color: lightblue;
+    /* background-color: lightblue; */
     min-height: 5vh;
     max-height: 25vh;
     overflow-y: auto;
+    outline-color: black;
 }
 
 .filterSystem {
     background-color: lightcoral;
+}
+
+.line{
+    height: 1px;
+    background-color: black;
 }
