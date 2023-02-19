@@ -23,7 +23,7 @@ def getStatementTopicsDict(cid_list):
     cid_set = set()
     topics_dict = defaultdict(int) # tracks topic names(keys) and the number of Tweets where a specific topic had the highest prob(values)
     threshold = 0.15 # threshold for probability value to determine that a statement belongs with a certain topic
-    junk_topics = ["topic_3", "topic_7", "topic_12", "topic_13", "topic_19", "topic_21"]
+    junk_topics = ["topic_1", "topic_6", "topic_7", "topic_11", "topic_14", "topic_15", "topic_21"]
     junk_topics = set(junk_topics)
 
     # iterate through each congressperson
@@ -244,9 +244,12 @@ def getCIDToSummaryMapping():
         new_dict["type"] = dict["type"]
         new_dict["full_name"] = dict["full_name"]
         new_dict["state"] = dict["state"]
+        new_dict["party"] = dict["party"]
+        new_dict["id"] = dict["opensecrets_id"]
         res[dict["opensecrets_id"]] = new_dict
-
-    return jsonify({"data": res})
+    response = jsonify({"data": res})
+    response.headers.add('Access-Control-Allow-Origin', 'http://localhost:3000')
+    return response
 
 # Returns top individual contributors for a specific candidate cid
 @app.route('/<string:cid>/individual', methods = ['GET'])
