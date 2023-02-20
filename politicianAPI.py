@@ -251,6 +251,23 @@ def getCIDToSummaryMapping():
     response.headers.add('Access-Control-Allow-Origin', 'http://localhost:3000')
     return response
 
+# Returns all Republicans sorted by alphabetical order or by total donations
+@app.route('/cid_to_summary', methods = ['GET'])
+def getCIDToSummaryMapping():
+    client = pymongo.MongoClient("mongodb://localhost:27017/")
+    db = client['comps']
+    collection = db['congresspeople']
+    res = {}
+    for dict in collection.find():
+        dict.pop("_id")
+        new_dict = {}
+        new_dict["type"] = dict["type"]
+        new_dict["full_name"] = dict["full_name"]
+        new_dict["state"] = dict["state"]
+        res[dict["opensecrets_id"]] = new_dict
+
+    return jsonify({"data": res})
+
 # Returns top individual contributors for a specific candidate cid
 @app.route('/<string:cid>/individual', methods = ['GET'])
 def getTopIndividuals(cid):
