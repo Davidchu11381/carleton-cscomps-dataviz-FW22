@@ -71,6 +71,10 @@ function SankeyPage() {
         })
     }
 
+    const backToFilter = () => {
+        console.log("code goes here to jump back to filter section");
+    }
+
     const clearFilter = () => {
         dispatch({
             type: 'CLEAR_FILTER',
@@ -184,7 +188,7 @@ function SankeyPage() {
                     </Button>
             {/* </Col> */}
         </Row>
-        <Row>
+        <Row lg={2}>
             <Col lg={4}>
                 <p className="lead">Politicians Based on Filtering</p>
             </Col>
@@ -197,22 +201,23 @@ function SankeyPage() {
                 </Row>
             </Col></div>
         </Row>
+        <div className={style.space}></div>
         <Row>
-            <Col>
-                <Button
-                    onClick={
-                        !isLoading? loading : null}
-                    disabled={isLoading}
-                    >
-                    {isLoading? 'Loading...' : 'Display Information'}
-                </Button>
-            </Col>
+            <Button
+                onClick={
+                    !isLoading? loading : null}
+                disabled={isLoading}
+                >
+                {isLoading? 'Loading...' : 'Display Information'}
+            </Button>
         </Row>
         <Row>
             {filters.sankeyReady? <SankeyChart cid_map={filters.displayPoli}/> : null}
         </Row>
-        <Row className="pt-3 h3">
-            this is just some random text...
+        {/* a button that will show up is sankey ready is true */}
+        <div className={style.space}></div>
+        <Row>
+            {filters.sankeyReady? <Button onClick={backToFilter}>Back to Filter System</Button> : null}
         </Row>
         {/* need to hide this until display sankey is displayed */}
         {/* <Row>

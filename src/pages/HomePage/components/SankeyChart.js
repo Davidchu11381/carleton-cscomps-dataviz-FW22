@@ -226,7 +226,7 @@ class SankeyChart extends Component {
               <p>Funding</p>
               <Chart
                 width={'200'}
-                height={'350px'}
+                height={'50vh'}
                 chartType="Sankey"
                 loader={<div>Loading Chart</div>}
                 data={indData}
@@ -248,7 +248,7 @@ class SankeyChart extends Component {
             <p>Tweets</p>
             <Chart
               width={'200'}
-              height={'350px'}
+              height={'100vh'}
               chartType="Sankey"
               loader={<div>Loading Chart</div>}
               data={tweetData}
@@ -269,7 +269,7 @@ class SankeyChart extends Component {
             <p>Statements</p>
             <Chart
               width={'200'}
-              height={'350px'}
+              height={'100vh'}
               chartType="Sankey"
               loader={<div>Loading Chart</div>}
               data={statementData}

@@ -34,7 +34,9 @@
     min-height: 5vh;
     max-height: 25vh;
     overflow-y: auto;
-    outline-color: black;
+    border-color: black;
+    /* border-width: 1px; */
+    border-style: dashed;
 }
 
 .filterSystem {
@@ -44,4 +46,8 @@
 .line{
     height: 1px;
     background-color: black;
+}
+
+.space {
+    height: 21px;
 }

@@ -41,6 +41,11 @@ function PoliticianButton( data ) {
                 value: person.id,
             });	
         };
+        dispatch({
+            type: 'DISPLAY_SANKEY', 
+            value: "",
+            buttonState: false,
+        });
     };
     
     return (

@@ -28,6 +28,7 @@ export const reducer = (state, action) => {
 
 		case 'DISPLAY_SANKEY':
 			console.log("this is hte buttonstate", state.buttonState);
+			console.log("the value", value);
 			return {
 				...state,
 				displayPoli: value,
