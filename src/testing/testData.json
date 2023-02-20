@@ -1,0 +1,19 @@
+{
+    "congresspeople": [
+        {
+            "id": 1,
+            "name": "Amber", 
+            "state": "TX"
+        },
+        {
+            "id": 2,
+            "name": "Chris", 
+            "state": "NM"
+        },
+        {
+            "id": 3,
+            "name": "Robert", 
+            "state": "NJ"
+        }
+    ] 
+}
