@@ -1,5 +1,6 @@
 import React from 'react'
 import { Col, Row, Container, Stack, Form, DropdownButton, Button, Accordion } from 'react-bootstrap'
+import { useNavigate } from 'react-router';
 import SankeyChart from '../HomePage/components/SankeyChart';
 import { useEffect, useReducer, useState, useRef } from 'react';
 import PoliticianButton from './components/PoliticianButton';
@@ -41,7 +42,6 @@ function SankeyPage() {
             dispatch({
                 type: 'DISPLAY_SANKEY',
                 value: data,
-                buttonState: true,
             })            
         }
     }
@@ -65,14 +65,11 @@ function SankeyPage() {
     }
 
     const displayButtons = () => {
+        // setWait(false);
         dispatch({
             type: 'DISPLAY_BUTTONS',
             value: "",
         })
-    }
-
-    const backToFilter = () => {
-        console.log("code goes here to jump back to filter section");
     }
 
     const clearFilter = () => {
@@ -103,7 +100,9 @@ function SankeyPage() {
     }, [fetchDelay]);
 
     useEffect(() => {
-        console.log("ins index.js:", filters, filters.selectedPoliticians.size);
+        console.log("ins index.js:", filters);
+        console.log("this is the new displayPoli:", filters.displayPoli);
+        console.log("this is the sankeyReady:", filters.sankeyReady);
     }, [filters]);
    
     return (
@@ -111,9 +110,9 @@ function SankeyPage() {
         {/* the top w text */}
         <Row>
             {/* <div className="pt-3 h3">Overview</div> */}
-            <p className="pt-3 h3">What is MoneyFlow?</p>
+            <p className="pt-3 h3">What is FollowTheMoney?</p>
             <p className="lead">
-                MoneyFlow is a web application that lets you explore the relationships between funding sources and speech
+                FollowTheMoney is a web application that lets you explore the relationships between funding sources and speech
                 for members of congress. We have gathered data on funding broken down by industry, statements made on the floor
                 of congress, and tweets for each politician. We then performed topic modeling on the statements and tweets
                 to gather quantitative data about what topics politicians speek about.
@@ -124,6 +123,7 @@ function SankeyPage() {
                 to congresspeople and congresspeople to topics.</p>
                 <p>If you'd like to learn more about the data that's being represented, head to <a href="/data">the page about the data collection</a>.
                 </p>
+            <a id="filter_system"></a>
             <div className={style.line}></div>
             </div>
             <p className="lead mb-1">
@@ -156,50 +156,33 @@ function SankeyPage() {
             </Col>
             <Col>
                 <div className="pt-3 h5">By State</div>
-                {/* create a dropdown for the states and a variable for selected ones */}
-                {/* <Row lg={8} md={6}> */}
-                {/* <Row lg={1} md={1}> */}
-                    {/* <Accordion>
-                    <Accordion.Item eventKey="1">
-                        <Accordion.Header>States</Accordion.Header>
-                        <Accordion.Body> */}
                     {stateAbbrv.map(state => {
                         return (<StateButton state={state} filters={filters} func={dispatch}></StateButton>)
                     })}
-                        {/* </Accordion.Body>
-                    </Accordion.Item>
-                    </Accordion> */}
-                {/* </Row> */}
             </Col>
         </Row>
         <Row>
-        {/* <Row lg={2}>
-            <Col>
-                <Button
-                    onClick={clearFilter}>
-                        Clear
-                    </Button>
-            </Col> */}
-            {/* <Col> */}
-                <Button className="mb-4 mt-4"
-                        onClick={displayButtons}
-                    >
-                        Filter
-                    </Button>
-            {/* </Col> */}
+            <Button className="mb-4 mt-4" onClick={displayButtons}>Filter</Button>
         </Row>
         <Row lg={2}>
             <Col lg={4}>
                 <p className="lead">Politicians Based on Filtering</p>
+                 <Button
+                    onClick={clearFilter}>
+                        Clear Selection
+                    </Button>
+                {/* <Button>
+                    Deselect Politicians
+                </Button> */}
             </Col>
             {/* listing of politcian buttons */}
             <div className={style.buttonListing}>
-            {/* this will prob be in a box so that we can keep them "contained somehow" */}
-            <Col lg>
-                <Row lg={5} md={4}>
-                    {theFilteredButtons()}
-                </Row>
-            </Col></div>
+                <Col lg>
+                    <Row lg={5} md={4}>
+                        {theFilteredButtons()}
+                    </Row>
+                </Col>
+            </div>
         </Row>
         <div className={style.space}></div>
         <Row>
@@ -210,6 +193,11 @@ function SankeyPage() {
                 >
                 {isLoading? 'Loading...' : 'Display Information'}
             </Button>
+            {/* <Button
+                disabled={wait}
+            >
+                Display Information
+            </Button> */}
         </Row>
         <Row>
             {filters.sankeyReady? <SankeyChart cid_map={filters.displayPoli}/> : null}
@@ -217,7 +205,7 @@ function SankeyPage() {
         {/* a button that will show up is sankey ready is true */}
         <div className={style.space}></div>
         <Row>
-            {filters.sankeyReady? <Button onClick={backToFilter}>Back to Filter System</Button> : null}
+            {filters.sankeyReady? <Button href="#filter_system">Back to Filter System<a href="#filter_system"></a></Button> : null}
         </Row>
         {/* need to hide this until display sankey is displayed */}
         {/* <Row>

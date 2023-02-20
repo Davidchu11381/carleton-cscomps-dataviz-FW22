@@ -32,7 +32,7 @@ export const reducer = (state, action) => {
 			return {
 				...state,
 				displayPoli: value,
-				sankeyReady: action.buttonState,
+				sankeyReady: true,
 			}
 
 		case 'UPDATE_PARTY':
@@ -44,6 +44,7 @@ export const reducer = (state, action) => {
 			}
 			return {
 				...state,
+				sankeyReady: false,
 			}
 		
 		case 'UPDATE_CHAMBER':
@@ -55,6 +56,7 @@ export const reducer = (state, action) => {
 			}
 			return {
 				...state,
+				sankeyReady: false,
 			}
 		
 		case 'UPDATE_STATES':
@@ -66,24 +68,23 @@ export const reducer = (state, action) => {
 			}
 			return {
 				...state,
+				sankeyReady: false,
 			}
 		
 		// related to selected politician window
 		case 'ADD_PERSON':
-			var haha = false;
 			state.selectedPoliticians.set(value, state.polList.get(value));
 			return {
 				...state,
-				sankeyReady: haha,
+				sankeyReady: false,
 			}
 		
 		case 'REMOVE_PERSON':
-			var hehe = false;
 			state.selectedPoliticians.delete(value);
 			console.log("INSIDE REMOVE PERSON:", state.selectedPoliticians, state.selectedPoliticians.size);
 			return {
 				...state,
-				sankeyReady: hehe,
+				sankeyReady: false,
 			}
 		
 		case 'DISPLAY_BUTTONS': 
@@ -127,9 +128,9 @@ export const reducer = (state, action) => {
 
 			return {
 				...state,
-				party: [],
-				chamber: [],
-				selectedStates: [],
+				// party: [],
+				// chamber: [],
+				// selectedStates: [],
 			}
 		
 		default:

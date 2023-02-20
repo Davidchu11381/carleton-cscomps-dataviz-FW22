@@ -226,7 +226,7 @@ class SankeyChart extends Component {
               <p>Funding</p>
               <Chart
                 width={'200'}
-                height={'50vh'}
+                height={'75vh'}
                 chartType="Sankey"
                 loader={<div>Loading Chart</div>}
                 data={indData}
@@ -238,7 +238,7 @@ class SankeyChart extends Component {
             <Card>
               <Card.Title>Funding</Card.Title>
               <Card.Body>information</Card.Body>
-              <Card.Footer><a href="/info#funding">More Information About Industry Funding Data</a></Card.Footer>
+              <Card.Footer><a href="/data#funding">More Information About Industry Funding Data</a></Card.Footer>
             </Card>
           </Col>
         </Row>
@@ -259,7 +259,7 @@ class SankeyChart extends Component {
             <Card>
               <Card.Title>Tweets</Card.Title>
               <Card.Body>information</Card.Body>
-              <Card.Footer><a href="/info#tweets">More Information About Tweet Data</a></Card.Footer>
+              <Card.Footer><a href="/data#tweets">More Information About Tweet Data</a></Card.Footer>
             </Card>
           </Col>
         </Row>
@@ -280,7 +280,7 @@ class SankeyChart extends Component {
             <Card>
               <Card.Title>Statements</Card.Title>
               <Card.Body>information</Card.Body>
-              <Card.Footer><a href="/info#statements">More Information About Statement Data</a></Card.Footer>
+              <Card.Footer><a href="/data#statements">More Information About Statement Data</a></Card.Footer>
             </Card>
           </Col>
         </Row>

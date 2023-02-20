@@ -11,6 +11,90 @@ function DataPage() {
             <div className="DataPage">
                 <Row><div></div></Row>
                 <Row>
+                    <div className="pt-3 h2" id="#funding">Funding Data</div>
+                    <p className="lead">
+                        Lorem ipsum dolor sit amet, consectetur adipiscing elit, 
+                        sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. 
+                        Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris 
+                        nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in 
+                        reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla
+                         pariatur. Excepteur sint occaecat cupidatat non proident, sunt in 
+                         culpa qui officia deserunt mollit anim id est laborum.
+                    </p>
+                    <p className="lead">
+                        Lorem ipsum dolor sit amet, consectetur adipiscing elit, 
+                        sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. 
+                        Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris 
+                        nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in 
+                        reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla
+                         pariatur. Excepteur sint occaecat cupidatat non proident, sunt in 
+                         culpa qui officia deserunt mollit anim id est laborum.
+                    </p>
+                    <p className="lead">
+                        Lorem ipsum dolor sit amet, consectetur adipiscing elit, 
+                        sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. 
+                        Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris 
+                        nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in 
+                        reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla
+                         pariatur. Excepteur sint occaecat cupidatat non proident, sunt in 
+                         culpa qui officia deserunt mollit anim id est laborum.
+                    </p>
+                    <div className="pt-3 h2" id="#tweets">Tweet Data</div>
+                    <p className="lead">
+                        Lorem ipsum dolor sit amet, consectetur adipiscing elit, 
+                        sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. 
+                        Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris 
+                        nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in 
+                        reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla
+                         pariatur. Excepteur sint occaecat cupidatat non proident, sunt in 
+                         culpa qui officia deserunt mollit anim id est laborum.
+                    </p>
+                    <p className="lead">
+                        Lorem ipsum dolor sit amet, consectetur adipiscing elit, 
+                        sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. 
+                        Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris 
+                        nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in 
+                        reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla
+                         pariatur. Excepteur sint occaecat cupidatat non proident, sunt in 
+                         culpa qui officia deserunt mollit anim id est laborum.
+                    </p>
+                    <p className="lead">
+                        Lorem ipsum dolor sit amet, consectetur adipiscing elit, 
+                        sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. 
+                        Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris 
+                        nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in 
+                        reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla
+                         pariatur. Excepteur sint occaecat cupidatat non proident, sunt in 
+                         culpa qui officia deserunt mollit anim id est laborum.
+                    </p>
+                    <div className="pt-3 h2" id="#statements">Statement Data</div>
+                    <p className="lead">
+                        Lorem ipsum dolor sit amet, consectetur adipiscing elit, 
+                        sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. 
+                        Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris 
+                        nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in 
+                        reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla
+                         pariatur. Excepteur sint occaecat cupidatat non proident, sunt in 
+                         culpa qui officia deserunt mollit anim id est laborum.
+                    </p>
+                    <p className="lead">
+                        Lorem ipsum dolor sit amet, consectetur adipiscing elit, 
+                        sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. 
+                        Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris 
+                        nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in 
+                        reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla
+                         pariatur. Excepteur sint occaecat cupidatat non proident, sunt in 
+                         culpa qui officia deserunt mollit anim id est laborum.
+                    </p>
+                    <p className="lead">
+                        Lorem ipsum dolor sit amet, consectetur adipiscing elit, 
+                        sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. 
+                        Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris 
+                        nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in 
+                        reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla
+                         pariatur. Excepteur sint occaecat cupidatat non proident, sunt in 
+                         culpa qui officia deserunt mollit anim id est laborum.
+                    </p>
                     <div className="lead">
                     <p>Funding data: OpenSecrets API | 
                         Tweet Data: from the Twitter API | 
@@ -30,36 +114,6 @@ function DataPage() {
                             Tools used to display the data: google charts Sankey diagram
                         </p>
                     </div>
-                </Row>
-                <Row>
-                    <Col>
-                        <div className="pt-3 h3">
-                            Overview
-                        </div>
-                        <div className="pt-3" >
-                            <p className="lead">
-                                MoneyFlow is a web application that lets you explore the relationships between funding sources and speech
-                                for members of congress. We have gathered data on funding broken down by industry, statements made on the floor
-                                of congress, and tweets for each politician. We then performed topic modeling on the statements and tweets
-                                to gather quantitative data about what topics politicians speek about.
-                            </p>
-                            
-                        </div>
-                    </Col>
-                    <Col>
-                        <div className="pt-3 h4">
-                            <p>How To Use</p>
-                        </div>
-                        <div className="pt-3 mb-3 pb-3 lead">
-                            <p>You can explore these relationships through Sankey diagrams, which show the flows of money
-                            to congresspeople and congresspeople to topics. This Overview Page contains diagrams depicting
-                            different subsets of politicians, like Republicans or Senators</p>
-                            <p>If you'd like to explore further funding flows, you can 
-                            head to <a href="/congress_data">Filter by Congress</a> to curate your own filters and 
-                            see the resulting diagrams.
-                            </p>
-                        </div>
-                    </Col>
                 </Row>
             </div>
         </Container>
