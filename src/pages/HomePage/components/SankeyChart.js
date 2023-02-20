@@ -95,7 +95,8 @@ class SankeyChart extends Component {
         let topic_name = tweetTopicLabels[topic]
         // console.log("topic, topic_name", topic, topic_name)
         let sankey_weight = parseInt(tweet_topics[topic]) / tweet_topic_total
-        tweet_sankey_list.push([memberName, topic_name, sankey_weight]) 
+        let rounded_weight = parseFloat(sankey_weight.toFixed(2))
+        tweet_sankey_list.push([memberName, topic_name, rounded_weight]) 
       }
 
       // Statements
@@ -109,7 +110,8 @@ class SankeyChart extends Component {
         let topic_name = statementTopicLabels[topic]
         //calculate weight to scale first
         let sankey_weight = parseInt(statement_topics[topic]) / statement_topic_total
-        statement_sankey_list.push([memberName, topic_name, sankey_weight]) 
+        let rounded_weight = parseFloat(sankey_weight.toFixed(2))
+        statement_sankey_list.push([memberName, topic_name, rounded_weight]) 
       }
     }
     return [ind_sankey_list, tweet_sankey_list, statement_sankey_list]

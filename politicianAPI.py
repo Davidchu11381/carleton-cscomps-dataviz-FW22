@@ -3,7 +3,6 @@ import pymongo
 import requests
 import xmltodict
 import tweepy
-from flask_cors import CORS, cross_origin
 from collections import defaultdict
 import heapq
 
@@ -32,26 +31,13 @@ def getStatementTopicsDict(cid_list):
         if cid in cid_set:
             continue
         cid_set.add(cid)
-        # get topic distributions for all statements by this politician
+        # get topic distributions for all statements by this congressperson
         for dict in collection.find({"opensecrets_id": cid}):
-            # get max topic distribution value for this statement
-            max_value = 0
-            for i in range(1,26):
-                topic = "topic_" + str(i)
-                if float(dict[topic]) > max_value:
-                    max_value = float(dict[topic])
-            
-            # setting a threshold to include the statement in the calculation. If it's too low, skip to next
-            if max_value < 0.2:
-                continue
-
-            # find all topics with that value
             max_topics = []
             for i in range(1,26):
                 topic = "topic_" + str(i)
-                if float(dict[topic]) == max_value:
+                if float(dict[topic]) > threshold:
                     max_topics.append(topic)
-
             # increment count for those topics
             for topic in max_topics:
                 if topic not in junk_topics:
@@ -87,14 +73,17 @@ def getTweetTopicsDict(cid_list):
                 continue
 
             # find all topics with that value
-            max_topics = []
+            max_topics = set()
             for i in range(1,13):
                 topic = "topic_" + str(i)
                 if float(dict[topic]) == max_value:
-                    max_topics.append(topic)
+                    # combines topic 5 and 2
+                    if topic == "topic_5":
+                        topic = "topic_2"
+                    max_topics.add(topic)
 
             # increment count for those topics
-            for topic in max_topics:
+            for topic in list(max_topics):
                 topics_dict[topic] += 1
     return topics_dict
 
@@ -241,8 +230,6 @@ def getSummaryInfo(cid):
     response = jsonify({"summary": dic})
     response.headers.add('Access-Control-Allow-Origin', 'http://localhost:3000')
     return response
-<<<<<<< HEAD
-=======
 
 # Returns all Republicans sorted by alphabetical order or by total donations
 @app.route('/cid_to_summary', methods = ['GET'])
@@ -263,24 +250,6 @@ def getCIDToSummaryMapping():
     response = jsonify({"data": res})
     response.headers.add('Access-Control-Allow-Origin', 'http://localhost:3000')
     return response
-
-# Returns all Republicans sorted by alphabetical order or by total donations
-@app.route('/cid_to_summary', methods = ['GET'])
-def getCIDToSummaryMapping():
-    client = pymongo.MongoClient("mongodb://localhost:27017/")
-    db = client['comps']
-    collection = db['congresspeople']
-    res = {}
-    for dict in collection.find():
-        dict.pop("_id")
-        new_dict = {}
-        new_dict["type"] = dict["type"]
-        new_dict["full_name"] = dict["full_name"]
-        new_dict["state"] = dict["state"]
-        res[dict["opensecrets_id"]] = new_dict
-
-    return jsonify({"data": res})
->>>>>>> 3e87cde227fcfe86caeec3a05ea817cbec81cf05
 
 # Returns top individual contributors for a specific candidate cid
 @app.route('/<string:cid>/individual', methods = ['GET'])
