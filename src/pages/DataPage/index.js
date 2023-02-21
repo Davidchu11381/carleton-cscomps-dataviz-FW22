@@ -59,25 +59,6 @@ function DataPage() {
                     Tweet data. The proportions displayed in the Statements visualization are 
                     calculated similarly to the proportions in the Tweets visualization.
                     </p>
-                    <div className="lead">
-                    <p>Funding data: OpenSecrets API | 
-                        Tweet Data: from the Twitter API | 
-                        Statement Data: from congress.gov</p>
-                    </div>
-                </Row>
-                <Row>
-                    <div classname="pt-3 h3">
-                        <p className='lead'>
-                            Tools that we used to analyze the data: LDA
-                        </p>
-                    </div>
-                </Row>
-                <Row>
-                    <div classname="pt-3 h3">
-                        <p className="lead">
-                            Tools used to display the data: google charts Sankey diagram
-                        </p>
-                    </div>
                 </Row>
             </div>
         </Container>

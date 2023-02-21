@@ -3,6 +3,8 @@ import { Col, Row, Container, Stack, Form, Card } from 'react-bootstrap'
 import Chart from 'react-google-charts';
 import { tweetTopicLabels, statementTopicLabels} from '../topicLabels.js';
 
+import style from './../index.module.css'
+
 class SankeyChart extends Component {
 
   constructor(props) {
@@ -50,7 +52,7 @@ class SankeyChart extends Component {
         ind_topic_dict["statement_topics"] = resultStatements;
         data[cids[cid]] = ind_topic_dict;
       }
-      console.log("this is the datain sankey", data)
+      // console.log("this is the datain sankey", data)
       return(data)
 
     } else { //group
@@ -69,8 +71,8 @@ class SankeyChart extends Component {
     var statement_sankey_list = [['From', 'To', 'Weight']]
     for (let cid in data) {
       var memberName = this.cid_map.get(cid)
-      console.log("memberName:", memberName)
-      console.log("data[cid]:", data[cid])
+      // console.log("memberName:", memberName)
+      // console.log("data[cid]:", data[cid])
       var industries = data[cid].industry.industry
       var tweet_topics = data[cid].tweet_topics.tweet_topics
       var statement_topics = data[cid].statement_topics.statement_topics
@@ -192,10 +194,10 @@ class SankeyChart extends Component {
 
   render() {
     let indData = this.state.indSankey
-    console.log("indData:", indData)
+    // console.log("indData:", indData)
     let tweetData = this.state.tweetSankey
     let statementData = this.state.stateSankey
-    console.log("tweetData:", tweetData)
+    // console.log("tweetData:", tweetData)
    
     return (
       <Container>
@@ -203,7 +205,7 @@ class SankeyChart extends Component {
         <Row lg={2} md={2}>
           {/* the sankey */}
           <Col>
-              <p>Funding</p>
+              {/* <p>Funding</p> */}
               <Chart
                 width={'200'}
                 height={'75vh'}
@@ -213,19 +215,23 @@ class SankeyChart extends Component {
                 rootProps={{ 'data-testid': '1' }}
               />
           </Col>
-            {/* the legend about funding */}
-          <Col>
-            <Card>
-              <Card.Title>Funding</Card.Title>
-              <Card.Body>This shows the top 10 industries by contribution total (in USD) for each selected congressperson. Note that each congressperson receives money from more than 10 industries, so the totals for each congressperson do not include contributions outside of those 10.</Card.Body>
-              <Card.Footer><a href="/data#funding">More Information About Industry Funding Data</a></Card.Footer>
-            </Card>
-          </Col>
+            {/* the legend about funding */} 
+          <div className={style.cardArrangement}>
+            <Col>
+              <Card>
+                <Card.Header>Funding</Card.Header>
+                <Card.Body>This shows the top 10 industries by contribution total (in USD) for each selected congressperson. Note that each congressperson receives money from more than 10 industries, so the totals for each congressperson do not include contributions outside of those 10.</Card.Body>
+                <Card.Footer><a href="/data#funding">More Information About Industry Funding Data</a></Card.Footer>
+              </Card>
+            </Col>
+          </div>
         </Row>
-        <p></p>
+        <div className={style.lineCenter}>
+          {/* <div className={style.line}></div> */}
+        </div>
         <Row lg={2} md={2}>
           <Col>
-            <p>Tweets</p>
+            {/* <p>Tweets</p> */}
             <Chart
               width={'200'}
               height={'100vh'}
@@ -235,18 +241,22 @@ class SankeyChart extends Component {
               rootProps={{ 'data-testid': '1' }}
             />
           </Col>
-          <Col>
-            <Card>
-              <Card.Title>Tweets</Card.Title>
-              <Card.Body>This shows the breakdown of the distribution of topics found in each congressperson’s Tweets. For each congressperson, we query their Tweets from the database and then calculate the proportion of each topic’s frequency out of the total 12 topics.</Card.Body>
-              <Card.Footer><a href="/data#tweets">More Information About Tweet Data</a></Card.Footer>
-            </Card>
-          </Col>
+          <div className={style.cardArrangement}>
+            <Col>
+              <Card>
+                <Card.Header>Tweets</Card.Header>
+                <Card.Body>This shows the breakdown of the distribution of topics found in each congressperson’s Tweets. For each congressperson, we query their Tweets from the database and then calculate the proportion of each topic’s frequency out of the total 12 topics.</Card.Body>
+                <Card.Footer><a href="/data#tweets">More Information About Tweet Data</a></Card.Footer>
+              </Card>
+            </Col>
+          </div>
         </Row>
-        <p></p>
+        <div className={style.lineCenter}>
+          {/* <div className={style.line}></div> */}
+        </div>
         <Row lg={2} md={2}>
           <Col>
-            <p>Statements</p>
+            {/* <p>Statements</p> */}
             <Chart
               width={'200'}
               height={'100vh'}
@@ -256,13 +266,15 @@ class SankeyChart extends Component {
               rootProps={{ 'data-testid': '1' }}
             />
           </Col>
-          <Col>
-            <Card>
-              <Card.Title>Statements</Card.Title>
-              <Card.Body>This shows the breakdown of the distribution of topics found in each congressperson’s congressional statements. For each congressperson, we query their statements and then calculate the proportion of each topic’s frequency out of the total 19 topics.</Card.Body>
-              <Card.Footer><a href="/data#statements">More Information About Statement Data</a></Card.Footer>
-            </Card>
-          </Col>
+          <div className={style.cardArrangement}>
+            <Col>
+              <Card>
+                <Card.Header>Statements</Card.Header>
+                <Card.Body>This shows the breakdown of the distribution of topics found in each congressperson’s congressional statements. For each congressperson, we query their statements and then calculate the proportion of each topic’s frequency out of the total 19 topics.</Card.Body>
+                <Card.Footer><a href="/data#statements">More Information About Statement Data</a></Card.Footer>
+              </Card>
+            </Col>
+          </div>
         </Row>
       </div>
       </Container>

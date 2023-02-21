@@ -1,6 +1,6 @@
 import React from 'react'
-import { Col, Row, Container, Stack, Form, DropdownButton, Button, Accordion } from 'react-bootstrap'
-import { useNavigate } from 'react-router';
+import { Col, Row, Container, Stack, Button } from 'react-bootstrap'
+// import { useNavigate } from 'react-router';
 import SankeyChart from '../HomePage/components/SankeyChart';
 import { useEffect, useReducer, useState, useRef } from 'react';
 import PoliticianButton from './components/PoliticianButton';
@@ -9,6 +9,9 @@ import GroupSelectionButton from './components/GroupSelectionButton';
 import style from "./index.module.css"
 
 import { reducer, initialState } from './hooks/reducer';
+
+import { compReducer, compInitialState } from './components/hooks/reducer';
+
 
 // TALK ABOUT IN COMPS TOMORROW
 // when click on the line between fields == info?
@@ -21,6 +24,7 @@ import { reducer, initialState } from './hooks/reducer';
 function SankeyPage() {
 
     const [filters, dispatch] = useReducer(reducer, initialState);
+    const [compStuff, compDispatch] = useReducer(compReducer, compInitialState);
     const allPoliticians = new Map(); 
     const [allData, setAllData] = useState(null);
     const fetchDelay = [];
@@ -42,6 +46,7 @@ function SankeyPage() {
             dispatch({
                 type: 'DISPLAY_SANKEY',
                 value: data,
+                buttonState: true,
             })            
         }
     }
@@ -75,6 +80,10 @@ function SankeyPage() {
     const clearFilter = () => {
         dispatch({
             type: 'CLEAR_FILTER',
+            value: "",
+        })
+        compDispatch({
+            type: 'CLEAR_EVERYTHING',
             value: "",
         })
     }

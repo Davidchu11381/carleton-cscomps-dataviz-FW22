@@ -32,7 +32,7 @@ export const reducer = (state, action) => {
 			return {
 				...state,
 				displayPoli: value,
-				sankeyReady: true,
+				sankeyReady: action.buttonState,
 			}
 
 		case 'UPDATE_PARTY':
@@ -128,9 +128,10 @@ export const reducer = (state, action) => {
 
 			return {
 				...state,
-				// party: [],
-				// chamber: [],
-				// selectedStates: [],
+				sankeyReady: false,
+				party: [],
+				chamber: [],
+				selectedStates: [],
 			}
 		
 		default:
