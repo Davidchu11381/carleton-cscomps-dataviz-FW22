@@ -1,0 +1,24 @@
+Purpose of Conress Page:
+    list out the congresspeople
+    allow users to filter out politicians that they want to learn more about
+    use a search bar for quicker access
+
+Needs:
+    congresspeople info:
+        name, state (?), party, chamber, picture
+    sorting ideas:
+        amount of money, alphabetical
+
+Logistics:
+    need a variable that would change based off of selection
+
+Design:
+        ----------------------------------------------
+                        Navigation
+        ----------------------------------------------
+           [chamber] [party] [state?]    |  [search]
+                                         |
+        politician politician politician |  blurb
+        politician politician politician |
+        politician politician politician |
+        ....                             |    

@@ -1,0 +1,23 @@
+.hide {
+    display: none;
+}
+
+.cardArrangement {
+    flex-direction: column;
+    align-self: center;
+}
+
+.line{
+    height: 2px;
+    background-color: black;
+    width: 80%;
+}
+
+.lineCenter {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    /* align-self: center; */
+    /* align-items: center; */
+    padding: 20px;
+}
