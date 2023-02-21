@@ -64,7 +64,11 @@ function SankeyPage() {
         let list = [ ...filters.filteredPoliticians ];
         let buttonList = [];
         list.map((pol) => {
-            buttonList.push(<PoliticianButton politician={{name: pol[1].full_name, id: pol[0], party: pol[1].party}} func={dispatch} state={true}></PoliticianButton>);
+            buttonList.push(
+            // <div className={style.poliButtonSpacing}>
+            <PoliticianButton politician={{name: pol[1].full_name, id: pol[0], party: pol[1].party}} func={dispatch} state={true}></PoliticianButton>
+            );
+            // /* </div> */s
         })
         return buttonList;
     }
@@ -139,6 +143,10 @@ function SankeyPage() {
                 Filter by chamber, party or state to see sankey diagrams
                 of politicians with the selected features. 
             </p>
+            <p className="lead">
+            NOTE: if more than 10 politicians are selected, the representation of the data becomes
+                quite convulated and can be confusing to interpret.
+            </p>
         </Row>
         <Row lg={2} md={2}>
             {/* the filtering system */}        
@@ -147,18 +155,22 @@ function SankeyPage() {
                     <Row lg={2} md={2}>
                         <Col>
                             <div className="pt-3 h5">By Chamber</div>
-                            <Row lg={1} md={1}>
-                                <GroupSelectionButton type="chamber" id="sen" value="Senate" func={dispatch}></GroupSelectionButton>
-                                <GroupSelectionButton type="chamber" id="rep" value="House" func={dispatch}></GroupSelectionButton>
-                            </Row>
+                            <div className={style.buttonSpace}>
+                                <Row lg={1} md={1}>
+                                    <GroupSelectionButton type="chamber" id="sen" value="Senate" func={dispatch}></GroupSelectionButton>
+                                    <GroupSelectionButton type="chamber" id="rep" value="House" func={dispatch}></GroupSelectionButton>
+                                </Row>
+                            </div>
                         </Col>
                         <Col>
                             <div className="pt-3 h5">By Party</div>
-                            <Row lg={1} md={1}>
-                                <GroupSelectionButton type="party" id="Republican" value="Republican" func={dispatch}></GroupSelectionButton>
-                                <GroupSelectionButton type="party" id="Democrat" value="Democrat" func={dispatch}></GroupSelectionButton>
-                                <GroupSelectionButton type="party" id="Independent" value="Independent" func={dispatch}></GroupSelectionButton>
-                            </Row>
+                            {/* <div className={style.buttonSpace}> */}
+                                <Row lg={1} md={1}>
+                                    <GroupSelectionButton type="party" id="Republican" value="Republican" func={dispatch}></GroupSelectionButton>
+                                    <GroupSelectionButton type="party" id="Democrat" value="Democrat" func={dispatch}></GroupSelectionButton>
+                                    <GroupSelectionButton type="party" id="Independent" value="Independent" func={dispatch}></GroupSelectionButton>
+                                </Row>
+                            {/* </div> */}
                         </Col>
                     </Row>
                 </Stack>
@@ -171,65 +183,60 @@ function SankeyPage() {
             </Col>
         </Row>
         <Row>
-            <Button className="mb-4 mt-4" onClick={displayButtons}>Filter</Button>
+            <Button 
+                // variant="secondary" 
+                className="mb-4 mt-4" 
+                onClick={displayButtons}>
+                Filter
+            </Button>
         </Row>
-        <Row lg={2}>
-            <Col lg={4}>
-                <p className="lead">Politicians Based on Filtering</p>
-                 <Button
-                    onClick={clearFilter}>
-                        Clear Selection
-                    </Button>
-                {/* <Button>
-                    Deselect Politicians
-                </Button> */}
-            </Col>
-            {/* listing of politcian buttons */}
-            <div className={style.buttonListing}>
-                <Col lg>
-                    <Row lg={5} md={4}>
-                        {theFilteredButtons()}
-                    </Row>
-                </Col>
-            </div>
-        </Row>
+        <div className={style.buttonSection}>
+            <Row>
+                <div className={style.poliBox}>
+                    <Col lg={4}>
+                        <p className="lead">Politicians Based on Filtering</p>
+                        <Button
+                            // variant="secondary"
+                            onClick={clearFilter}>
+                                Clear Selection
+                            </Button>
+                        {/* <Button>
+                            Deselect Politicians
+                        </Button> */}
+                    </Col>
+                    {/* listing of politcian buttons */}
+                    <Col>
+                        <div className={style.buttonListing}>
+                            {/* <Col lg> */}
+                                {/* <div className={style.poliButtonSpacing}> */}
+                                    <Row lg={5} md={4}>
+                                        {theFilteredButtons()}
+                                    </Row>
+                                {/* </div> */}
+                            {/* </Col> */}
+                        </div>
+                    </Col>
+                </div>    
+            </Row>
+        </div>
         <div className={style.space}></div>
         <Row>
             <Button
+                // variant="secondary"
                 onClick={
                     !isLoading? loading : null}
                 disabled={isLoading}
                 >
                 {isLoading? 'Loading...' : 'Display Information'}
             </Button>
-            {/* <Button
-                disabled={wait}
-            >
-                Display Information
-            </Button> */}
         </Row>
         <Row>
             {filters.sankeyReady? <SankeyChart cid_map={filters.displayPoli}/> : null}
         </Row>
-        {/* a button that will show up is sankey ready is true */}
         <div className={style.space}></div>
         <Row>
-            {filters.sankeyReady? <Button href="#filter_system">Back to Filter System<a href="#filter_system"></a></Button> : null}
+            {filters.sankeyReady? <Button href="#filter_system">Back to Filter System</Button> : null}
         </Row>
-        {/* need to hide this until display sankey is displayed */}
-        {/* <Row>
-            <Button>
-                Back to Top
-            </Button>
-        </Row> */}
-
-            {/* {[ ...filters.selectedPoliticians ].map((el) => { 
-                console.log("the different politicians:", el);
-                let haha = new Map();
-                haha.set(el.id, el.name); 
-                console.log("inside loop = this is the given data:", haha);                     
-                return <SankeyChart cid_map={haha}/>
-            })} */}
     </Container>
     );
 }

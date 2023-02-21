@@ -11,7 +11,8 @@ function DataPage() {
             <div className="DataPage">
                 <Row><div></div></Row>
                 <Row>
-                    <div className="pt-3 h2" id="#funding">Funding Data</div>
+                    <a id="funding"></a>
+                    <div className="pt-3 h2" id="funding">Funding Data</div>
                     <p className="lead">
                         Funding data was collected from the OpenSecrets API. This data consists 
                         of the contributions to each congressperson in the 116th Congress from 
@@ -23,7 +24,8 @@ function DataPage() {
                         industry to the given congressperson. For more information, 
                         see <a href="https://www.opensecrets.org/industries/">https://www.opensecrets.org/industries/</a>.
                     </p>
-                    <div className="pt-3 h2" id="#tweets">Tweet Data</div>
+                    <a id="tweets"></a>
+                    <div className="pt-3 h2" id="tweets">Tweet Data</div>
                     <p className="lead">
                     Tweet data was collected from the Twitter API. We collected all available 
                     Tweets for each congressperson with a public Twitter account in the 116th 
@@ -47,7 +49,8 @@ function DataPage() {
                         </li>
                     </ol>
                     </p>
-                    <div className="pt-3 h2" id="#statements">Statement Data</div>
+                    <a id="statements"></a>
+                    <div className="pt-3 h2" id="statements">Statement Data</div>
                     <p className="lead">
                     Statement data was collected from the Congressional Record API and consists of 
                     statements made by congress people during the 116th Congress on the House or 

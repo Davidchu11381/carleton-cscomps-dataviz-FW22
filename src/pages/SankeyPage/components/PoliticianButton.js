@@ -18,7 +18,7 @@ function PoliticianButton( data ) {
         if (party === "Republican") {
             return 'outline-danger'
         } else if (party === "Democrat"){
-            return 'outline-info';
+            return 'outline-primary';
         } else {
             return 'outline-success';
         }
