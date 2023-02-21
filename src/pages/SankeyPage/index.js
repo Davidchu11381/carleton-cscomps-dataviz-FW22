@@ -121,7 +121,7 @@ function SankeyPage() {
             <div className="pt-3 mb-3 pb-3 lead">
                 <p>You can explore these relationships through Sankey diagrams, which show the flows of money
                 to congresspeople and congresspeople to topics.</p>
-                <p>If you'd like to learn more about the data that's being represented, head to <a href="/data">the page about the data collection</a>.
+                <p>If you'd like to learn more about the data that's being represented, head to <a href="/data">our data collection page</a>.
                 </p>
             <a id="filter_system"></a>
             <div className={style.line}></div>

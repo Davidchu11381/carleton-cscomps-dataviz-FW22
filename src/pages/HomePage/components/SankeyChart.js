@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
 import { Col, Row, Container, Stack, Form, Card } from 'react-bootstrap'
-import { Placeholder } from 'react-bootstrap';
 import Chart from 'react-google-charts';
 import { tweetTopicLabels, statementTopicLabels} from '../topicLabels.js';
 
@@ -191,40 +190,19 @@ class SankeyChart extends Component {
     this.setState({stateSankey})
   } 
 
-
-  getChartName() {
-    let chartName = "";
-    if (this.group === undefined) {
-      let cids = this.cid_map
-      let names = []
-      for (let cid in cids) {
-        names.push(this.cid_map[cid])
-      }
-      chartName = names.join(", ")
-
-    } else {
-      chartName = this.group
-      chartName = chartName.concat("s")
-    }
-
-    return(chartName)
-  }
-
   render() {
-    //let sankeyData = this.state.sankey
     let indData = this.state.indSankey
+    console.log("indData:", indData)
     let tweetData = this.state.tweetSankey
     let statementData = this.state.stateSankey
     console.log("tweetData:", tweetData)
-    let chartName = this.getChartName()
-
+   
     return (
       <Container>
       <div className="container mt-5">
         <Row lg={2} md={2}>
           {/* the sankey */}
           <Col>
-            <h2>{chartName}</h2>
               <p>Funding</p>
               <Chart
                 width={'200'}
@@ -239,7 +217,7 @@ class SankeyChart extends Component {
           <Col>
             <Card>
               <Card.Title>Funding</Card.Title>
-              <Card.Body>information</Card.Body>
+              <Card.Body>This shows the top 10 industries by contribution total (in USD) for each selected congressperson. Note that each congressperson receives money from more than 10 industries, so the totals for each congressperson do not include contributions outside of those 10.</Card.Body>
               <Card.Footer><a href="/data#funding">More Information About Industry Funding Data</a></Card.Footer>
             </Card>
           </Col>
@@ -260,7 +238,7 @@ class SankeyChart extends Component {
           <Col>
             <Card>
               <Card.Title>Tweets</Card.Title>
-              <Card.Body>information</Card.Body>
+              <Card.Body>This shows the breakdown of the distribution of topics found in each congressperson’s Tweets. For each congressperson, we query their Tweets from the database and then calculate the proportion of each topic’s frequency out of the total 12 topics.</Card.Body>
               <Card.Footer><a href="/data#tweets">More Information About Tweet Data</a></Card.Footer>
             </Card>
           </Col>
@@ -281,7 +259,7 @@ class SankeyChart extends Component {
           <Col>
             <Card>
               <Card.Title>Statements</Card.Title>
-              <Card.Body>information</Card.Body>
+              <Card.Body>This shows the breakdown of the distribution of topics found in each congressperson’s congressional statements. For each congressperson, we query their statements and then calculate the proportion of each topic’s frequency out of the total 19 topics.</Card.Body>
               <Card.Footer><a href="/data#statements">More Information About Statement Data</a></Card.Footer>
             </Card>
           </Col>
@@ -292,68 +270,3 @@ class SankeyChart extends Component {
   }
 }
 export default SankeyChart
-
-
-
-/* OLD STUFF
-  fetchData() {
-    console.log("group:", this.group)
-    if (this.group === undefined) {
-      console.log("in if")
-      fetch('http://137.22.4.60:5001/'+ this.cid_list +'/industry') 
-        .then(response => response.json())
-        .then(ind_data => {
-          console.log("industry data:", ind_data);
-          this.setState({ ind_data });
-        });
-      fetch('http://137.22.4.60:5001/'+ this.cid_list +'/topics') 
-        .then(response => response.json())
-        .then(top_data => {
-          console.log("topic data:", top_data);
-          this.setState({ top_data });
-        });
-    } else {
-      console.log("in else")
-      fetch('http://137.22.4.60:5001/'+ this.group +'/aggregate') 
-      .then(response => response.json())
-      .then(ind_data => {
-        console.log("the data:", ind_data);
-        console.log("industry specifically: ", ind_data.industry)
-        this.setState({ ind_data });
-      });
-    }
-  }
-
-  formatList() {
-    // determine what to title the middle column of the sankey, set topics
-    if (this.group === undefined) {
-      var mid_col = this.cid_list //gonna have to change, just a cid right now not a name
-      var topics = this.state.top_data.topics
-    } else {
-      var mid_col = this.group
-      var topics = this.state.ind_data.tweet_topics
-    }
-    var industries = this.state.ind_data.industry
-    var sankeyList = [['From', 'To', 'Weight']]
-
-    //get total of industries, to match topics to industries
-    var ind_total = 0;
-    for (let ind in industries) {
-      sankeyList.push([industries[ind].industry_name, mid_col, parseInt(industries[ind].total)]);
-      ind_total  += parseInt(industries[ind].total)
-    }
-    
-    var topic_total = 0;
-    for (let topic in topics) {
-      topic_total += parseInt(topics[topic])
-    }
-
-    for (let topic in topics) {
-      //calculate weight to scale first
-      let sankey_weight = (parseInt(topics[topic]) * ind_total) / topic_total
-      sankeyList.push([mid_col, topic, sankey_weight]) // need to scale somehow
-    }
-    console.log(sankeyList)
-    return(sankeyList)
-  }
-  */
