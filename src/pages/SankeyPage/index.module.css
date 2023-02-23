@@ -5,7 +5,7 @@
 .buttonListing {
     /* min-height: 15vh;
     max-height: 20vh; */
-    height: 20vh;
+    height: 40vh;
     /* height: 20px; */
     overflow-y: auto;
     border-color: black;

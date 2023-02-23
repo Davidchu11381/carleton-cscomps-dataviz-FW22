@@ -50,7 +50,7 @@ function PoliticianButton( data ) {
     
     return (
         <ToggleButton
-            className="mb-2"
+            className="m-1"
             id={info.id}
             type="checkbox"
             variant={partyType()}

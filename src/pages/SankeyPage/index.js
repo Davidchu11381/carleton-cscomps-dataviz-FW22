@@ -155,9 +155,9 @@ function SankeyPage() {
         <br></br>
         <Row>
         <Col>
-        <Row lg={2} md={2}>
+        {/* <Row lg={2} md={2}> */}
             {/* the filtering system */}        
-            <Col>
+            {/* <Col> */}
                 <Stack gap={1}>
                     <Row lg={2} md={2}>
                         <Col>
@@ -181,7 +181,9 @@ function SankeyPage() {
                         </Col>
                     </Row>
                 </Stack>
-            </Col>
+            {/* </Col>
+        </Row> */}
+        <Row>
             <Col>
                 <div className="pt-3 h5">By State</div>
                     {stateAbbrv.map(state => {
@@ -190,12 +192,7 @@ function SankeyPage() {
             </Col>
         </Row>
         <Row>
-            <Button 
-                // variant="secondary" 
-                className="mb-4 mt-4 ps-5 pe-5" 
-                onClick={displayButtons}>
-                Filter
-            </Button>
+
         </Row>
         </Col>
         <Col className="ms-4">
@@ -215,12 +212,18 @@ function SankeyPage() {
                                 </Row>
                             {/* </div> */}
                         {/* </Col> */}
-                    </div>
-                    <Button className="mt-3"
-                        // variant="secondary"
-                        onClick={clearFilter}>
-                            Clear Selection
-                        </Button>
+                    </div>           
+                <Button 
+                    // className="mb-4 mt-4 ps-5 pe-5" 
+                    className="mt-2"
+                    onClick={displayButtons}>
+                    Filter
+                </Button>            
+                <Button className="mt-2"
+                    variant="danger"
+                    onClick={clearFilter}>
+                        Clear Selection
+                    </Button>
                     {/* <Button>
                         Deselect Politicians
                     </Button> */}
