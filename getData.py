@@ -129,22 +129,22 @@ def get_politician_data():
                 new_dict[var] = row[index]
 
             # adding summary info from OpenSecrets
-            endpoint = "http://www.opensecrets.org/api/?method=candSummary&cid=" + new_dict["opensecrets_id"] + "&cycle=2022&apikey="
-            api = endpoint + key
-            response = requests.get(f"{api}")
-            if response.status_code == 200:
-                data_dict = xmltodict.parse(response.text)["response"]["summary"] # parse from XML to a JSON-dict format
+            #endpoint = "http://www.opensecrets.org/api/?method=candSummary&cid=" + new_dict["opensecrets_id"] + "&cycle=2022&apikey="
+            #api = endpoint + key
+            #response = requests.get(f"{api}")
+            #if response.status_code == 200:
+                #data_dict = xmltodict.parse(response.text)["response"]["summary"] # parse from XML to a JSON-dict format
                 
                 # removing @ symbols
-                data_dict = removeAtSymbol(data_dict)
+                #data_dict = removeAtSymbol(data_dict)
                 
                 # adding to dictionary
-                new_dict["first_elected"] = data_dict["first_elected"]
-                new_dict["total"] = float(data_dict["total"])
-                new_dict["spent"] = float(data_dict["spent"])
-                new_dict["cash_on_hand"] = float(data_dict["cash_on_hand"])
-                new_dict["debt"] = float(data_dict["debt"])
-                new_dict["origin"] = data_dict["origin"]
+                #new_dict["first_elected"] = data_dict["first_elected"]
+                #new_dict["total"] = float(data_dict["total"])
+                #new_dict["spent"] = float(data_dict["spent"])
+                #new_dict["cash_on_hand"] = float(data_dict["cash_on_hand"])
+                #new_dict["debt"] = float(data_dict["debt"])
+                #new_dict["origin"] = data_dict["origin"]
 
             # adding industry info from OpenSecrets
             endpoint = "https://www.opensecrets.org/api/?method=candIndustry&cid=" + new_dict["opensecrets_id"] + "&cycle=2022&apikey="
@@ -246,9 +246,9 @@ def getTwitterProfilePics():
         congresspeople.find_one_and_update({"opensecrets_id": dic["opensecrets_id"]}, {"$set": {"profile_pic": getProfilePic(twitter_handle)}})
         
 def main():
-    # get_politician_data() # get all summary information for congresspeople
+    get_politician_data() # get all summary information for congresspeople
     # getTweetTopicData() # get topic distribution for all tweets
     # getStatementTopicData() # get topic distribution for all statements
     # saveAggregateData() # calculate and save aggregate topic and industry data for Republican, Democrat, Senator, Representative
-    getTwitterProfilePics() # save all profile pictures 
+    #getTwitterProfilePics() # save all profile pictures 
 main()

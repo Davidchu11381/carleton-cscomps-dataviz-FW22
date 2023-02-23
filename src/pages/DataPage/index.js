@@ -15,7 +15,7 @@ function DataPage() {
                     <div className="pt-3 h2" id="funding">Funding Data</div>
                     <p className="lead">
                         Funding data was collected from the OpenSecrets API. This data consists 
-                        of the contributions to each congressperson in the 116th Congress from 
+                        of the contributions to each congressperson in the 117th Congress from 
                         the top ten contributing industries for that congressperson, based on 
                         contributions made in the 2020 election cycle. OpenSecrets groups 
                         contributions into 83 industries, and the dollar amounts displayed 
@@ -28,7 +28,7 @@ function DataPage() {
                     <div className="pt-3 h2" id="tweets">Tweet Data</div>
                     <p className="lead">
                     Tweet data was collected from the Twitter API. We collected all available 
-                    Tweets for each congressperson with a public Twitter account in the 116th 
+                    Tweets for each congressperson with a public Twitter account in the 117th 
                     Congress. To extract the topic categories displayed in our visualizations, 
                     we fit a Latent Dirichlet Allocation (LDA) statistical language model to a 
                     subset of the Tweets consisting of one hundred randomly selected Tweets for 
@@ -53,7 +53,7 @@ function DataPage() {
                     <div className="pt-3 h2" id="statements">Statement Data</div>
                     <p className="lead">
                     Statement data was collected from the Congressional Record API and consists of 
-                    statements made by congress people during the 116th Congress on the House or 
+                    statements made by congress people during the 117th Congress on the House or 
                     Senate floors. Like the Tweet data, we intuited the statement topics by fitting 
                     a LDA model to the statement data; unlike the Tweet data, we categorized the 
                     statements into twenty-five topics. We followed the same manual procedure to 

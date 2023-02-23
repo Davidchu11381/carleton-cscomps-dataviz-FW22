@@ -126,9 +126,9 @@ function SankeyPage() {
             <p className="pt-3 h3">What is FollowTheMoney?</p>
             <p className="lead">
                 FollowTheMoney is a web application that lets you explore the relationships between funding sources and speech
-                for members of congress. We have gathered data on funding broken down by industry, statements made on the floor
-                of congress, and tweets for each politician. We then performed topic modeling on the statements and tweets
-                to gather quantitative data about what topics politicians speek about.
+                for members of Congress. We have gathered data on funding broken down by industry, statements made on the floor
+                of Congress, and tweets for each politician. We then performed topic modeling on the statements and tweets
+                to gather quantitative data about what topics politicians speak about.
             </p>
             <p className="pt-3 h5">How is the data represented?</p>
             <div className="pt-3 mb-3 pb-3 lead">
