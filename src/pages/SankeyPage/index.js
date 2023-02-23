@@ -1,6 +1,6 @@
 import React from 'react'
-import { Col, Row, Container, Stack, Button } from 'react-bootstrap'
-// import { useNavigate } from 'react-router';
+import { Col, Row, Container, Stack, Button, ButtonGroup, ToggleButtonGroup } from 'react-bootstrap'
+import { useNavigate, useLocation } from 'react-router';
 import SankeyChart from '../HomePage/components/SankeyChart';
 import { useEffect, useReducer, useState, useRef } from 'react';
 import PoliticianButton from './components/PoliticianButton';
@@ -9,28 +9,23 @@ import GroupSelectionButton from './components/GroupSelectionButton';
 import style from "./index.module.css"
 
 import { reducer, initialState } from './hooks/reducer';
-
 import { compReducer, compInitialState } from './components/hooks/reducer';
-
 
 // TALK ABOUT IN COMPS TOMORROW
 // when click on the line between fields == info?
 // illustrates backing of politicians (aka lobbying)
 
-// need "space" for already-selected politicians
-// states may be a drop-down selection (just to be easier)
-// GOAL: focus on connecting filtering with data viz
-
 function SankeyPage() {
 
     const [filters, dispatch] = useReducer(reducer, initialState);
     const [compStuff, compDispatch] = useReducer(compReducer, compInitialState);
+    // const navigate = useNavigate();
     const allPoliticians = new Map(); 
     const [allData, setAllData] = useState(null);
     const fetchDelay = [];
     const apiCallCount = useRef(0);
     const [isLoading, setLoading] = useState(false);
-
+    // const scrollRef = useRef(0);
 
     const stateAbbrv = [ 'AK', 'AL', 'AR', 'AZ', 'CA', 'CO', 'CT', 'DC', 'DE', 'FL', 'GA',
     'HI', 'IA', 'ID', 'IL', 'IN', 'KS', 'KY', 'LA', 'MA', 'MD', 'ME',
@@ -48,13 +43,23 @@ function SankeyPage() {
                 type: 'DISPLAY_SANKEY',
                 value: data,
                 buttonState: true,
-            })            
+            })
         }
     }
+
+    // const timer = setTimeout(() => {
+    //     console.log('This will run after 1 second!')
+    //   }, 1000);
+    //   return () => clearTimeout(timer);
+    // }
 
     useEffect(() => {
         if (isLoading) {
             displaySankey();
+            // const timer = setTimeout(() => {
+            //     console.log('This will run after 1 second!')
+            // }, 1000);
+            // return () => clearTimeout(timer);
             setLoading(false);
         }
     }, [isLoading]);
@@ -66,16 +71,13 @@ function SankeyPage() {
         let buttonList = [];
         list.map((pol) => {
             buttonList.push(
-            // <div className={style.poliButtonSpacing}>
             <PoliticianButton politician={{name: pol[1].full_name, id: pol[0], party: pol[1].party}} func={dispatch} state={true}></PoliticianButton>
             );
-            // /* </div> */s
         })
         return buttonList;
     }
 
     const displayButtons = () => {
-        // setWait(false);
         dispatch({
             type: 'DISPLAY_BUTTONS',
             value: "",
@@ -114,19 +116,18 @@ function SankeyPage() {
     }, [fetchDelay]);
 
     useEffect(() => {
-        console.log("ins index.js:", filters);
-        console.log("this is the new displayPoli:", filters.displayPoli);
-        console.log("this is the sankeyReady:", filters.sankeyReady);
+        console.log("in index.js:", filters);
     }, [filters]);
    
     return (
     <Container>
         <p className="pt-3 mb-3 h3">What is FollowTheMoney?</p>
+
         <p className="lead">
-        FollowTheMoney is a web application that lets you explore the relationships between funding sources and speech
-        for members of Congress. We have gathered data on funding broken down by industry, statements made on the floor
-        of Congress, and tweets for each politician. We then performed topic modeling on the statements and tweets
-        to gather quantitative data about what topics politicians speak about.
+            FollowTheMoney is a web application that lets you explore the relationships between funding sources and speech
+            for members of Congress. We have gathered data on funding broken down by industry, statements made on the floor
+            of Congress, and tweets for each politician. We then performed topic modeling on the statements and tweets
+            to gather quantitative data about what topics politicians speak about.
         </p>
 
         <p className="lead">You can explore these relationships through Sankey diagrams, which show the flows of money
@@ -146,112 +147,107 @@ function SankeyPage() {
             Finally, once you are satisfied with your group of politicians, click on the <strong>Display Information </strong>
             to see the resulting Sankey Diagrams.
         </p>
-        <p>
-                <strong>Note:</strong> If more than 10 politicians are selected, the representation of the data becomes
-                quite convulated and can be confusing to interpret.
-        </p>
         <a id="filter_system"></a>
-        {/* the top w text */}
+        <br></br>
+        <p className="lead">
+            <strong>Note:</strong> If more than 10 politicians are selected, the representation of the data becomes
+            quite convulated and can be confusing to interpret.
+        </p>
         <br></br>
         <Row>
-        <Col>
-        {/* <Row lg={2} md={2}> */}
-            {/* the filtering system */}        
-            {/* <Col> */}
+            <Col>
                 <Stack gap={1}>
                     <Row lg={2} md={2}>
                         <Col>
                             <div className="pt-3 h5">By Chamber</div>
                             <div className={style.buttonSpace}>
-                                <Row lg={1} md={1}>
-                                    <GroupSelectionButton type="chamber" id="sen" value="Senate" func={dispatch}></GroupSelectionButton>
-                                    <GroupSelectionButton type="chamber" id="rep" value="House" func={dispatch}></GroupSelectionButton>
+                                <Row>
+                                    <ToggleButtonGroup type="checkbox">
+                                        <Stack>
+                                            <Row>
+                                            <GroupSelectionButton type="chamber" id="sen" value="Senate" func={dispatch}></GroupSelectionButton>
+                                            </Row><Row>
+                                            <GroupSelectionButton type="chamber" id="rep" value="House" func={dispatch}></GroupSelectionButton>
+                                            </Row>
+                                        </Stack>
+                                    </ToggleButtonGroup>
                                 </Row>
                             </div>
                         </Col>
                         <Col>
                             <div className="pt-3 h5">By Party</div>
-                            {/* <div className={style.buttonSpace}> */}
-                                <Row lg={1} md={1}>
-                                    <GroupSelectionButton type="party" id="Republican" value="Republican" func={dispatch}></GroupSelectionButton>
-                                    <GroupSelectionButton type="party" id="Democrat" value="Democrat" func={dispatch}></GroupSelectionButton>
-                                    <GroupSelectionButton type="party" id="Independent" value="Independent" func={dispatch}></GroupSelectionButton>
+                                <Row>
+                                <ToggleButtonGroup type="checkbox">
+                                    <Stack>
+                                        <GroupSelectionButton type="party" id="Republican" value="Republican" func={dispatch}></GroupSelectionButton>
+                                        <GroupSelectionButton type="party" id="Democrat" value="Democrat" func={dispatch}></GroupSelectionButton>
+                                        <GroupSelectionButton type="party" id="Independent" value="Independent" func={dispatch}></GroupSelectionButton>
+                                    </Stack>
+                                </ToggleButtonGroup>
                                 </Row>
-                            {/* </div> */}
                         </Col>
                     </Row>
                 </Stack>
-            {/* </Col>
-        </Row> */}
-        <Row>
-            <Col>
-                <div className="pt-3 h5">By State</div>
-                    {stateAbbrv.map(state => {
-                        return (<StateButton state={state} filters={filters} func={dispatch}></StateButton>)
-                    })}
-            </Col>
-        </Row>
-        <Row>
-
-        </Row>
-        </Col>
-        <Col className="ms-4">
-        <div className={style.buttonSection}>
-           
-            <div>
                 <Row>
-                <p className="m-3 h5">Politicians Based on Filtering</p>
+                    <Col>
+                        <div className="pt-3 h5">By State</div>
+                            {stateAbbrv.map(state => {
+                                return (<StateButton state={state} filters={filters} func={dispatch}></StateButton>)
+                            })}
+                    </Col>
                 </Row>
-                {/* listing of politcian buttons */}
-                <Row>
-                    <div className={style.buttonListing}>
-                        {/* <Col lg> */}
-                            {/* <div className={style.poliButtonSpacing}> */}
+            </Col>
+            <Col className="ms-4">
+                <div className={style.buttonSection}>
+                    <div>
+                        <Row>
+                            <p className="m-3 h5">Politicians Based on Filtering</p>
+                        </Row>
+                        <Row>
+                            <div className={style.buttonListing}>
                                 <Row lg={5} md={4}>
                                     {theFilteredButtons()}
                                 </Row>
-                            {/* </div> */}
-                        {/* </Col> */}
-                    </div>           
-                <Button 
-                    // className="mb-4 mt-4 ps-5 pe-5" 
-                    className="mt-2"
-                    onClick={displayButtons}>
-                    Filter
-                </Button>            
-                <Button className="mt-2"
-                    variant="danger"
-                    onClick={clearFilter}>
-                        Clear Selection
-                    </Button>
-                    {/* <Button>
-                        Deselect Politicians
-                    </Button> */}
-                </Row>
-            </div>  
+                            </div>           
+                        <Button 
+                            // className="mb-4 mt-4 ps-5 pe-5" 
+                            className="mt-2"
+                            onClick={displayButtons}>
+                            Filter
+                        </Button>            
+                        <Button className="mt-2"
+                            variant="danger"
+                            onClick={clearFilter}>
+                                Clear Selection
+                            </Button>
+                        </Row>
+                    </div>  
 
-        <Row className="mt-2">
-            <Button
-                    className="btn-success ps-5 pe-5"
-                    // variant="secondary"
-                    onClick={
-                        !isLoading? loading : null}
-                    disabled={isLoading}
-                    >
-                    {isLoading? 'Loading...' : 'Display Information'}
-            </Button>
-        </Row>   
-        </div>
-        </Col>
+                    <Row className="mt-2">
+                        <Button
+                            // className="btn-success ps-5 pe-5"
+                            variant="success"
+                            onClick={!isLoading? loading : null}
+                            disabled={isLoading}
+                            href="#sankeys"
+                            >
+                                {isLoading? 'Loading...' : 'Display Information'}
+                        </Button>
+                        {filters.sankeyReady? <p className="lead"><center><strong>Scroll down to see the data!</strong></center></p>: null}
+                    </Row>   
+                </div>
+            </Col>
         </Row>
-        
         <Row>
+            {/* {filters.sankeyReady? window.scroll(): null} */}
+            <a id="sankeys"></a>
             {filters.sankeyReady? <SankeyChart cid_map={filters.displayPoli}/> : null}
         </Row>
         <div className={style.space}></div>
         <Row>
             {filters.sankeyReady? <Button href="#filter_system">Back to Filter System</Button> : null}
         </Row>
+        <br></br>
     </Container>
     );
 }

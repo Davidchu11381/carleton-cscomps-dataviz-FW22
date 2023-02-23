@@ -206,6 +206,7 @@ class SankeyChart extends Component {
           {/* the sankey */}
           <Col>
               {/* <p>Funding</p> */}
+              <a id="sankeyStart"></a>
               <Chart
                 width={'200'}
                 height={'75vh'}
