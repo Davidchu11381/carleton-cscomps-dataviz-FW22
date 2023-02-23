@@ -31,6 +31,7 @@ function SankeyPage() {
     const apiCallCount = useRef(0);
     const [isLoading, setLoading] = useState(false);
 
+
     const stateAbbrv = [ 'AK', 'AL', 'AR', 'AZ', 'CA', 'CO', 'CT', 'DC', 'DE', 'FL', 'GA',
     'HI', 'IA', 'ID', 'IL', 'IN', 'KS', 'KY', 'LA', 'MA', 'MD', 'ME',
     'MI', 'MN', 'MO', 'MS', 'MT', 'NC', 'ND', 'NE', 'NH', 'NJ', 'NM',
@@ -119,35 +120,41 @@ function SankeyPage() {
     }, [filters]);
    
     return (
-        <Container>
-        {/* the top w text */}
-        <Row>
-            {/* <div className="pt-3 h3">Overview</div> */}
-            <p className="pt-3 h3">What is FollowTheMoney?</p>
-            <p className="lead">
-                FollowTheMoney is a web application that lets you explore the relationships between funding sources and speech
-                for members of Congress. We have gathered data on funding broken down by industry, statements made on the floor
-                of Congress, and tweets for each politician. We then performed topic modeling on the statements and tweets
-                to gather quantitative data about what topics politicians speak about.
-            </p>
-            <p className="pt-3 h5">How is the data represented?</p>
-            <div className="pt-3 mb-3 pb-3 lead">
-                <p>You can explore these relationships through Sankey diagrams, which show the flows of money
-                to congresspeople and congresspeople to topics.</p>
-                <p>If you'd like to learn more about the data that's being represented, head to <a href="/data">our data collection page</a>.
-                </p>
-            <a id="filter_system"></a>
-            <div className={style.line}></div>
-            </div>
-            <p className="lead mb-1">
-                Filter by chamber, party or state to see sankey diagrams
-                of politicians with the selected features. 
-            </p>
-            <p className="lead">
-            NOTE: if more than 10 politicians are selected, the representation of the data becomes
+    <Container>
+        <p className="pt-3 mb-3 h3">What is FollowTheMoney?</p>
+        <p className="lead">
+        FollowTheMoney is a web application that lets you explore the relationships between funding sources and speech
+        for members of Congress. We have gathered data on funding broken down by industry, statements made on the floor
+        of Congress, and tweets for each politician. We then performed topic modeling on the statements and tweets
+        to gather quantitative data about what topics politicians speak about.
+        </p>
+
+        <p className="lead">You can explore these relationships through Sankey diagrams, which show the flows of money
+        to congresspeople and congresspeople to topics.</p>
+
+        <p className="lead mb-4">If you'd like to learn more about the data that's being represented, head to <a href="/data">our data collection page</a>.
+        </p>
+        <p className="mt-4 mb-3 h5"> <strong>Try Out the Filter Below </strong></p>
+        <p className="lead mb-2">
+                First, <strong>filter</strong> for the chamber(s), party(s) and/or state(s) that you are interested in.
+        </p> 
+        <p className="lead mb-2">
+                If you wish to edit your group of politicians, simply click on their names from the box on the right, 
+                and they will disappear. If you wish to clear the entire group, click <strong>Clear Selection</strong>.
+        </p>
+        <p className="lead mb-4">
+            Finally, once you are satisfied with your group of politicians, click on the <strong>Display Information </strong>
+            to see the resulting Sankey Diagrams.
+        </p>
+        <p>
+                <strong>Note:</strong> If more than 10 politicians are selected, the representation of the data becomes
                 quite convulated and can be confusing to interpret.
-            </p>
-        </Row>
+        </p>
+        <a id="filter_system"></a>
+        {/* the top w text */}
+        <br></br>
+        <Row>
+        <Col>
         <Row lg={2} md={2}>
             {/* the filtering system */}        
             <Col>
@@ -185,51 +192,56 @@ function SankeyPage() {
         <Row>
             <Button 
                 // variant="secondary" 
-                className="mb-4 mt-4" 
+                className="mb-4 mt-4 ps-5 pe-5" 
                 onClick={displayButtons}>
                 Filter
             </Button>
         </Row>
+        </Col>
+        <Col className="ms-4">
         <div className={style.buttonSection}>
-            <Row>
-                <div className={style.poliBox}>
-                    <Col lg={4}>
-                        <p className="lead">Politicians Based on Filtering</p>
-                        <Button
-                            // variant="secondary"
-                            onClick={clearFilter}>
-                                Clear Selection
-                            </Button>
-                        {/* <Button>
-                            Deselect Politicians
-                        </Button> */}
-                    </Col>
-                    {/* listing of politcian buttons */}
-                    <Col>
-                        <div className={style.buttonListing}>
-                            {/* <Col lg> */}
-                                {/* <div className={style.poliButtonSpacing}> */}
-                                    <Row lg={5} md={4}>
-                                        {theFilteredButtons()}
-                                    </Row>
-                                {/* </div> */}
-                            {/* </Col> */}
-                        </div>
-                    </Col>
-                </div>    
-            </Row>
-        </div>
-        <div className={style.space}></div>
-        <Row>
+           
+            <div>
+                <Row>
+                <p className="m-3 h5">Politicians Based on Filtering</p>
+                </Row>
+                {/* listing of politcian buttons */}
+                <Row>
+                    <div className={style.buttonListing}>
+                        {/* <Col lg> */}
+                            {/* <div className={style.poliButtonSpacing}> */}
+                                <Row lg={5} md={4}>
+                                    {theFilteredButtons()}
+                                </Row>
+                            {/* </div> */}
+                        {/* </Col> */}
+                    </div>
+                    <Button className="mt-3"
+                        // variant="secondary"
+                        onClick={clearFilter}>
+                            Clear Selection
+                        </Button>
+                    {/* <Button>
+                        Deselect Politicians
+                    </Button> */}
+                </Row>
+            </div>  
+
+        <Row className="mt-2">
             <Button
-                // variant="secondary"
-                onClick={
-                    !isLoading? loading : null}
-                disabled={isLoading}
-                >
-                {isLoading? 'Loading...' : 'Display Information'}
+                    className="btn-success ps-5 pe-5"
+                    // variant="secondary"
+                    onClick={
+                        !isLoading? loading : null}
+                    disabled={isLoading}
+                    >
+                    {isLoading? 'Loading...' : 'Display Information'}
             </Button>
+        </Row>   
+        </div>
+        </Col>
         </Row>
+        
         <Row>
             {filters.sankeyReady? <SankeyChart cid_map={filters.displayPoli}/> : null}
         </Row>
