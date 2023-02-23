@@ -200,38 +200,41 @@ class SankeyChart extends Component {
     // console.log("tweetData:", tweetData)
    
     return (
-      <Container>
-      <div className="container mt-5">
-        <Row lg={2} md={2}>
-          {/* the sankey */}
-          <Col>
-              {/* <p>Funding</p> */}
-              <a id="sankeyStart"></a>
-              <Chart
-                width={'200'}
-                height={'75vh'}
-                chartType="Sankey"
-                loader={<div>Loading Chart</div>}
-                data={indData}
-                rootProps={{ 'data-testid': '1' }}
-              />
-          </Col>
-            {/* the legend about funding */} 
-          <div className={style.cardArrangement}>
-            <Col>
-              <Card>
-                <Card.Header>Funding</Card.Header>
-                <Card.Body>This shows the top 10 industries by contribution total (in USD) for each selected congressperson. Note that each congressperson receives money from more than 10 industries, so the totals for each congressperson do not include contributions outside of those 10.</Card.Body>
-                <Card.Footer><a href="/data#funding">More Information About Industry Funding Data</a></Card.Footer>
-              </Card>
-            </Col>
+      <Container className="mt-5 pt-3 mb-3 pb-3">
+      <div>
+    
+
+        {/* the legend about funding */} 
+          <div className="mt-5 mb-5">
+            <Card>
+            <Card.Header className="lead"><strong>Industry Fundings and Politicians </strong></Card.Header>
+            <Card.Body className="lead">This shows the top 10 industries by contribution total (in USD) for each selected congressperson. Note that each congressperson receives money from more than 10 industries, so the totals for each congressperson do not include contributions outside of those 10.</Card.Body>
+            <Card.Footer><a href="/data#funding">More Information About Industry Funding Data</a></Card.Footer>
+            </Card>
           </div>
-        </Row>
+        
+        {/* the sankey */}
+            {/* <p>Funding</p> */}
+            <a id="sankeyStart"></a>
+            <Chart
+            width={'200'}
+            height={'75vh'}
+            chartType="Sankey"
+            loader={<div>Loading Chart</div>}
+            data={indData}
+            rootProps={{ 'data-testid': '1' }}
+            />
         <div className={style.lineCenter}>
           {/* <div className={style.line}></div> */}
         </div>
-        <Row lg={2} md={2}>
-          <Col>
+        
+        <div className="mt-5 mb-5">
+              <Card>
+                <Card.Header className="lead"><strong>Politicians and Tweet Topics</strong></Card.Header>
+                <Card.Body className="lead" >This shows the breakdown of the distribution of topics found in each congressperson’s Tweets. For each congressperson, we query their Tweets from the database and then calculate the proportion of each topic’s frequency out of the total 12 topics.</Card.Body>
+                <Card.Footer><a href="/data#tweets">More Information About Tweet Data</a></Card.Footer>
+              </Card>
+          </div>
             {/* <p>Tweets</p> */}
             <Chart
               width={'200'}
@@ -241,22 +244,19 @@ class SankeyChart extends Component {
               data={tweetData}
               rootProps={{ 'data-testid': '1' }}
             />
-          </Col>
-          <div className={style.cardArrangement}>
-            <Col>
-              <Card>
-                <Card.Header>Tweets</Card.Header>
-                <Card.Body>This shows the breakdown of the distribution of topics found in each congressperson’s Tweets. For each congressperson, we query their Tweets from the database and then calculate the proportion of each topic’s frequency out of the total 12 topics.</Card.Body>
-                <Card.Footer><a href="/data#tweets">More Information About Tweet Data</a></Card.Footer>
-              </Card>
-            </Col>
-          </div>
-        </Row>
+
         <div className={style.lineCenter}>
           {/* <div className={style.line}></div> */}
         </div>
-        <Row lg={2} md={2}>
-          <Col>
+
+        <div className="mt-5 mb-5">
+            <Card>
+            <Card.Header className="lead"><strong>Politicians and Statement Topics</strong></Card.Header>
+            <Card.Body className="lead">This shows the breakdown of the distribution of topics found in each congressperson’s congressional statements. For each congressperson, we query their statements and then calculate the proportion of each topic’s frequency out of the total 19 topics.</Card.Body>
+            <Card.Footer><a href="/data#statements">More Information About Statement Data</a></Card.Footer>
+            </Card>
+
+          </div>
             {/* <p>Statements</p> */}
             <Chart
               width={'200'}
@@ -266,17 +266,6 @@ class SankeyChart extends Component {
               data={statementData}
               rootProps={{ 'data-testid': '1' }}
             />
-          </Col>
-          <div className={style.cardArrangement}>
-            <Col>
-              <Card>
-                <Card.Header>Statements</Card.Header>
-                <Card.Body>This shows the breakdown of the distribution of topics found in each congressperson’s congressional statements. For each congressperson, we query their statements and then calculate the proportion of each topic’s frequency out of the total 19 topics.</Card.Body>
-                <Card.Footer><a href="/data#statements">More Information About Statement Data</a></Card.Footer>
-              </Card>
-            </Col>
-          </div>
-        </Row>
       </div>
       </Container>
     )
