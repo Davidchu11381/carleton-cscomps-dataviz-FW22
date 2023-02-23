@@ -1,38 +1,12 @@
-
-.poliButton {
-    overflow-y: initial;
-}
-
-.stuffyButtons {
-    background-color: lightgray;
-    height: 200px;
-    overflow-y: visible;
-    overflow-x: hidden;
-    /* justify-content: space-between; */
-    justify-content: space-around;
-}
-
-.hide {
-    display: none;
-}
-
-.notHide {
-    display: block;
-}
-
-.huh {
-    background-color: red;
-}
-
-.topPart {
-    height: 40vh;
-    overflow-y: auto;
-}
+/* * {
+    outline: solid 1px red;
+} */
 
 .buttonListing {
     /* min-height: 15vh;
     max-height: 20vh; */
     height: 20vh;
+    /* height: 20px; */
     overflow-y: auto;
     border-color: black;
     border-width: 0.05em;
@@ -44,7 +18,7 @@
     background-color: lightcoral;
 }
 
-.line{
+.line {
     height: 1px;
     background-color: black;
 }
@@ -65,9 +39,16 @@
 .poliBox {
     display: flex;
     flex-direction: row;
+    /* flex-wrap: wrap; */
     /* flex-basis: 50%; */
 }
 
 .buttonSection {
     height: 20vh;
+    /* height: 50px; */
+    /* background-color: red; */
+}
+
+.stopScrolling {
+    overflow-x: hidden;
 }
