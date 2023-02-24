@@ -105,6 +105,7 @@ function SankeyPage() {
 
     // collecting data for politicians needed for filtering
     useEffect(() => {
+        // fetch('http://137.22.4.60:5001/cid_to_summary', { mode: 'no-cors' })
         fetch('http://137.22.4.60:5001/cid_to_summary')
         .then(response => response.json())
         .then(data => {
