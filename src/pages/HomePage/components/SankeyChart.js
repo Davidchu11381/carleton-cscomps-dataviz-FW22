@@ -10,7 +10,6 @@ class SankeyChart extends Component {
   constructor(props) {
     super(props);
     this.cid_map = props.cid_map
-    //this.cid_list = props.cid_list; //pass in cid_list as props in html
     this.group = props.group
     this.state = {
       indSankey : [],
@@ -19,7 +18,7 @@ class SankeyChart extends Component {
     };
   }
 
-  //fetch data and format list when component is created
+  // fetch data and format list when component is created
   componentDidMount() {
     this.formatList();
   }
@@ -28,15 +27,8 @@ class SankeyChart extends Component {
   async fetchData() {
     if (this.group === undefined) { //cid list
       var data = {}
-     // var cids = this.cid_list.split(',');
       var cids = [ ... this.cid_map.keys() ]
-      // var cids = Object.keys(this.cid_map)
-      // console.log(this.cid_map)
-      console.log("cids", cids)
       for (let cid in cids) {
-        // console.log("cid:", cid);
-        // console.log("politician:", cids[cid]);
-
         //api calls
         const responseInd = await fetch('http://137.22.4.60:5001/'+ cids[cid] +'/industry');
         const resultInd = await responseInd.json();
@@ -52,7 +44,7 @@ class SankeyChart extends Component {
         ind_topic_dict["statement_topics"] = resultStatements;
         data[cids[cid]] = ind_topic_dict;
       }
-      // console.log("this is the datain sankey", data)
+
       return(data)
 
     } else { //group
@@ -63,25 +55,21 @@ class SankeyChart extends Component {
     }
   }
 
-  //format list when given a cid list
+  // format list when given a cid list
   formatListCids(data) {
-    //var sankey_list = [['From', 'To', 'Weight']]
     var ind_sankey_list = [['From', 'To', 'Weight']]
     var tweet_sankey_list = [['From', 'To', 'Weight']]
     var statement_sankey_list = [['From', 'To', 'Weight']]
+
     for (let cid in data) {
       var memberName = this.cid_map.get(cid)
-      // console.log("memberName:", memberName)
-      // console.log("data[cid]:", data[cid])
       var industries = data[cid].industry.industry
       var tweet_topics = data[cid].tweet_topics.tweet_topics
       var statement_topics = data[cid].statement_topics.statement_topics
 
-      //add industries to sankey list, calculate total for scaling purposes
-      var ind_total = 0;
+      // add industries to sankey list
       for (let ind in industries) {
         ind_sankey_list.push([industries[ind].industry_name, memberName, parseInt(industries[ind].total)]);
-        ind_total  += parseInt(industries[ind].total)
       }
 
       // Tweets
@@ -92,9 +80,8 @@ class SankeyChart extends Component {
       }
 
       for (let topic in tweet_topics) {
-        //calculate weight to scale first
         let topic_name = tweetTopicLabels[topic]
-        // console.log("topic, topic_name", topic, topic_name)
+        //calculate weight to scale first
         let sankey_weight = parseInt(tweet_topics[topic]) / tweet_topic_total
         let rounded_weight = parseFloat(sankey_weight.toFixed(2))
         tweet_sankey_list.push([memberName, topic_name, rounded_weight]) 
@@ -111,16 +98,16 @@ class SankeyChart extends Component {
         let topic_name = statementTopicLabels[topic]
         //calculate weight to scale first
         let sankey_weight = parseInt(statement_topics[topic]) / statement_topic_total
-        let rounded_weight = parseFloat(sankey_weight.toFixed(2))
+        let rounded_weight = parseFloat(sankey_weight.toFixed(2)) 
         statement_sankey_list.push([memberName, topic_name, rounded_weight]) 
       }
     }
+
     return [ind_sankey_list, tweet_sankey_list, statement_sankey_list]
   }
 
-  //format list when given a group
+  // format list when given a group
   formatListGroup(data) {
-    //var sankey_list = [['From', 'To', 'Weight']] 
     var industries = data.industry
     var tweet_topics = data.tweet_topics
     var statement_topics = data.statement_topics
@@ -142,7 +129,6 @@ class SankeyChart extends Component {
 
     for (let topic in tweet_topics) {
       let topic_name = tweetTopicLabels[topic]
-      // console.log("topic, topic_name", topic, topic_name)
       //calculate weight to scale first
       let sankey_weight = parseInt(tweet_topics[topic]) / tweet_topic_total
       tweet_sankey_list.push([data.group, topic_name, sankey_weight]) 
@@ -194,10 +180,8 @@ class SankeyChart extends Component {
 
   render() {
     let indData = this.state.indSankey
-    // console.log("indData:", indData)
     let tweetData = this.state.tweetSankey
     let statementData = this.state.stateSankey
-    // console.log("tweetData:", tweetData)
    
     return (
       <Container className="mt-5 pt-3 mb-3 pb-3">
