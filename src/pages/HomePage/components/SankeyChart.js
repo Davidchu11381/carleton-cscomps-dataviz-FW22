@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Col, Row, Container, Stack, Form, Card } from 'react-bootstrap'
+import { Container, Card } from 'react-bootstrap'
 import Chart from 'react-google-charts';
 import { tweetTopicLabels, statementTopicLabels} from '../topicLabels.js';
 
@@ -25,7 +25,7 @@ class SankeyChart extends Component {
   
   // fetch data asynchronously
   async fetchData() {
-    if (this.group === undefined) { //cid list
+    if (this.group === undefined) { //cid map
       var data = {}
       var cids = [ ... this.cid_map.keys() ]
       for (let cid in cids) {
@@ -55,7 +55,7 @@ class SankeyChart extends Component {
     }
   }
 
-  // format list when given a cid list
+  // format list when given a cid map
   formatListCids(data) {
     var ind_sankey_list = [['From', 'To', 'Weight']]
     var tweet_sankey_list = [['From', 'To', 'Weight']]
@@ -158,7 +158,7 @@ class SankeyChart extends Component {
     var tweet_sankey_list = []
     var statement_sankey_list = []
 
-    if (this.group === undefined) { //cid list
+    if (this.group === undefined) { //cid map
       let lists = this.formatListCids(data)
       ind_sankey_list = lists[0]
       tweet_sankey_list = lists[1]
