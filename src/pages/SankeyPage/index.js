@@ -1,7 +1,6 @@
 import React from 'react'
-import { Col, Row, Container, Stack, Button, ButtonGroup, ToggleButtonGroup } from 'react-bootstrap'
-import { useNavigate, useLocation } from 'react-router';
-import SankeyChart from '../HomePage/components/SankeyChart';
+import { Col, Row, Container, Stack, Button, ToggleButtonGroup } from 'react-bootstrap'
+import SankeyChart from './components/SankeyChart';
 import { useEffect, useReducer, useState, useRef } from 'react';
 import PoliticianButton from './components/PoliticianButton';
 import StateButton from './components/StateButton';
@@ -253,6 +252,8 @@ function SankeyPage() {
                     </Col>
                 </Row>
             </div>
+            <br></br>
+            <br></br>
             <div id="charts">
                 <Container className="mt-5">
                     <Row className="mt-5 pt-5">

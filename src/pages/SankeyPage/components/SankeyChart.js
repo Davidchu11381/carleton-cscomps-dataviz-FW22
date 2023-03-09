@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { Container, Card } from 'react-bootstrap'
 import Chart from 'react-google-charts';
-import { tweetTopicLabels, statementTopicLabels} from '../topicLabels.js';
+import { tweetTopicLabels, statementTopicLabels} from './topicLabels.js';
 
 import style from './../index.module.css'
 

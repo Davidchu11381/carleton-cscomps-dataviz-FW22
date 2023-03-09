@@ -57,7 +57,7 @@ function AboutUs() {
                 </Col>
                 <Col>
                 <p><a 
-                    // href="https://www.linkedin.com/in/kevin-chen-32791a190/" 
+                    href="https://www.linkedin.com/in/lucklita-theng/" 
                     target="_blank"
                     rel="noopener noreferrer"
                     >Lita Theng</a></p>

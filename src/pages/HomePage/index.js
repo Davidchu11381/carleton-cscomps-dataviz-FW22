@@ -2,7 +2,7 @@ import React, { useEffect } from 'react';
 import { useState, useReducer } from 'react';
 import {Container, Row, Col, Button} from 'react-bootstrap';
 // import YoutubeEmbed from './components/YoutubeEmbed';
-import SankeyChart from './components/SankeyChart';
+import SankeyChart from '../SankeyPage/components/SankeyChart';
 // import { renderMatches, useNavigate } from 'react-router-dom';
 import style from "./index.module.css"
 
