@@ -160,7 +160,7 @@ function SankeyPage() {
         <br></br>
         <p>
             <strong>Note:</strong> If more than 10 politicians are selected, the representation of the data becomes
-            quite convulated and can be confusing to interpret.
+            quite convoluted and can be confusing to interpret.
         </p>
         <br></br>
         <div>
