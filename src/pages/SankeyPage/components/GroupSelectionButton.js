@@ -50,6 +50,7 @@ function GroupSelectionButton( data ) {
             className="m-1"
             id={data.id}
             type="checkbox"
+            // variant="outline-secondary"
             variant="outline-primary"
             checked={determineType()}
             // checked={initial}

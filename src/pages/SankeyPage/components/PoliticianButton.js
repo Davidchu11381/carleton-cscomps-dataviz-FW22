@@ -18,7 +18,7 @@ function PoliticianButton( data ) {
         if (party === "Republican") {
             return 'outline-danger'
         } else if (party === "Democrat"){
-            return 'outline-info';
+            return 'outline-primary';
         } else {
             return 'outline-success';
         }
@@ -50,7 +50,7 @@ function PoliticianButton( data ) {
     
     return (
         <ToggleButton
-            className="mb-2"
+            className="m-1"
             id={info.id}
             type="checkbox"
             variant={partyType()}

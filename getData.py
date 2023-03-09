@@ -2,98 +2,16 @@ import csv
 import pymongo
 import xmltodict
 import requests
-from politicianAPI import removeAtSymbol, getTweetTopicsDict, getIndustryData, getProfilePic, getStatementTopicsDict
+from politicianAPI import removeAtSymbol
 
 path_to_legislators = '/home/dataviz/Downloads/legislators-current.csv'
 path_to_industries = '/home/dataviz/Downloads/CRPIndustryCodes.csv'
 path_to_tweet_topics = '/home/dataviz/Downloads/tweets_topics_dist.csv'
 path_to_statement_topics = '/home/dataviz/Downloads/statement_topics_dist2.csv'
 
-#path_to_legislators = '/Users/kevin/Downloads/legislators-current.csv'
-#path_to_industries = '/Users/kevin/Downloads/CRPIndustryCodes.csv'
-#path_to_tweet_topics = '/Users/kevin/Downloads/tweets_topics_dist.csv'
-#path_to_statement_topics = '/Users/kevin/Downloads/statement_topics_dist2.csv'
-
-key = "91a96cc61cceb54c2473df69372795f6" # API key
-
-# twitter keys
-consumer_key = "YauX4ahOHAxcsDgcX4zrtkWid"  #same as api key
-consumer_secret = "PNezX7Ne2xEAnkomoNBuPw7NWvgQt1w5OvtxTTzgRZZNgSsGRA"  #same as api secret
-access_key = "1572984312554786818-eoA2bVWAu0g9FHzhLprwAiOUOwSw5H"
-access_secret = "ieTStsQ3LsfFomPAMTEgLjnWU90fODIS543LDvnihfaSn"
-
+key = "91a96cc61cceb54c2473df69372795f6" # OpenSecrets API key
 
 #########
-
-# Returns all Republicans sorted by alphabetical order or by total donations
-def getAllRepublicans2(sort):
-    client = pymongo.MongoClient("mongodb://localhost:27017/")
-    db = client['comps']
-    collection = db['congresspeople']
-    list = []
-    for dict in collection.find({"party": "Republican"}):
-        dict.pop("_id")
-        list.append(dict)
-    if sort == "alphabetical":
-        list.sort(key = lambda x: x["last_name"])
-    elif sort == "total":
-        list.sort(key = lambda x: x["total"])
-
-    cid_list = [dict["opensecrets_id"] for dict in list]
-    return cid_list
-  
-# Returns all Democrats sorted by alphabetical order or by total donations
-def getAllDemocrats2(sort):
-    client = pymongo.MongoClient("mongodb://localhost:27017/")
-    db = client['comps']
-    collection = db['congresspeople']
-    list = []
-    for dict in collection.find({"party": "Democrat"}):
-        dict.pop("_id")
-        list.append(dict)
-    if sort == "alphabetical":
-        list.sort(key = lambda x: x["last_name"])
-    elif sort == "total":
-        list.sort(key = lambda x: x["total"])
-
-    cid_list = [dict["opensecrets_id"] for dict in list]
-    return cid_list
-
-# Returns all Senators sorted by alphabetical order or by total donations
-def getAllSenators2(sort):
-    client = pymongo.MongoClient("mongodb://localhost:27017/")
-    db = client['comps']
-    collection = db['congresspeople']
-    list = []
-    for dict in collection.find({"type": "sen"}):
-        dict.pop("_id")
-        list.append(dict)
-    if sort == "alphabetical":
-        list.sort(key = lambda x: x["last_name"])
-    elif sort == "total":
-        list.sort(key = lambda x: x["total"])
-
-    cid_list = [dict["opensecrets_id"] for dict in list]
-
-    return cid_list
-
-# Returns all Representatives sorted by alphabetical order or by total donations
-def getAllRepresentatives2(sort):
-    client = pymongo.MongoClient("mongodb://localhost:27017/")
-    db = client['comps']
-    collection = db['congresspeople']
-    list = []
-    for dict in collection.find({"type": "rep"}):
-        dict.pop("_id")
-        list.append(dict)
-    if sort == "alphabetical":
-        list.sort(key = lambda x: x["last_name"])
-    elif sort == "total":
-        list.sort(key = lambda x: x["total"])
-
-    cid_list = [dict["opensecrets_id"] for dict in list]
-
-    return cid_list
 
 # Returns top 10 industries for a specific candidate cid
 def getTopIndustries(cid):
@@ -202,53 +120,8 @@ def getStatementTopicData():
                 new_dict["topic_" + str(topic_num)] = row[i]
             new_collection.insert_one(new_dict)
 
-# saves aggregate data(tweet topics + industry funding) to our database for the following groups: "Republican", "Democrat", "Senator", "Representative"
-def saveAggregateData():
-    client = pymongo.MongoClient("mongodb://localhost:27017/")
-    db = client['comps']
-    new_collection1 = db["aggregate_tweet_topics"] # create a new collection in the database
-    new_collection1.drop() # clear anything already in it
-
-    new_collection2 = db["aggregate_industry_data"] # create a new collection in the database
-    new_collection2.drop() # clear anything already in it
-
-    new_collection3 = db["aggregate_statement_topics"] # create a new collection in the database
-    new_collection3.drop() # clear anything already in it
-
-    groups = ["Republican", "Democrat", "Senator", "Representative"]
-    for group in groups:
-        if group == "Republican":
-            cid_list = getAllRepublicans2("total")
-        elif group == "Democrat":
-            cid_list = getAllDemocrats2("total")
-        elif group == "Senator":
-            cid_list = getAllSenators2("total")
-        else:
-            cid_list = getAllRepresentatives2("total")
-
-        topics_dict = getTweetTopicsDict(cid_list)
-        new_collection1.insert_one({"group":group, "tweet_topics": topics_dict})
-
-        industry_data = getIndustryData(cid_list)
-        new_collection2.insert_one({"group":group, "industry": industry_data})
-
-        statements_dict = getStatementTopicsDict(cid_list)
-        new_collection3.insert_one({"group":group, "statement_topics": statements_dict})
-
-# updates every congressperson's info with their twitter handle 
-def getTwitterProfilePics():
-    client = pymongo.MongoClient("mongodb://localhost:27017/")
-    db = client['comps']
-    congresspeople = db["congresspeople"] # create a new collection in the database
-
-    for dic in congresspeople.find():
-        twitter_handle = dic["twitter"]
-        congresspeople.find_one_and_update({"opensecrets_id": dic["opensecrets_id"]}, {"$set": {"profile_pic": getProfilePic(twitter_handle)}})
-        
 def main():
-    # get_politician_data() # get all summary information for congresspeople
-    # getTweetTopicData() # get topic distribution for all tweets
-    # getStatementTopicData() # get topic distribution for all statements
-    # saveAggregateData() # calculate and save aggregate topic and industry data for Republican, Democrat, Senator, Representative
-    getTwitterProfilePics() # save all profile pictures 
+    get_politician_data() # get all summary information for congresspeople
+    getTweetTopicData() # get topic distribution for all tweets
+    getStatementTopicData() # get topic distribution for all statements
 main()

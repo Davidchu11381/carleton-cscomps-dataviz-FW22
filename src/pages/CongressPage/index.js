@@ -1,5 +1,5 @@
 import React from 'react'
-import { Container, Row, Col, Form, Button } from 'react-bootstrap'
+import { Container, Row, Col, Form, Button, Dropdown } from 'react-bootstrap'
 import { Card } from 'react-bootstrap'
 import { useNavigate } from 'react-router-dom';
 // import { useState } from 'react';
@@ -24,13 +24,13 @@ function CongressPage() {
                 <Row lg={3}>
                     <Col>
                     <Form.Select aria-label="Chamber">
-                        <option>Congress Chamber</option>
+                        <option>Chamber</option>
                         <option value="House">House</option>
                         <option value="Senate">Senate</option>
                     </Form.Select></Col>
                     <Col>
                     <Form.Select aria-label="Political Party">
-                        <option>Political Party</option>
+                        <option>Party</option>
                         <option value="Democrat">Democrat</option>
                         <option value="Republican">Republican</option>
                     </Form.Select></Col>
@@ -54,6 +54,86 @@ function CongressPage() {
                         <option value="3">Three</option>
                     </Form.Select></Col>
                 </Row>
+                <br></br>
+                <br></br>
+                <Dropdown>
+                <Dropdown.Toggle variant="success" id="dropdown-basic">
+                    States
+                </Dropdown.Toggle>
+
+                <Dropdown.Menu>
+                <Form.Check 
+                    className="m-2"
+                    type="checkbox"
+                    id="checkbox-state"
+                    label="Alabama"
+                    />
+                                <Form.Check 
+                    type="checkbox"
+                    className="m-2"
+                    id="checkbox-state"
+                    label="Alaska"
+                    />
+                                    <Form.Check 
+                    type="checkbox"
+                    className="m-2"
+                    id="checkbox-state"
+                    label="Arizona"
+                    />
+
+<Form.Check 
+                    type="checkbox"
+                    className="m-2"
+                    id="checkbox-state"
+                    label="Arkansas"
+                    />
+
+<Form.Check 
+                    type="checkbox"
+                    className="m-2"
+                    id="checkbox-state"
+                    label="California"
+                    />
+
+<Form.Check 
+                    type="checkbox"
+                    className="m-2"
+                    id="checkbox-state"
+                    label="Colorado"
+                    />
+
+<Form.Check 
+                    type="checkbox"
+                    className="m-2"
+                    id="checkbox-state"
+                    label="Connecticut"
+                    />
+
+                    <Dropdown.Item href="#/action-1">Alabama</Dropdown.Item>
+                    <Dropdown.Item href="#/action-2">Alaksa</Dropdown.Item>
+                    <Dropdown.Item href="#/action-3">Arizona</Dropdown.Item>
+                    <Dropdown.Item href="#/action-3">Arkansas</Dropdown.Item>
+                    <Dropdown.Item href="#/action-3">California</Dropdown.Item>
+                    <Dropdown.Item href="#/action-3">Colorado</Dropdown.Item>
+                    <Dropdown.Item href="#/action-3">Connecticut</Dropdown.Item>
+                    <Dropdown.Item href="#/action-3">Delaware</Dropdown.Item>
+                    <Dropdown.Item href="#/action-3">Florida</Dropdown.Item>
+                    <Dropdown.Item href="#/action-3">Georgia</Dropdown.Item>
+                    <Dropdown.Item href="#/action-3">Hawaii</Dropdown.Item>
+                    <Dropdown.Item href="#/action-3">Idaho</Dropdown.Item>
+                    <Dropdown.Item href="#/action-3">Illinois</Dropdown.Item>
+                    <Dropdown.Item href="#/action-3">Indiana</Dropdown.Item>
+                </Dropdown.Menu>
+                </Dropdown>
+                <br></br>
+                <br></br>
+                <br></br>
+                <br></br>
+                <br></br><br></br>
+                <br></br><br></br>
+                <br></br><br></br>
+                <br></br><br></br>
+                <br></br>
                 <Container>
                     <Row sm={2} md={2} lg={4}>
                         <Card border={type} style={{ width: '18rem' }}>
