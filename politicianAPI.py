@@ -1,18 +1,9 @@
 from flask import Flask, jsonify, request
 import pymongo
-import requests
-import xmltodict
-import tweepy
 from collections import defaultdict
 import heapq
 
 opensecrets_key = "91a96cc61cceb54c2473df69372795f6" # API key
-
-# twitter keys
-consumer_key = "YauX4ahOHAxcsDgcX4zrtkWid"  #same as api key
-consumer_secret = "PNezX7Ne2xEAnkomoNBuPw7NWvgQt1w5OvtxTTzgRZZNgSsGRA"  #same as api secret
-access_key = "1572984312554786818-eoA2bVWAu0g9FHzhLprwAiOUOwSw5H"
-access_secret = "ieTStsQ3LsfFomPAMTEgLjnWU90fODIS543LDvnihfaSn"
 
 # returns dict containing distribution of statement topics for the given cid list.
 def getStatementTopicsDict(cid_list):
@@ -120,25 +111,6 @@ def getIndustryData(cid_list):
 def removeAtSymbol(dict):
     return {x.translate({64:None}) : y for x, y in dict.items()}
 
-# gets the Twitter profile picture of a Twitter handle
-def getProfilePic(handle):
-    # Twitter authentication
-    auth = tweepy.OAuthHandler(consumer_key, consumer_secret)   
-    auth.set_access_token(access_key, access_secret) 
-    
-    # Creating an API object 
-    api = tweepy.API(auth)
-
-    try:
-        api.verify_credentials()
-        user = api.get_user(screen_name=handle)
-        extension = user.profile_image_url[-3:]
-        url = user.profile_image_url[:-10]
-        url += "bigger." + extension
-        return url
-    except:
-        print('Failed authentication')
-
 # creating a Flask app
 app = Flask(__name__)
 
@@ -157,7 +129,8 @@ def getTweetTopics(cid_list):
     cid_list = cid_list.split(",") # splits input into a list of cid's
     topics_dict = getTweetTopicsDict(cid_list)
     response = jsonify({"tweet_topics": topics_dict})
-    response.headers.add('Access-Control-Allow-Origin', 'http://localhost:3000')
+    # response.headers.add('Access-Control-Allow-Origin', 'http://localhost:3000')
+    response.headers.add('Access-Control-Allow-Origin', '*')
     return response
 
 # Returns statement topic distribution for a congressperson(s)
@@ -168,17 +141,9 @@ def getStatementTopics(cid_list):
     cid_list = cid_list.split(",") # splits input into a list of cid's
     topics_dict = getStatementTopicsDict(cid_list)
     response = jsonify({"statement_topics": topics_dict})
-    response.headers.add('Access-Control-Allow-Origin', 'http://localhost:3000')
+    # response.headers.add('Access-Control-Allow-Origin', 'http://localhost:3000')
+    response.headers.add('Access-Control-Allow-Origin', '*')
     return response
-
-# Returns statement topic distribution for a congressperson(s)
-# For just one congressperson, cid_list is just the cid.
-# If there are multiple congresspeople, cid_list is a comma-delimited list of cid's. ex. "N00007360,N00007361,N00007362"
-# @app.route('/<string:cid_list>/statement_topics', methods = ['GET'])
-# def getStatementTopics(cid_list):
-#     cid_list = cid_list.split(",") # splits input into a list of cid's
-#     topics_dict = getStatementTopicsDict(cid_list)
-#     return jsonify({"statement_topics": topics_dict})
 
 # Returns top 10 industries for a congressperson(s)
 # For just one congressperson, cid_list is just the cid.
@@ -189,33 +154,8 @@ def getIndustries(cid_list):
     res = getIndustryData(cid_list)
     top_k = heapq.nlargest(10, res, key = lambda x : x["total"])
     response = jsonify({"industry": top_k})
-    response.headers.add('Access-Control-Allow-Origin', 'http://localhost:3000')
-    return response
-
-# Returns all aggregate information pertaining to a group
-# group can be equal to anything of the following: "Republican", "Democrat", "Senator", "Representative"
-@app.route('/<string:group>/aggregate', methods = ['GET'])
-def getAggregatedData(group):
-    # getting data from our database
-    client = pymongo.MongoClient("mongodb://localhost:27017/")
-    db = client['comps']
-    tweet_topics_collection = db['aggregate_tweet_topics']
-    industry_collection = db['aggregate_industry_data']
-    statement_topics_collection = db['aggregate_statement_topics']
-
-    tweet_topics_dic = tweet_topics_collection.find_one({"group": group})
-    tweet_topics_dic.pop("_id")
-
-    industry_dic = industry_collection.find_one({"group": group})
-    industry_dic.pop("_id")
-
-    statement_topics_dic = statement_topics_collection.find_one({"group": group})
-    statement_topics_dic.pop("_id")
-
-    top_k = heapq.nlargest(10, industry_dic["industry"], key = lambda x : x["total"])
-
-    response = jsonify({"group": group, "tweet_topics": tweet_topics_dic["tweet_topics"], "statement_topics" : statement_topics_dic["statement_topics"], "industry": top_k})
-    response.headers.add('Access-Control-Allow-Origin', 'http://localhost:3000')
+    # response.headers.add('Access-Control-Allow-Origin', 'http://localhost:3000')
+    response.headers.add('Access-Control-Allow-Origin', '*')
     return response
 
 # Returns all information pertaining to a candidate cid
@@ -228,7 +168,8 @@ def getSummaryInfo(cid):
     dic = collection.find_one({"opensecrets_id": cid})
     dic.pop("_id")
     response = jsonify({"summary": dic})
-    response.headers.add('Access-Control-Allow-Origin', 'http://localhost:3000')
+    # response.headers.add('Access-Control-Allow-Origin', 'http://localhost:3000')
+    response.headers.add('Access-Control-Allow-Origin', '*')
     return response
 
 # Returns all Republicans sorted by alphabetical order or by total donations
@@ -248,26 +189,9 @@ def getCIDToSummaryMapping():
         new_dict["id"] = dict["opensecrets_id"]
         res[dict["opensecrets_id"]] = new_dict
     response = jsonify({"data": res})
-    response.headers.add('Access-Control-Allow-Origin', 'http://localhost:3000')
+    response.headers.add('Access-Control-Allow-Origin', '*')
+    # response.headers.add('Access-Control-Allow-Origin', 'http://localhost:3000')
     return response
-
-# Returns top individual contributors for a specific candidate cid
-@app.route('/<string:cid>/individual', methods = ['GET'])
-def getTopIndividuals(cid):
-    endpoint = "https://www.opensecrets.org/api/?method=candContrib&cid=" + cid + "&cycle=2022&apikey="
-    api = endpoint + opensecrets_key
-    response = requests.get(f"{api}")
-    if response.status_code == 200:
-        data_dict = xmltodict.parse(response.text)["response"]["contributors"] # parse from XML to a JSON-dict format
-
-        # remove "@" symbols
-        data_dict = removeAtSymbol(data_dict) 
-        data_dict["contributor"] = [removeAtSymbol(contributor_dict) for contributor_dict in data_dict["contributor"]]
-        response = jsonify(data_dict)
-        response.headers.add('Access-Control-Allow-Origin', 'http://localhost:3000')
-        return response
-    else:
-        return f"There's a {response.status_code} error with your request"
 
 # Returns all Republicans sorted by alphabetical order or by total donations
 @app.route('/republicans/<string:sort>', methods = ['GET'])
@@ -286,7 +210,8 @@ def getAllRepublicans(sort):
 
     cid_list = [dict["opensecrets_id"] for dict in list]
     response = jsonify({"data": ",".join(cid_list)})
-    response.headers.add('Access-Control-Allow-Origin', 'http://localhost:3000')
+    # response.headers.add('Access-Control-Allow-Origin', 'http://localhost:3000')
+    response.headers.add('Access-Control-Allow-Origin', '*')
     return response
   
 # Returns all Democrats sorted by alphabetical order or by total donations
@@ -306,7 +231,8 @@ def getAllDemocrats(sort):
 
     cid_list = [dict["opensecrets_id"] for dict in list]
     response = jsonify({"data": ",".join(cid_list)})
-    response.headers.add('Access-Control-Allow-Origin', 'http://localhost:3000')
+    # response.headers.add('Access-Control-Allow-Origin', 'http://localhost:3000')
+    response.headers.add('Access-Control-Allow-Origin', '*')
     return response
 
 # Returns all Senators sorted by alphabetical order or by total donations
@@ -327,7 +253,8 @@ def getAllSenators(sort):
     cid_list = [dict["opensecrets_id"] for dict in list]
 
     response = jsonify({"data": ",".join(cid_list)})
-    response.headers.add('Access-Control-Allow-Origin', 'http://localhost:3000')
+    # response.headers.add('Access-Control-Allow-Origin', 'http://localhost:3000')
+    response.headers.add('Access-Control-Allow-Origin', '*')
     return response
 
 # Returns all Representatives sorted by alphabetical order or by total donations
@@ -348,7 +275,8 @@ def getAllRepresentatives(sort):
     cid_list = [dict["opensecrets_id"] for dict in list]
 
     response = jsonify({"data": ",".join(cid_list)})
-    response.headers.add('Access-Control-Allow-Origin', 'http://localhost:3000')
+    # response.headers.add('Access-Control-Allow-Origin', 'http://localhost:3000')
+    response.headers.add('Access-Control-Allow-Origin', '*')
     return response
 
 # Returns all congresspeople from a state 
@@ -364,7 +292,8 @@ def getCongresspeopleByState(state):
 
     cid_list = [dict["opensecrets_id"] for dict in list]
     response = jsonify({"data": ",".join(cid_list)})
-    response.headers.add('Access-Control-Allow-Origin', 'http://localhost:3000')
+    # response.headers.add('Access-Control-Allow-Origin', 'http://localhost:3000')
+    response.headers.add('Access-Control-Allow-Origin', '*')
     return response
 
 @app.route('/allSummaries', methods = ['GET'])
@@ -382,7 +311,8 @@ def getAllSummaries():
 
     # cid_list = [dict["opensecrets_id"] for dict in list]
     # response = jsonify({"data": ",".join(cid_list)})
-    response.headers.add('Access-Control-Allow-Origin', 'http://localhost:3000')
+    # response.headers.add('Access-Control-Allow-Origin', 'http://localhost:3000')
+    response.headers.add('Access-Control-Allow-Origin', '*')
     return response
 
 # driver function

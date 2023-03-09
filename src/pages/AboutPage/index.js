@@ -22,24 +22,45 @@ function AboutUs() {
             <div className="lead mt-3"> 
             <Row className="mb-3">
                 <Col>
-                <p>Anna</p>
+                <p><a href="https://www.linkedin.com/in/anna-neiman-golden-676322218//" 
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    >Anna Neiman-Golden</a></p>
                 </Col>
                 <Col>
-                <p>Ben</p>
+                <p>
+                <a href="https://www.linkedin.com/in/ben-aoki-sherwood/" 
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    >Ben Aoki-Sherwood</a></p>
                 </Col>
                 <Col>
-                <p>Chisom</p>
+                <p><a href="https://www.linkedin.com/in/chisomoguh/" 
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    >Chisomnazu Oguh</a></p>
                 </Col>
             </Row>
             <Row className="mb-3">
                 <Col>
-                <p>David</p>
+                <p><a href="https://www.linkedin.com/in/chuhoangminhduc/" 
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    >Hoang Minh Duc (David) Chu</a></p>
                 </Col>
                 <Col>
-                <p>Kevin</p>
+                <p><a href="https://www.linkedin.com/in/kevin-chen-32791a190/" 
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    >
+                    Kevin Chen</a></p>
                 </Col>
                 <Col>
-                <p>Lita</p>
+                <p><a 
+                    // href="https://www.linkedin.com/in/kevin-chen-32791a190/" 
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    >Lita Theng</a></p>
                 </Col>   
             </Row> 
             </div>
