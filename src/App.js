@@ -25,7 +25,7 @@ function App() {
                 {/* <Route path='/barchart' element={<BarChartPage />} /> */}
                 {/* <Route path='/congress' element={<CongressPage />} /> */}
                 <Route path='/data' element={<DataPage />} />
-                <Route path='/overview' element={<HomePage />} />
+                {/*<Route path='/overview' element={<HomePage />} />*/}
             </Routes>
         </Router>
     </>
