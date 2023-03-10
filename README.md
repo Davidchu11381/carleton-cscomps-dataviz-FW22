@@ -2,7 +2,11 @@
 
 FollowTheMoney is a web application that enables exploration of the relationships between funding sources and speech topics for members of the 117th United States Congress. These relationships are visualized in the form of Sankey diagrams, which the flows of money from donating industries to congresspeople and the flows of speech from congress people to topics. FollowTheMoney uses data on campaign funding broken down by industry gathered from OpenSecrets, statements made on the floor of Congress collected from the Congressional Records, and tweets for each congress person pulled from Twitter. To extract and quantify the topics contained in the statements and tweets, we used a Latent Dirichlet Allocation (LDA) topic model, assigning each document to a particular topic. We hope that FollowTheMoney's intuitive, simple interface can help a broad audience understand better how campaign contributions influence what politicians talk about.
 
-Users are able to input a arbitrary subset of congresspeople and then three visualizations will be displayed:
+Users are able to input a arbitrary subset of congresspeople by using the filtering system below:
+
+![alt text](https://github.com/Davidchu11381/carleton-cscomps-dataviz-FW22/blob/master/DemoScreenshots/filter.png)
+
+Upon clicking "Display Visualization(s) Below", three visualizations will be displayed:
 
 1. A Sankey diagram showing the breakdown of the top 10 industries that fund the congressperson(s).
 
@@ -10,6 +14,11 @@ Users are able to input a arbitrary subset of congresspeople and then three visu
 
 3. A Sankey diagram showing the breakdown of the distribution of the topics found in the congressperson(s) congressional statements.
 
+### See examples of those diagrams below for the Democratic Senators of Minnesota(as of March 2023):
+
+![alt text](https://github.com/Davidchu11381/carleton-cscomps-dataviz-FW22/blob/master/DemoScreenshots/funding_sankey.png)
+![alt text](https://github.com/Davidchu11381/carleton-cscomps-dataviz-FW22/blob/master/DemoScreenshots/tweets_sankey.png)
+![alt text](https://github.com/Davidchu11381/carleton-cscomps-dataviz-FW22/blob/master/DemoScreenshots/statements_sankey.png)
 ___
 
 ## Methods
