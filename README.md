@@ -34,7 +34,31 @@ Statement data was collected from the Congressional Record API and consists of s
 
 ___
 
+## How to Run
 
+### API
+To run the API for this project, run this in the command line within the project directory, remotely on Olin 312-04:
 
+$ export FLASK_APP=politicianAPI.py
 
+$ flask run --host 0.0.0.0 --port 5001
 
+Then, go to your browser and go to http://localhost:5001/ to access the API. 
+
+### Run locally
+To run the site locally, run this in the command line within the project directory:
+
+`npm start`
+
+Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+
+The page will reload when you make changes.
+
+### Build
+To build and run the site, run this in the command line within the project directory:
+
+`npm run build`
+
+`serve -s build`
+
+You can now access the site at the url [followthemoneycomps.com](followthemoneycomps.com).
