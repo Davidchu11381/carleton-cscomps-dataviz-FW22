@@ -3,7 +3,6 @@
  * PoliticianButton for Sankey filtering system
  */
 
-// import styles from './HeaderBar.module.css';
 import React from 'react';
 import { useState } from 'react';
 import { ToggleButton } from 'react-bootstrap';
@@ -60,7 +59,6 @@ function PoliticianButton( data ) {
             onChange={(e) => {
                 setInitial(e.currentTarget.checked);
                 updateList(info, e.currentTarget.checked);
-                // partyType();
             }}
         >
             {info.name}

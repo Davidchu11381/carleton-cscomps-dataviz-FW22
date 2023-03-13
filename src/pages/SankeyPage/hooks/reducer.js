@@ -116,7 +116,6 @@ export const reducer = (state, action) => {
 			arrayPolList.forEach(per => state.selectedPoliticians.set(per[0], per[1]));
 			state.filteredPoliticians.clear();
 			arrayPolList.forEach(per => state.filteredPoliticians.set(per[0], per[1]));
-			// state.selectedPoliticians.forEach((value, key) => state.filteredPoliticians.delete(key));
 			
 			return {
 			    ...state,
@@ -138,24 +137,3 @@ export const reducer = (state, action) => {
 			return state;
 	}
 };
-
-// OLD CODE
-
-	// case 'ADD_STATE':
-	// 	if (state.selectedStates.includes(value)) {
-	// 		return {
-	// 			...state,
-	// 		}
-	// 	} else {
-	// 		state.selectedStates.push(value);
-	// 		return {
-	// 			...state,
-	// 		}
-	// 	}	
-
-	// case 'REMOVE_STATE':
-	// 	index = state.selectedStates.indexOf(value);
-	// 	state.selectedStates.splice(index, 1);
-	// 	return {
-	// 		...state,
-	// 	}

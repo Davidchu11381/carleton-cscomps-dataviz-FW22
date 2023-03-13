@@ -3,7 +3,6 @@
  * reducer.js
  */
 
-
 export const initialState = {
     // need a variable for each type
     showRep: false,

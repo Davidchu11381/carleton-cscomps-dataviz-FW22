@@ -3,24 +3,12 @@
 } */
 
 .buttonListing {
-    /* min-height: 15vh;
-    max-height: 20vh; */
     height: 40vh;
-    /* height: 20px; */
     overflow-y: auto;
     border-color: black;
     border-width: 0.05em;
     border-style: dashed;
     overflow-x: hidden;
-}
-
-.filterSystem {
-    background-color: lightcoral;
-}
-
-.line {
-    height: 1px;
-    background-color: black;
 }
 
 .space {
@@ -31,24 +19,6 @@
     width: 95%;
 }
 
-.poliButtonSpacing {
-    padding: 0.5%;
-    background-color: aquamarine;
-}
-
-.poliBox {
-    display: flex;
-    flex-direction: row;
-    /* flex-wrap: wrap; */
-    /* flex-basis: 50%; */
-}
-
 .buttonSection {
     height: 20vh;
-    /* height: 50px; */
-    /* background-color: red; */
-}
-
-.stopScrolling {
-    overflow-x: hidden;
 }

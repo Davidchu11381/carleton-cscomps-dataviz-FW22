@@ -1,16 +1,12 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route} from 'react-router-dom';
 import '../node_modules/bootstrap/dist/css/bootstrap.min.css'
-import HomePage from './pages/HomePage/index.js'
 import AboutUs from './pages/AboutPage/index.js'
 import NavbarBand from './components/Navbar.js'
-// import IndustryPage from './pages/IndustryPage';
-// import PersonPage from './pages/PersonPage';
-// import CongressPage from './pages/CongressPage'
-// import BarChartPage from './pages/BarChartPage';
 import DataPage from './pages/DataPage';
 import SankeyPage from './pages/SankeyPage';
-
+// import OverviewPage from './pages/old_pages/OverviewPage'
+// import CongressPage from './pages/old_pages/CongressPage'
 
 function App() {
     return (
@@ -20,12 +16,9 @@ function App() {
             <Routes>
                 <Route exact path='/' element={<SankeyPage />} />
                 <Route path='/aboutUs' element={<AboutUs />} />
-                {/* <Route path='/industry' element={<IndustryPage />} /> */}
-                {/* <Route path='/individual' element={<PersonPage />} /> */}
-                {/* <Route path='/barchart' element={<BarChartPage />} /> */}
                 {/* <Route path='/congress' element={<CongressPage />} /> */}
                 <Route path='/data' element={<DataPage />} />
-                {/*<Route path='/overview' element={<HomePage />} />*/}
+                {/* <Route path='/overview' element={<OverviewPage />} /> */}
             </Routes>
         </Router>
     </>

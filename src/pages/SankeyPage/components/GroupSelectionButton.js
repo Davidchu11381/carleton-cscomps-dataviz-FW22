@@ -3,17 +3,15 @@
  * GroupSelectionButton gathers user input for data visualization
  */
 
-// import styles from './HeaderBar.module.css';
 import React from 'react';
 import { useReducer } from 'react';
 import { ToggleButton } from 'react-bootstrap';
-import { compReducer, compInitialState } from './hooks/reducer';
+import { componentReducer, componentInitialState } from './hooks/reducer';
 
 function GroupSelectionButton( data ) {    
     const dispatch = data.func;
     const type = data.type;
-    // const [initial, setInitial] = useState(false);
-    const [compState, compDispatch] = useReducer(compReducer, compInitialState);
+    const [compState, compDispatch] = useReducer(componentReducer, componentInitialState);
 
     function determineType(){
         if (type === "chamber") {
@@ -50,14 +48,11 @@ function GroupSelectionButton( data ) {
             className="m-1"
             id={data.id}
             type="checkbox"
-            // variant="outline-secondary"
             variant="outline-primary"
             checked={determineType()}
-            // checked={initial}
             size="sm"
             value="1"
             onChange={(e) => {
-                // setInitial(e.currentTarget.checked);
                 updateList();
             }}
         >

@@ -1,13 +1,8 @@
-import React, { useEffect } from 'react';
-import { useState, useReducer } from 'react';
+import React, { useEffect, useReducer } from 'react';
 import {Container, Row, Col, Button} from 'react-bootstrap';
-// import YoutubeEmbed from './components/YoutubeEmbed';
-import SankeyChart from '../SankeyPage/components/SankeyChart';
-// import { renderMatches, useNavigate } from 'react-router-dom';
-import style from "./index.module.css"
+import SankeyChart from '../../SankeyPage/components/SankeyChart';
 
 import { reducer, initialState } from './components/reducer';
-
 
 function HomePage() {
 
@@ -27,15 +22,6 @@ function HomePage() {
             value: id,
         });
     }
-
-    // function displaySankeys() {
-    //     if (filters.desiredSankeys.length !== 0) {
-    //         filters.desiredSankeys.map(type => {
-    //             return (<SankeyChart group={type}/>)
-    //         })
-    //     }
-    //     return (<p>This is where the sankeys would appear</p>)
-    // }
 
     useEffect(() => {
         console.log(filters);
@@ -120,16 +106,3 @@ function HomePage() {
 }
 
 export default HomePage;
-
-// OLD CODE
-
-    // const navigate = useNavigate();
-    // const switchtoIndustryPage = () => {
-    //     console.log("switching to industry page");
-    //     navigate('/industry');
-    // }
-    
-    // const switchtoCongressPage = () => {
-    //     console.log("switching to congress page");
-    //     navigate('/congress')
-    // }

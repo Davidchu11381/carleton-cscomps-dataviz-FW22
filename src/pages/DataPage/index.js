@@ -1,8 +1,6 @@
-import React, { useEffect } from 'react';
-// import { useState, useReducer } from 'react';
-import {Container, Row, Col, Button} from 'react-bootstrap';
-// import SankeyChart from './components/SankeyChart';
-// import style from "./index.module.css"
+import React from 'react';
+
+import {Container, Row} from 'react-bootstrap';
 
 function DataPage() {
 
@@ -69,16 +67,3 @@ function DataPage() {
 }
 
 export default DataPage;
-
-// OLD CODE
-
-    // const navigate = useNavigate();
-    // const switchtoIndustryPage = () => {
-    //     console.log("switching to industry page");
-    //     navigate('/industry');
-    // }
-    
-    // const switchtoCongressPage = () => {
-    //     console.log("switching to congress page");
-    //     navigate('/congress')
-    // }

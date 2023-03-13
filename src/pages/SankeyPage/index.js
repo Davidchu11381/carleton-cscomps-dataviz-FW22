@@ -8,23 +8,16 @@ import GroupSelectionButton from './components/GroupSelectionButton';
 import style from "./index.module.css"
 
 import { reducer, initialState } from './hooks/reducer';
-import { compReducer, compInitialState } from './components/hooks/reducer';
-
-// TALK ABOUT IN COMPS TOMORROW
-// when click on the line between fields == info?
-// illustrates backing of politicians (aka lobbying)
+import { componentReducer, componentInitialState } from './components/hooks/reducer';
 
 function SankeyPage() {
 
     const [filters, dispatch] = useReducer(reducer, initialState);
-    const [compStuff, compDispatch] = useReducer(compReducer, compInitialState);
-    // const navigate = useNavigate();
+    const [compStuff, compDispatch] = useReducer(componentReducer, componentInitialState);
     const allPoliticians = new Map(); 
     const [allData, setAllData] = useState(null);
     const fetchDelay = [];
     const apiCallCount = useRef(0);
-    const [isLoading, setLoading] = useState(false);
-    // const scrollRef = useRef(0);
 
     const stateAbbrv = [ 'AK', 'AL', 'AR', 'AZ', 'CA', 'CO', 'CT', 'DC', 'DE', 'FL', 'GA',
     'HI', 'IA', 'ID', 'IL', 'IN', 'KS', 'KY', 'LA', 'MA', 'MD', 'ME',
@@ -45,25 +38,6 @@ function SankeyPage() {
             })
         }
     }
-
-    // const timer = setTimeout(() => {
-    //     console.log('This will run after 1 second!')
-    //   }, 1000);
-    //   return () => clearTimeout(timer);
-    // }
-    
-    useEffect(() => {
-        if (isLoading) {
-            displaySankey();
-            // const timer = setTimeout(() => {
-            //     console.log('This will run after 1 second!')
-            // }, 1000);
-            // return () => clearTimeout(timer);
-            setLoading(false);
-        }
-    }, [isLoading]);
-
-    const loading = () => setLoading(true);
 
     function theFilteredButtons() {
         let list = [ ...filters.filteredPoliticians ];
@@ -104,7 +78,6 @@ function SankeyPage() {
 
     // collecting data for politicians needed for filtering
     useEffect(() => {
-        // fetch('http://137.22.4.60:5001/cid_to_summary', { mode: 'no-cors' })
         fetch('http://137.22.4.60:5001/cid_to_summary')
         .then(response => response.json())
         .then(data => {
@@ -221,7 +194,6 @@ function SankeyPage() {
                                         </Row>
                                     </div>           
                                 <Button 
-                                    // className="mb-4 mt-4 ps-5 pe-5" 
                                     className="mt-2"
                                     onClick={displayButtons}>
                                     Filter
@@ -235,19 +207,13 @@ function SankeyPage() {
                             </div> 
                             <Row className="mt-2 mb-4">
                                     <Button
-                                        // className="btn-success ps-5 pe-5"
                                         variant="success"
                                         onClick={handleClickScroll}
-                                        // onClick={!isLoading? loading : null}
-                                        // disabled={isLoading}
                                         npmhref="#sankeys"
                                         >
-                                            {/* {isLoading? 'Loading...' : 'Display Visualization(s) Below'} */}
                                             Display Visualization(s) Below
                                     </Button>
-                                {/* {filters.sankeyReady? <p className="lead"><center><strong>Scroll down to see the data!</strong></center></p>: null} */}
                             </Row>   
-
                         </div>
                     </Col>
                 </Row>
@@ -257,7 +223,6 @@ function SankeyPage() {
             <div id="charts">
                 <Container className="mt-5">
                     <Row className="mt-5 pt-5">
-                        {/* {filters.sankeyReady? window.scroll(): null} */}
                         <a id="sankeys"></a>
                         {filters.sankeyReady? <SankeyChart cid_map={filters.displayPoli}/> : null}
                     </Row>
@@ -274,55 +239,3 @@ function SankeyPage() {
 }
 
 export default SankeyPage;
-
-
-// OLD CODE
-
-// function filterItems(arr, query) {
-//     return arr.filter((el) => el.toLowerCase().includes(query.toLowerCase()));
-// }
-
-// const updateStateList = (event) => {
-//     if (event.target.checked) {
-//         dispatch({
-//             type: 'ADD_STATE',
-//             value: event.target.id,
-//         })
-//     } else {
-//         dispatch({
-//             type: 'REMOVE_STATE',
-//             value: event.target.id,
-//         })
-//     }
-// }
-
-// const handleFilter = (event) => {        
-//     var eligibleStates = filterItems(stateList, event.target.value);
-
-//     if (event.code === "Enter") {
-//         event.target.value = "";
-//         if (eligibleStates.length === 1) {
-//             dispatch({
-//                 type: 'ADD_STATE',
-//                 value: eligibleStates[0],
-//             });
-//             dispatch({
-//                 type: 'UPDATE_BUTTONS', 
-//                 party: filters.party,
-//                 chamber: filters.party,
-//                 selectedStates: filters.selectedStates,
-//             });
-//         };
-//     };
-// };
-
-
-// const stateList = ['Alabama','Alaska','Arizona','Arkansas',
-//     'California','Colorado','Connecticut','Delaware','Florida',
-//     'Georgia','Hawaii','Idaho','Illinois','Indiana','Iowa',
-//     'Kansas','Kentucky','Louisiana','Maine','Maryland','Massachusetts',
-//     'Michigan','Minnesota','Mississippi','Missouri','Montana','Nebraska',
-//     'Nevada','New Hampshire','New Jersey','New Mexico','New York',
-//     'North Carolina','North Dakota','Ohio','Oklahoma','Oregon','Pennsylvania',
-//     'Rhode Island','South Carolina','South Dakota','Tennessee','Texas','Utah',
-//     'Vermont','Virginia','Washington','West Virginia','Wisconsin','Wyoming'];

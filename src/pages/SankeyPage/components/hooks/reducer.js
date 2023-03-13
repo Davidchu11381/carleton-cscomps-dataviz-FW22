@@ -30,13 +30,13 @@ function createStateMap() {
     return states;
 }
 
-export const compInitialState = {
+export const componentInitialState = {
     stateInfo: createStateMap(),
     chamberInfo: createChamberMap(),
     partyInfo: createPartyMap(),
 };
 
-export const compReducer = (state, action) => {
+export const componentReducer = (state, action) => {
 	console.log("inside the mini reducer:", action.type, action.value);
 	const value = action.value;
 
