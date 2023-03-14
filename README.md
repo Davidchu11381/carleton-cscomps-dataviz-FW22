@@ -1,6 +1,6 @@
 # Is a Dollar Worth a Thousand Words? Visualizing the Connections Between U.S. Congress Members’ Funding and Speech
 
-FollowTheMoney is a web application that enables exploration of the relationships between funding sources and speech topics for members of the 117th United States Congress. These relationships are visualized in the form of Sankey diagrams, which the flows of money from donating industries to congresspeople and the flows of speech from congress people to topics. FollowTheMoney uses data on campaign funding broken down by industry gathered from OpenSecrets, statements made on the floor of Congress collected from the Congressional Records, and tweets for each congress person pulled from Twitter. To extract and quantify the topics contained in the statements and tweets, we used a Latent Dirichlet Allocation (LDA) topic model, assigning each document to a particular topic. We hope that FollowTheMoney's intuitive, simple interface can help a broad audience understand better how campaign contributions influence what politicians talk about.
+FollowTheMoney is a web application that enables the exploration of the relationships between funding sources and speech topics for members of the 117th United States Congress. These relationships are visualized in the form of Sankey diagrams, which show the flows of money from donating industries to congresspeople and the flows of speech from congresspeople to topics. FollowTheMoney uses data on campaign funding broken down by industry gathered from OpenSecrets, statements made on the floor of Congress collected from the Congressional Records, and tweets for each congressperson pulled from Twitter. To extract and quantify the topics contained in the statements and tweets, we used a Latent Dirichlet Allocation (LDA) topic model, assigning each document to a particular topic. The hope is that FollowTheMoney's intuitive, simple interface can help a broad audience understand better how campaign contributions influence what politicians talk about.
 
 Users are able to input a arbitrary subset of congresspeople by using the filtering system below:
 
@@ -35,6 +35,9 @@ Statement data was collected from the Congressional Record API and consists of s
 ___
 
 ## How to Run
+
+### Get the data 
+Run the file "getData.py" by running "python3 getData.py" in the command line within the project directory.
 
 ### API
 To run the API for this project, run this in the command line within the project directory, remotely on Olin 312-04:
